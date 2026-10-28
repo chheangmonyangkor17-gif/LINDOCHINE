@@ -1,0 +1,2841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambodia | L'INDOCHINE Sovereign Journeys</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ivory: #F0EDE5;
+            --ink: #0A0A0A;
+            --gold: #C29D6B;
+            --clay: #1A1917;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        body { 
+            background-color: var(--ivory); 
+            color: var(--ink); 
+            font-family: 'Tenor Sans', sans-serif; 
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        /* Cinematic Overlays */
+        .vignette { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%); pointer-events: none; z-index: 100; opacity: 0.4; }
+        .grain { position: fixed; inset: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.07; pointer-events: none; z-index: 1000; mix-blend-mode: multiply; }
+
+        /* Bespoke Cursor */
+        #cursor-follower {
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px;
+            border: 0.5px solid var(--gold); border-radius: 50%; z-index: 10000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear, width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor-follower span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; }
+
+        /* Navigation */
+        nav { 
+            position: fixed; top: 0; width: 100%; padding: 0 60px; 
+            height: 90px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 999; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        .nav-links { display: flex; list-style: none; gap: 40px; height: 100%; }
+        .nav-links > li { display: flex; align-items: center; }
+        .nav-links > li > a {
+            text-decoration: none; color: var(--ivory); font-size: 10px; letter-spacing: 3px;
+            text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            transition: color 0.4s var(--ease); padding: 20px 0; position: relative; padding-right: 18px;
+        }
+        .nav-links > li > a:hover { color: var(--gold); }
+
+        .dropdown > a::after {
+            content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            width: 0; height: 0; border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+            border-top: 4px solid var(--gold); transition: transform 0.4s var(--ease); opacity: 0.6;
+        }
+        .dropdown:hover > a::after { transform: translateY(-50%) rotate(180deg); opacity: 1; }
+
+        .mega-menu {
+            position: absolute; top: 90px; left: 0; width: 100vw; background: var(--ink); padding: 40px 60px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; opacity: 0; visibility: hidden; 
+            pointer-events: none; transform: translateY(15px); transition: all 0.5s var(--ease);
+            border-bottom: 1px solid rgba(194, 157, 107, 0.3); z-index: 1000;
+        }
+        .mega-menu::before {
+            content: ''; position: absolute; top: -10px; left: var(--triangle-left, 50%); transform: translateX(-50%);
+            width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--ink); pointer-events: none;
+        }
+        .dropdown { position: static; } 
+        .dropdown:hover .mega-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+
+        .mega-item {
+            position: relative; height: 250px; overflow: hidden; text-decoration: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mega-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); filter: brightness(0.5); }
+        .mega-item span {
+            position: absolute; z-index: 2; color: var(--ivory); font-family: 'Cormorant Garamond'; font-size: 1.2rem; 
+            font-style: italic; letter-spacing: 1px; text-align: center; padding: 0 10px; transition: transform 0.4s var(--ease);
+        }
+        .mega-item:hover img { transform: scale(1.1); filter: brightness(0.7); }
+        .mega-item::after { content: ''; position: absolute; inset: 0; border: 0px solid var(--gold); transition: 0.4s var(--ease); }
+        .mega-item:hover::after { border: 1px solid var(--gold); inset: 10px; }
+
+        .btn-plan {
+            text-decoration: none; color: var(--gold); font-size: 9px; letter-spacing: 2px;
+            text-transform: uppercase; border: 1px solid var(--gold); padding: 12px 25px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); transition: all 0.5s var(--ease); display: inline-block;
+        }
+        .btn-plan:hover { background: var(--gold); color: var(--ink); }
+
+        /* Hero Section */
+        .page-header {
+            height: 100vh;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%), url('cambodiaguide.jpg'); 
+            background-size: cover; background-position: center; background-attachment: fixed; 
+            display: flex; align-items: center; justify-content: center; text-align: center; color: var(--ivory); position: relative;
+        }
+        .page-header .hero-subtitle {
+            display: block; letter-spacing: 15px; text-transform: uppercase; font-size: 20px; color: #FFFFFF; font-weight: 700; margin-bottom: 25px;
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.8), 0 0 10px rgba(194, 157, 107, 0.5);
+        }
+        .page-header h1 { font-family: 'Cormorant Garamond'; font-size: 9vw; font-style: italic; font-weight: 300; text-shadow: 0 4px 30px rgba(0,0,0,0.6); }
+
+        /* Editorial Showcase Destination Effects Styles */
+        .showcase-container { max-width: 1200px; margin: 0 auto; padding: 40px 0; }
+        .showcase-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 80px; align-items: center; }
+        .showcase-left { display: flex; flex-direction: column; justify-content: center; }
+        .showcase-nav-list { list-style: none; margin-bottom: 35px; }
+        .showcase-nav-item {
+            font-family: 'Cormorant Garamond'; font-size: 2.6rem; font-style: italic; color: var(--ink);
+            opacity: 0.25; cursor: pointer; margin-bottom: 18px; transition: all 0.6s var(--ease); position: relative; padding-left: 0;
+        }
+        .showcase-nav-item:hover, .showcase-nav-item.active { opacity: 1; color: var(--gold); padding-left: 20px; }
+        .showcase-meta { min-height: 200px; display: flex; flex-direction: column; align-items: flex-start; }
+        #showcase-desc-container { margin-bottom: 25px; }
+        .showcase-desc { font-family: 'Tenor Sans', sans-serif; font-size: 13px; line-height: 1.6; opacity: 0; display: none; transition: opacity 0.5s var(--ease); color: var(--ink); }
+        .showcase-desc strong { font-family: 'Cormorant Garamond'; font-size: 1.6rem; font-style: italic; display: block; color: var(--gold); margin-bottom: 8px; font-weight: 400; }
+        .showcase-desc.active { display: block; opacity: 0.8; }
+        .showcase-right { position: relative; height: 580px; overflow: hidden; border: 0.5px solid rgba(194, 157, 107, 0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+        .showcase-img-pane {
+            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; transform: scale(1.06); transition: opacity 0.8s var(--ease), transform 1.2s var(--ease);
+        }
+        .showcase-img-pane.active { opacity: 1; transform: scale(1); z-index: 1; }
+
+        /* Itinerary Section */
+        .itinerary-section { background: var(--clay); padding: 0 60px 180px 60px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .itin-card { position: relative; height: 70vh; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; transition: transform 0.8s var(--ease); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .itin-img-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(20%) brightness(0.5); transition: transform 1.5s var(--ease), filter 0.8s var(--ease); z-index: 1; }
+        .itin-content { position: relative; z-index: 2; color: var(--ivory); transform: translateY(60px); transition: all 0.7s var(--ease); padding: 20px; background: rgba(255, 255, 255, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); border-radius: 4px; }
+        .itin-content h4 { font-family: 'Cormorant Garamond'; font-size: 1.6rem; font-style: italic; font-weight: 300; margin-bottom: 8px; line-height: 1.2; }
+        .itin-content p { font-size: 0.75rem; line-height: 1.5; opacity: 0; max-height: 0; overflow: hidden; transition: all 0.6s var(--ease); margin-bottom: 0; color: rgba(240, 237, 229, 0.9); }
+        .itin-card:hover .itin-content { transform: translateY(0); background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); }
+        .itin-card:hover .itin-content p { opacity: 1; max-height: 250px; margin: 12px 0 18px 0; }
+        .itin-link { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold); padding-bottom: 3px; display: inline-block; opacity: 0; transition: opacity 0.6s var(--ease); }
+        .itin-card:hover .itin-link { opacity: 1; }
+
+        /* Accommodation Section Styles */
+        .accommodation-section { background: var(--ivory); padding: 120px 60px; }
+        .accommodation-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; margin-top: 60px; }
+        .hotel-card { text-decoration: none; color: var(--ink); }
+        .hotel-image-container { height: 300px; overflow: hidden; margin-bottom: 20px; border: 0.5px solid rgba(194, 157, 107, 0.2); position: relative; }
+        .hotel-image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+        .hotel-card:hover .hotel-image-container img { transform: scale(1.05); }
+        .hotel-info { display: flex; justify-content: space-between; align-items: flex-start; }
+        .hotel-name { font-family: 'Cormorant Garamond'; font-size: 1.4rem; font-style: italic; margin-bottom: 5px; }
+        .hotel-location { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+        .view-hotel-btn { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 2px; transition: all 0.4s var(--ease); }
+        .hotel-card:hover .view-hotel-btn { padding-right: 10px; }
+
+        /* Room row layout formatting */
+        .room-row { display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 60px; align-items: flex-start; text-align: left; }
+
+        /* Refined Easy-to-Read Footer */
+        footer { padding: 100px 60px 40px; background: var(--ivory); border-top: 1px solid rgba(0,0,0,0.08); color: var(--ink); }
+        .footer-main { display: grid; grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr; gap: 60px; margin-bottom: 80px; }
+        .footer-col h4 { font-family: 'Tenor Sans', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 30px; color: var(--gold); font-weight: 600; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 14px; }
+        .footer-col ul li a { text-decoration: none; color: var(--ink); font-size: 14px; letter-spacing: 0.5px; opacity: 0.8; transition: all 0.4s var(--ease); }
+        .footer-col ul li a:hover { opacity: 1; color: var(--gold); padding-left: 8px; }
+        .footer-contact p { font-size: 14px; letter-spacing: 0.5px; margin-bottom: 15px; opacity: 0.9; }
+        .footer-social { display: flex; gap: 15px; margin-top: 25px; }
+        .social-icon { width: 42px; height: 42px; border: 1px solid rgba(0,0,0,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.5s var(--ease); }
+        .social-icon svg { width: 14px; fill: var(--ink); transition: all 0.5s var(--ease); }
+        .social-icon:hover { border-color: var(--gold); background: var(--gold); transform: translateY(-3px); }
+        .social-icon:hover svg { fill: var(--ivory); }
+        .footer-bottom { padding-top: 40px; border-top: 1px solid rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; }
+        .copyright { font-size: 11px; letter-spacing: 1.5px; opacity: 0.6; text-transform: uppercase; }
+        .footer-bottom-links { display: flex; gap: 30px; }
+        .footer-bottom-links a { text-decoration: none; color: var(--ink); font-size: 11px; letter-spacing: 1px; opacity: 0.7; text-transform: uppercase; transition: 0.3s; }
+
+        /* Responsiveness & Mobile Optimization */
+        @media (max-width: 1024px) {
+            nav { padding: 0 30px; }
+            .nav-links { gap: 20px; }
+            .itinerary-section { grid-template-columns: repeat(2, 1fr); padding: 0 30px 100px 30px; }
+            .accommodation-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .footer-main { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+            .showcase-grid { grid-template-columns: 1fr; gap: 40px; }
+            .showcase-right { height: 420px; order: -1; }
+            .showcase-nav-item { font-size: 2.1rem; }
+        }
+
+        @media (max-width: 768px) {
+            #cursor-follower { display: none !important; }
+            * { cursor: auto !important; }
+            .page-header h1 { font-size: 15vw; }
+            .page-header .hero-subtitle { font-size: 14px; letter-spacing: 8px; }
+            nav { padding: 0 20px; height: 70px; }
+            .logo { font-size: 1.2rem; }
+            .nav-links { display: none; }
+            .itinerary-section { grid-template-columns: 1fr; padding: 0 20px 80px 20px; }
+            .itin-card { height: 60vh; }
+            .accommodation-section { padding: 80px 20px; }
+            .accommodation-grid { grid-template-columns: 1fr; }
+            .hotel-image-container { height: 250px; }
+            .footer-main { grid-template-columns: 1fr; gap: 40px; }
+            .footer-bottom { flex-direction: column; gap: 20px; text-align: center; }
+            .footer-bottom-links { justify-content: center; flex-wrap: wrap; gap: 15px; }
+            .overlay-inner { margin: 20px auto !important; padding: 0 15px !important; }
+            .gallery-grid { grid-template-columns: 1fr !important; grid-template-rows: 200px 120px 120px !important; gap: 8px !important; margin-bottom: 20px !important; }
+            .gallery-grid > div:first-child { grid-row: span 1 !important; }
+            .overlay-text { padding-top: 0 !important; }
+            #modal-name { font-size: 24px !important; line-height: 1.2 !important; margin-bottom: 8px !important; }
+            #modal-location { font-size: 9px !important; margin-bottom: 5px !important; }
+            #modal-desc { font-size: 15px !important; margin-bottom: 20px !important; }
+            #close-overlay { top: 20px !important; right: 20px !important; padding: 10px 15px !important; }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 { font-size: 18vw; }
+            .mega-menu { display: none !important; }
+        }
+
+        /* Desktop Nav Controls */
+        @media (min-width: 1025px) {
+            .menu-trigger, .mobile-overlay { display: none; }
+            .desktop-nav { display: flex !important; }
+        }
+
+        /* Mobile Menu & Mega Menu Styles */
+        @media (max-width: 1024px) {
+            .desktop-nav { display: none !important; }
+            .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+            .burger .line { width: 25px; height: 1px; background: var(--gold); display: block; margin: 6px 0; }
+            .mobile-overlay { position: fixed; inset: 0; background: var(--ink); z-index: 5000; transform: translateY(-100%); transition: transform 0.8s var(--ease); overflow-y: auto; padding: 100px 40px; }
+            .mobile-overlay.active { transform: translateY(0); }
+            .menu-close { position: absolute; top: 30px; right: 30px; color: var(--gold); font-size: 24px; cursor: pointer; }
+            .mobile-nav-links { list-style: none; }
+            .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+            .mobile-nav-links a, .mobile-drop-trigger { font-family: 'Cormorant Garamond'; font-size: 2rem; color: var(--ivory); text-decoration: none; font-style: italic; }
+            .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+            .mobile-mega-content { display: none; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+            .mobile-mega-content.active { display: grid; }
+            .mobile-mega-item { text-decoration: none; }
+            .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; opacity: 0.7; }
+            .mobile-mega-item span { display: block; color: var(--ivory); font-size: 0.7rem; text-transform: uppercase; margin-top: 5px; letter-spacing: 1px; }
+            .mobile-partner-list { list-style: none; margin-top: 20px; }
+            .mobile-partner-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 8px; }
+            .mobile-partner-list a { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+            .mobile-partner-list .arrow { font-size: 14px; color: var(--gold); font-family: sans-serif; font-style: normal; }
+        }
+        /* Refined Compact Showcase Styles */
+    .showcase-container { 
+        max-width: 950px; 
+        margin: 0 auto; 
+        padding: 40px 20px; 
+    }
+    
+    .showcase-layout-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    /* Horizontal Scroller for Regions */
+    .showcase-tabs-wrapper {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(194, 157, 107, 0.2);
+        scrollbar-width: none; /* Hide default scrollbar for Firefox */
+    }
+    .showcase-tabs-wrapper::-webkit-scrollbar {
+        display: none; /* Hide default scrollbar for Chrome/Safari */
+    }
+
+    .showcase-nav-list-inline { 
+        display: inline-flex;
+        gap: 35px;
+        list-style: none; 
+        padding: 0;
+        margin: 0;
+    }
+
+    .showcase-nav-item-inline {
+        font-family: 'Cormorant Garamond', serif; 
+        font-size: 1.6rem; 
+        font-style: italic; 
+        color: var(--ink);
+        opacity: 0.3; 
+        cursor: pointer; 
+        transition: all 0.5s var(--ease); 
+        position: relative;
+        padding-bottom: 6px;
+    }
+    .showcase-nav-item-inline:hover, 
+    .showcase-nav-item-inline.active { 
+        opacity: 1; 
+        color: var(--gold); 
+    }
+    .showcase-nav-item-inline.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: var(--gold);
+    }
+
+    /* Rectangle Image Container (16:9 Aspect Ratio) */
+    .showcase-media-frame { 
+        position: relative; 
+        width: 100%;
+        aspect-ratio: 16 / 9; /* Perfect modern horizontal rectangle */
+        overflow: hidden; 
+        border: 0.5px solid rgba(194, 157, 107, 0.3); 
+        box-shadow: 0 15px 40px rgba(0,0,0,0.06); 
+    }
+    
+    .showcase-img-pane {
+        position: absolute; 
+        inset: 0; 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover;
+        opacity: 0; 
+        transform: scale(1.03); 
+        transition: opacity 0.6s var(--ease), transform 1s var(--ease);
+    }
+    .showcase-img-pane.active { 
+        opacity: 1; 
+        transform: scale(1); 
+        z-index: 1; 
+    }
+
+    /* Elegant Text Details Stacked Underneath Image */
+    .showcase-details-pane { 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        max-width: 750px;
+        margin: 0 auto;
+        padding-top: 10px;
+    }
+    
+    #showcase-desc-container { 
+        width: 100%;
+        min-height: 90px; /* Prevents layout shifting when shifting content */
+    }
+    
+    .showcase-desc { 
+        font-family: 'Tenor Sans', sans-serif; 
+        font-size: 13px; 
+        line-height: 1.6; 
+        opacity: 0; 
+        display: none; 
+        transition: opacity 0.4s var(--ease); 
+        color: var(--ink); 
+    }
+    .showcase-desc strong { 
+        font-family: 'Cormorant Garamond', serif; 
+        font-size: 1.5rem; 
+        font-style: italic; 
+        display: block; 
+        color: var(--gold); 
+        margin-bottom: 10px; 
+        font-weight: 400; 
+        letter-spacing: 1px;
+    }
+    .showcase-desc.active { 
+        display: block; 
+        opacity: 0.85; 
+    }
+    
+    .showcase-action-btn {
+        margin-top: 20px;
+        background: transparent; 
+        color: var(--ink);
+    }
+    
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div id="cursor-follower"><span>Explore</span></div>
+
+    <nav>
+        <a href="index.html" class="logo">L'INDOCHINE</a>
+        
+        <ul class="nav-links desktop-nav">
+            <li class="dropdown"> 
+                <a href="#">Destinations</a>
+                <div class="mega-menu"> 
+                    <a href="cambodia.html" class="mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                    <a href="Vietnam.html" class="mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                    <a href="Thailand.html" class="mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                    <a href="Laos.html" class="mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                    <a href="Multi-country.html" class="mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                </div>
+            </li>
+            <li class="dropdown"> 
+                <a href="#">Themes</a>
+                <div class="mega-menu" style="grid-template-columns: repeat(6, 1fr);">
+                    <a href="Culture-Heritage.html" class="mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                    <a href="Romantic-Journeys.html" class="mega-item"><img src="penin boat 1.jpg"><span>Romantic Journeys</span></a>
+                    <a href="Wellness-Rejuvenation.html" class="mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                    <a href="Family-Journeys.html" class="mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                    <a href="Nature-Adventure.html" class="mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                    <a href="Culinary-Journeys.html" class="mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Partners</a>
+                <div class="mega-menu" style="grid-template-columns: 1.3fr 1fr; padding: 0; overflow: hidden; min-width: 600px;">
+                    <div style="padding: 50px; background: var(--ink);">
+                        <h4 style="color: var(--gold); font-size: 13px; margin-bottom: 35px; letter-spacing: 4px; text-transform: uppercase; font-family: 'Tenor Sans';">B2B & DMC Services</h4>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="Dmc-services.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>DMC Operational Excellence</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="b2b-rates.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>Confidential B2B Tariffs</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="white-label.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>White-Label Ground Handling</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="mice-groups.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>MICE & Incentive Groups</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <p style="margin-top: 30px; font-size: 10px; color: var(--gold); opacity: 0.7; letter-spacing: 2px; text-transform: uppercase;">Your strategic partner in SouthEast Asia.</p>
+                    </div>
+                    <div style="position: relative; background: var(--clay); overflow: hidden;">
+                        <img src="angkor_wat_sunrise2712_67ddcbab8b.jpg" alt="Siem Reap Hub" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+                        <div style="position: absolute; bottom: 35px; left: 35px;">
+                            <span style="display: block; color: var(--ivory); font-family: 'Cormorant Garamond'; font-style: italic; font-size: 22px;">Regional Operations</span>
+                            <span style="display: block; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px;">Siem Reap, Cambodia</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><a href="Accommodation.html">Accommodation</a></li>
+            <li><a href="About-Us.html">About Us</a></li>
+        </ul>
+
+        <div class="menu-trigger" id="menu-open">
+            <div class="burger"><span class="line"></span><span class="line"></span></div>
+        </div>
+
+        <div class="mobile-overlay" id="mobile-overlay">
+            <div class="menu-close" id="menu-close">✕</div>
+            <div class="mobile-scroll-container">
+                <ul class="mobile-nav-links">
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Destinations <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="cambodia.html" class="mobile-mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                            <a href="Vietnam.html" class="mobile-mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                            <a href="Thailand.html" class="mobile-mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                            <a href="Laos.html" class="mobile-mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                            <a href="Multi-country.html" class="mobile-mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                        </div>
+                    </li>
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Themes <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="Culture-Heritage.html" class="mobile-mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                            <a href="Romantic-Journeys.html" class="mobile-mega-item"><img src="penin boat 1.jpg"><span>Romantic Getaways</span></a>
+                            <a href="Wellness-Rejuvenation.html" class="mobile-mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                            <a href="Family-Journeys.html" class="mobile-mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                            <a href="Nature-Adventure.html" class="mobile-mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                            <a href="Culinary-Journeys.html" class="mobile-mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                        </div>
+                    </li>
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Partners <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <div style="grid-column: span 2; width: 100%;">
+                                <ul class="mobile-partner-list">
+                                    <li><a href="Dmc-services.html"><span>DMC Excellence</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="b2b-rates.html"><span>B2B Tariffs</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="white-label.html"><span>White-Label</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="mice-groups.html"><span>MICE Groups</span> <span class="arrow">→</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a href="Accommodation.html">Accommodation</a></li>
+                    <li><a href="About-Us.html">About Us</a></li>
+                    <li><a href="Plan-Your-Trip.html">Plan Your Trip</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="nav-right desktop-nav"><a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a></div>
+    </nav>
+
+    <header class="page-header">
+        <div style="z-index: 2;">
+            <span class="hero-subtitle">Kingdom of Wonder</span>
+            <h1>Cambodia</h1>
+            <div style="width: 100px; height: 1px; background: var(--gold); margin: 30px auto; opacity: 0.6;"></div>
+        </div>
+    </header>
+
+    <main style="padding: 100px 10%; background-color: var(--ivory);">
+        <section style="max-width: 800px; margin: 0 auto 100px auto; text-align: center;">
+            <p style="font-family: 'Cormorant Garamond'; font-size: 2.2rem; line-height: 1.6; font-style: italic; color: var(--ink); margin-bottom: 40px;">
+                "A land where ancient temples rise from the jungle, where the Mekong flows with timeless grace, and where warm smiles welcome you at every turn."
+            </p>
+            <p style="font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); font-weight: 600;">
+                Cambodia, every sunrise feels like a new discovery.
+            </p>
+        </section>
+
+        <section style="margin-bottom: 120px;">
+            <h3 style="font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 40px; text-align: center; color: var(--gold);">Travel Essentials</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background-color: rgba(194, 157, 107, 0.2); border: 1px solid rgba(194, 157, 107, 0.2);">
+                <div style="background: var(--ivory); padding: 30px; text-align: center;">
+                    <span style="display: block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; margin-bottom: 10px;">Capital</span>
+                    <span style="font-family: 'Cormorant Garamond'; font-size: 1.4rem;">Phnom Penh</span>
+                </div>
+                <div style="background: var(--ivory); padding: 30px; text-align: center;">
+                    <span style="display: block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; margin-bottom: 10px;">Language</span>
+                    <span style="font-family: 'Cormorant Garamond'; font-size: 1.4rem;">Khmer</span>
+                </div>
+                <div style="background: var(--ivory); padding: 30px; text-align: center;">
+                    <span style="display: block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; margin-bottom: 10px;">Religion</span>
+                    <span style="font-family: 'Cormorant Garamond'; font-size: 1.4rem;">Theravada Buddhism</span>
+                </div>
+                <div style="background: var(--ivory); padding: 30px; text-align: center;">
+                    <span style="display: block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; margin-bottom: 10px;">Currency</span>
+                    <span style="font-family: 'Cormorant Garamond'; font-size: 1.4rem;">USD & KHR</span>
+                </div>
+            </div>
+            <p style="font-size: 11px; text-align: center; margin-top: 20px; opacity: 0.5; font-style: italic;">
+                *USD is used for most transactions; Riel for small change.
+            </p>
+        </section>
+
+        <section style="margin-bottom: 120px;">
+            <h3 style="font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 40px; text-align: center; color: var(--gold);">When to Journey</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <div style="border-left: 1px solid rgba(194, 157, 107, 0.4); padding-left: 30px;">
+                    <h4 style="font-family: 'Cormorant Garamond'; font-size: 1.5rem; margin-bottom: 15px;">The Golden Season <span style="font-size: 12px; font-style: italic; opacity: 0.6;">(November – April)</span></h4>
+                    <p style="font-size: 14px; line-height: 1.6; opacity: 0.8;">
+                        The most popular time to visit. Expect clear blue skies and mild temperatures ideal for exploring temple ruins. From February onwards, the heat begins to intensify, offering a true tropical experience.
+                    </p>
+                </div>
+                <div style="border-left: 1px solid rgba(194, 157, 107, 0.4); padding-left: 30px;">
+                    <h4 style="font-family: 'Cormorant Garamond'; font-size: 1.5rem; margin-bottom: 15px;">The Emerald Season <span style="font-size: 12px; font-style: italic; opacity: 0.6;">(May – October)</span></h4>
+                    <p style="font-size: 14px; line-height: 1.6; opacity: 0.8;">
+                        The monsoon rains bring the countryside to life in vibrant shades of green. While brief daily showers are common, the moats of Angkor are full, the dust is settled, and the sites are much more peaceful.
+                    </p>
+                </div>
+            </div>
+            <div style="margin-top: 40px; padding: 20px; background: rgba(194, 157, 107, 0.05); text-align: center; border: 1px solid rgba(194, 157, 107, 0.1);">
+                <p style="font-size: 12px; letter-spacing: 1px; color: var(--gold); text-transform: uppercase;">
+                    <strong>Curator's Note:</strong> The months of November through January offer the most comfortable climate for extensive trekking.
+                </p>
+            </div>
+        </section>
+
+       <section class="showcase-container">
+    <div style="text-align: center; margin-bottom: 35px;">
+        <h3 style="font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold);">Destinations</h3>
+    </div>
+    
+    <div class="showcase-layout-stack">
+        <!-- Horizontal Tab Selector Layout -->
+        <div class="showcase-tabs-wrapper">
+            <ul class="showcase-nav-list-inline" id="showcase-nav">
+                <!-- Populated dynamically via JS -->
+            </ul>
+        </div>
+        
+        <!-- Rectangle Image Frame Section -->
+        <div class="showcase-media-frame" id="showcase-images">
+            <!-- Images populated dynamically via JS -->
+        </div>
+        
+        <!-- Metadata Details Container Directly Underneath Image -->
+        <div class="showcase-details-pane">
+            <div id="showcase-desc-container">
+                <!-- Descriptions populated dynamically via JS -->
+            </div>
+            <a href="#" id="showcase-link" class="btn-plan showcase-action-btn">Explore Realm</a>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <div class="section-label" style="background: var(--clay); color: var(--gold); padding: 120px 0 60px 0; text-align: center; font-size: 12px; letter-spacing: 4px; text-transform: uppercase;">
+        Curated Itineraries
+    </div>
+
+    <section class="itinerary-section">
+        <div class="itin-card">
+            <img src="istockphoto-589941504-612x612.jpg" class="itin-img-bg">
+            <div class="itin-content">
+                <span>7 Days / Cambodia</span>
+                <h4>Cambodia - A Luxury Culture & Heritage Immersion </h4>
+                <p>This bespoke 7-day journey is meticulously crafted for profound cultural and heritage immersion in Cambodia, focusing on the awe-inspiring ancient wonders and the vibrant contemporary traditions. This journey will provide deep insights into the Khmer civilization, from its glorious past to its enduring present, all experienced with unparalleled luxury and comfort.</p>
+                <a href="cambodia-culture-heritage.html" class="itin-link">Explore Itinerary</a>
+            </div>
+        </div>
+
+        <div class="itin-card">
+            <img src="The-Sacred-Blessing.webp" class="itin-img-bg">
+            <div class="itin-content">
+                <span>7 Days / Cambodia</span>
+                <h4> Cambodia - A Luxury Romantic Getaway</h4>
+                <p>This bespoke 7-day journey is meticulously crafted for couples seeking an intimate and luxurious escape in Cambodia. It combines the historical mystique of Angkor with the serene beauty of a private island, ensuring moments of profound connection, exquisite dining, and unparalleled privacy.</p>
+                <a href="cambodia-romantic-getaway.html" class="itin-link">Explore Itinerary</a>
+            </div>
+        </div>
+
+        <div class="itin-card">
+            <img src="outdoor-spa-sala-1.jpg" class="itin-img-bg">
+            <div class="itin-content">
+                <span>7 Days / Cambodia</span>
+                <h4>Cambodia - A Luxury Wellness & Rejuvenation Journey</h4>
+                <p>Embark on a bespoke journey dedicated to restoring harmony of mind, body, and spirit amidst Cambodia's most serene and exclusive wellness havens. This experience combines ancient healing traditions with modern therapeutic approaches, all in unparalleled luxury.</p>
+                <a href="cambodia-wellness-rejuvenation.html" class="itin-link">Explore Itinerary</a>
+            </div>
+        </div>
+
+        <div class="itin-card">
+            <img src="Screenshot-2023-06-10-at-4.25.58-AM-2.png" class="itin-img-bg">
+            <div class="itin-content">
+                <span>7 Days / Cambodia</span>
+                <h4> Cambodia - A Luxury Family Journey</h4>
+                <p>This bespoke 7-day itinerary is crafted for families seeking an enriching and comfortable adventure through Cambodia. From the awe-inspiring ancient temples of Angkor to vibrant city explorations and unique wildlife encounters, this journey is designed with engaging activities and luxurious family-friendly accommodations, ensuring unforgettable moments for parents and children alike.</p>
+                <a href="cambodia-family-journey.html" class="itin-link">Explore Itinerary</a>
+            </div>
+        </div>
+
+        <div class="itin-card">
+            <img src="shinta-mani-wild-bensley.jpg" class="itin-img-bg">
+            <div class="itin-content">
+                <span>7 Days / Cambodia</span>
+                <h4>Cambodia - Urban Elegance to Wild Immersion</h4>
+                <p>This bespoke 7-day journey is meticulously crafted for discerning adventurers seeking the pinnacle of luxury, combined with profound nature immersion and exhilarating experiences in Cambodia. It seamlessly transitions from the sophisticated urban landscape of Phnom Penh to the raw, protected wilderness of the Cardamom Mountains, home to one of the world's most unique eco-lodges.</p>
+                <a href="cambodia-urban-to-wild.html" class="itin-link">Explore Itinerary</a>
+            </div>
+        </div>
+
+        <div class="itin-card">
+            <img src="Cambodian-Cooking-Class.webp" class="itin-img-bg">
+            <div class="itin-content">
+                <span>7 Days / Cambodia</span>
+                <h4>Cambodia - A Luxury Culinary Journey</h4>
+                <p>This bespoke 7-day itinerary is designed for the epicurean traveler, delving deep into the rich flavors and vibrant culinary traditions of Cambodia. From hands-on cooking experiences and bustling market tours to exquisite fine dining and authentic street food discoveries, this journey promises a feast for all senses, set against a backdrop of luxurious accommodations and cultural immersion.</p>
+                <a href="cambodia-culinary-journey.html" class="itin-link">Explore Itinerary</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-label" style="background: var(--ivory); color: var(--gold); padding: 120px 0 0 0; text-align: center; font-size: 12px; letter-spacing: 4px; text-transform: uppercase;">
+        The Accommodation Collection
+    </div>
+
+    <section class="accommodation-section">
+        <div style="text-align: center; max-width: 800px; margin: 0 auto 60px auto;">
+            <p style="font-family: 'Cormorant Garamond'; font-size: 1.8rem; line-height: 1.4; font-style: italic; color: var(--ink);">
+                "Experience the art of hospitality with our carefully chosen portfolio of sanctuaries."
+            </p>
+        </div>
+
+        <div class="accommodation-grid">
+            <a href="raffles-le-royal-phnom-penh.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="a5e0-1.webp" alt="Raffles Hotel Le Royal"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Raffles Hotel Le Royal</div>
+                        <div class="hotel-location">Phnom Penh, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="rosewood-phnom-penh.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="rosewood-phnom-penh-cambodia-facade-hotel.webp" alt="Rosewood Phnom Penh"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Rosewood Phnom Penh</div>
+                        <div class="hotel-location">Phnom Penh, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="sofitel-phnom-penh.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="Sofitel-Phnom-Penh-Phokeethra_2023-12-11-162754_shfy - Copy.webp" alt="Sofitel Phnom Penh Phokeethra"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Sofitel Phnom Penh Phokeethra</div>
+                        <div class="hotel-location">Phnom Penh, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="hyatt-regency-phnom-penh.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="Hyatt_Regency_Phnom_Penh.jpg" alt="Hyatt Regency Phnom Penh"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Hyatt Regency Phnom Penh</div>
+                        <div class="hotel-location">Phnom Penh, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="shangri-la-phnom-penh.html" class="hotel-card">
+    <div class="hotel-image-container"><img src="Shangri-La-Phnom-Penh-Hotel-Facade2.jpg" alt="Shangri-La Phnom Penh"></div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Shangri-La Phnom Penh</div>
+            <div class="hotel-location">Phnom Penh, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+            <a href="raffles-grand-hotel-dangkor.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="Raffles-Grand-Hotel-dAngkor.webp" alt="Raffles Grand Hotel D’Angkor"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Raffles Grand Hotel D’Angkor</div>
+                        <div class="hotel-location">Siem Reap, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="sofitel-angkor-phokeethra.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="Sofitel-Angkor-Phokeethra-Golf-Spa-Resort-1.jpg.webp" alt="Sofitel Angkor Phokeethra Golf & Spa Resort"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Sofitel Angkor Phokeethra</div>
+                        <div class="hotel-location">Siem Reap, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="amansara.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="amansara_-cambodia-main-swimming-pool_high-res_10083.jpg" alt="Amansara"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Amansara</div>
+                        <div class="hotel-location">Siem Reap, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="phumbaitang.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="review-zannier-hotels-phum-baitang.webp" alt="Zannier Hotel Phum Baitang"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Zannier Hotels Phum Baitang</div>
+                        <div class="hotel-location">Siem Reap, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="park-hyatt-siem-reap.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="Hotel-Facade--Park-Hyatt-Siem-Reap-Triple-Crown-March26-PR-Global.webp" alt="Park Hyatt Siem Reap"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Park Hyatt Siem Reap</div>
+                        <div class="hotel-location">Siem Reap, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="fcc-angkor-by-avani.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="233020.jpg" alt="FCC Angkor by Avani"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">FCC Angkor By Avani</div>
+                        <div class="hotel-location">Siem Reap, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="shinta-mani-angkor.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="IMGL1003 (1).jpg" alt="Shinta Mani Angkor and Bensley Collection Pool Villas"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Shinta Mani Angkor</div>
+                        <div class="hotel-location">Siem Reap, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="anantara-angkor-resort.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="0_EXTERIOR-G_17.jpg" alt="Anantara Angkor Resort"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Anantara Angkor Resort</div>
+                        <div class="hotel-location">Siem Reap, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+<a href="sala-lodges.html" class="hotel-card">
+    <div class="hotel-image-container"><img src="0fab1f04_71diapo19 - Copy.jpg" alt="Sala Lodges"></div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Sala Lodges</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<a href="jaya-house-river-park.html" class="hotel-card">
+    <div class="hotel-image-container"><img src="62947cd3fa42ae010b181a71_60bb8ded0c28d3a68c7280b1_50777486761_4c9f19dfc0_k.jpg" alt="Jaya House River Park"></div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Jaya House River Park</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+
+<!-- Treeline Urban Resort -->
+<a href="treeline-urban-resort.html" class="hotel-card">
+    <div class="hotel-image-container"><img src="main-slide-03-1500x1000.webp" alt="Treeline Urban Resort"></div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Treeline Urban Resort</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<!-- Anjali by Syphon -->
+<a href="anjali-by-syphon.html" class="hotel-card">
+    <div class="hotel-image-container"><img src="urban-greenery-garden-anjali-by-sophon.webp" alt="Anjali by Syphon"></div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Anjali by Syphon</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<!-- Navutu Dreams Resort & Wellness Retreat -->
+<a href="navutu-dreams-resort-and-wellness-retreat.html" class="hotel-card">
+    <div class="hotel-image-container"><img src="148525499.jpg" alt="Navutu Dreams Resort & Wellness Retreat"></div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Navutu Dreams Resort & Wellness Retreat</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+
+<!-- The Beige -->
+<a href="the-beige.html" class="hotel-card">
+    <div class="hotel-image-container"><img src="picture-siem-reap-the-beige-99.jpg" alt="The Beige"></div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">The Beige</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<!-- Angkor Village Hotel -->
+<a href="angkor-village-hotel.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="421858448.jpg" alt="Angkor Village Hotel">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Angkor Village Hotel</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<!-- Templation Hotel -->
+<a href="templation-hotel.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="main-photo_cc3ccc50a35132fb51a45b8bbfcba9f0.jpg" alt="Templation Hotel">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Templation Hotel</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<!-- TUI BLUE Angkor Graces -->
+<a href="tui-blue-angkor-graces.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="csm_SAI_REP10269_TB_Cambodia_AngkorGrace_Outdoor19_e9b5ec294e.jpg" alt="TUI BLUE Angkor Graces">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">TUI BLUE Angkor Graces</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<!-- Courtyard by Marriott Siem Reap Resort -->
+<a href="courtyard-by-marriott-siem-reap.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="repcy-exterior-2189-hor-feat.avif" alt="Courtyard by Marriott Siem Reap Resort">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Courtyard by Marriott Siem Reap Resort</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<!-- Borei Angkor Resort -->
+<a href="borei-angkor-resort.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="Infront Hotel (1).jpg" alt="Borei Angkor Resort">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Borei Angkor Resort & Spa</div>
+            <div class="hotel-location">Siem Reap, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+
+<!-- Maison Wat Kor -->
+<a href="maison-wat-kor.html" class="hotel-card">
+    <div class="hotel-image-container"><img src="156488718.jpg" alt="Maison Wat Kor"></div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Maison Wat Kor</div>
+            <div class="hotel-location">Battambang, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+<!-- Hanchey Bamboo Resort -->
+<a href="hanchey-bamboo-resort.html" class="hotel-card">
+    <div class="hotel-image-container"><img src="60748ebc-c426-4ef0-b0d0-d2a428a0f922_rw_1920.jpg" alt="Hanchey Bamboo Resort"></div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Hanchey Bamboo Resort</div>
+            <div class="hotel-location">Kampong Cham, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+            <a href="shinta-mani-wild.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="shinta-mani-wild-bensley.jpg" alt="Shinta Mani Wild"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Shinta Mani Wild</div>
+                        <div class="hotel-location">Sihanoukville, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+ <a href="knai-bang-chatt.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="Architecture-knai-bang-chatt.jpg" alt="Knai Bang Chatt by Kep West">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Knai Bang Chatt by Kep West</div>
+            <div class="hotel-location">Kep, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<a href="samanea-wellness-resort.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="6976dde68ec4e4a809e5ff90_COMP 6900961c5d8e0a9481c5dc9a_DJI_20251018081924_0454_D-min (2).jpg" alt="Samanea Wellness Resort">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Samanea Wellness Resort</div>
+            <div class="hotel-location">Pursat, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<a href="cardamom-tented-camp.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="Tent-Walkway-1.jpg" alt="Cardamom Tented Camp">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Cardamom Tented Camp</div>
+            <div class="hotel-location">Pursat, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<a href="samanea-beach-resort.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="0f753332.webp" alt="Samanea Beach Resort">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Samanea Beach Resort</div>
+            <div class="hotel-location">Kep, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+<a href="orchids-and-canvas.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="orchids-canvas-floating-tent-koh-kong (1).jpg" alt="Orchids & Canvas">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Orchids & Canvas</div>
+            <div class="hotel-location">Koh Kong, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+
+<a href="le-relais-de-chhlong.html" class="hotel-card">
+    <div class="hotel-image-container">
+        <img src="1400__1539173785_Pool.jpg" alt="Le Relais de Chhlong">
+    </div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">Le Relais de Chhlong</div>
+            <div class="hotel-location">Kratie, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+            <a href="song-saa-private-island.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="Song-Saa-Private-Island-1.jpg" alt="Song Saa Private Island"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Song Saa Private Island</div>
+                        <div class="hotel-location">Sihanoukville, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="koh-russey-resort.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="Alila-Villas-Koh-Russey-Beach-Villa-818x546.jpg" alt="Koh Russey Resort"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Koh Russey Resort</div>
+                        <div class="hotel-location">Sihanoukville, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="jati-koh-russey.html" class="hotel-card">
+    <div class="hotel-image-container"><img src="img_1004-1600x.jpg" alt="JATI Koh Russey"></div>
+    <div class="hotel-info">
+        <div>
+            <div class="hotel-name">JATI Koh Russey</div>
+            <div class="hotel-location">Sihanoukville, Cambodia</div>
+        </div>
+        <span class="view-hotel-btn">View Hotel</span>
+    </div>
+</a>
+
+            <a href="six-senses-krabey-island.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="Six_Senses_Krabey_Island_Cambodia_Drone_2023_wbpstars_SVC-3-1440x810.jpg" alt="Six Senses Krabey Island"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Six Senses Krabey Island</div>
+                        <div class="hotel-location">Sihanoukville, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <!-- Siempang Forest Lodge -->
+            <a href="siempang-forest-lodge.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="1.Aerial Lodge.jpg" alt="Siempang Forest Lodge"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Siempang Forest Lodge</div>
+                        <div class="hotel-location">Stung Treng, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <!-- Aqua Mekong Luxury Cruise -->
+            <a href="aqua-mekong.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="Aqua Mekong_Vessel_03.jpg" alt="Aqua Mekong Luxury Cruise"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Aqua Mekong</div>
+                        <div class="hotel-location">Mekong & Tonle Sap, Cambodia</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+
+            <a href="jayavarman.html" class="hotel-card">
+                <div class="hotel-image-container"><img src="Heritage_Line_-_Mekong_-_Jayavarman_-_Ship_4.jpg" alt="Heritage Line Jayavarman Cruise"></div>
+                <div class="hotel-info">
+                    <div>
+                        <div class="hotel-name">Heritage Line Cruise Jayavarman</div>
+                        <div class="hotel-location">Mekong & Tonle Sap, Cambodia & Vietnam</div>
+                    </div>
+                    <span class="view-hotel-btn">View Hotel</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <div id="hotel-overlay" data-lenis-prevent style="position: fixed; inset: 0; background: var(--ink); z-index: 2000; display: none; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; opacity: 0;">
+        <div id="close-overlay" style="position: fixed; top: 40px; right: 60px; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; z-index: 2001; background: rgba(0,0,0,0.5); padding: 12px 20px; backdrop-filter: blur(10px); border: 0.5px solid rgba(194, 157, 107, 0.3);">
+            Close [X]
+        </div>
+        
+        <div class="overlay-inner" style="max-width: 1100px; margin: 60px auto; padding: 0 40px;">
+            <div class="gallery-grid" style="display: grid; grid-template-columns: 1.2fr 1fr; grid-template-rows: 200px 200px; gap: 15px; margin-bottom: 50px;">
+                <div style="grid-row: span 2; border: 0.5px solid rgba(194, 157, 107, 0.3); overflow: hidden; background: #111;">
+                    <img id="modal-img-1" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+                </div>
+                <div style="border: 0.5px solid rgba(194, 157, 107, 0.3); overflow: hidden; background: #111;">
+                    <img id="modal-img-2" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+                </div>
+                <div style="border: 0.5px solid rgba(216, 188, 150, 0.3); overflow: hidden; background: #111;">
+                    <img id="modal-img-3" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+                </div>
+            </div>
+
+            <div class="overlay-text" style="max-width: 700px; margin: 0 auto; text-align: center;">
+                <span id="modal-location" style="display: block; font-family: 'Tenor Sans'; color: var(--gold); letter-spacing: 3px; font-size: 11px; margin-bottom: 10px; text-transform: uppercase;"></span>
+                <h2 id="modal-name" style="font-family: 'Cormorant Garamond'; color: var(--ivory); font-size: clamp(32px, 5vw, 48px); font-weight: 300; margin-bottom: 20px;"></h2>
+                <div style="width: 40px; height: 1px; background: var(--gold); margin: 0 auto 30px auto; opacity: 0.5;"></div>
+
+                <div id="modal-highlights-container" style="margin-bottom: 30px;"></div>
+                <div id="modal-amenities-container" style="margin-bottom: 30px;"></div>
+                <p id="modal-desc" style="font-family: 'Cormorant Garamond'; color: var(--ivory); font-size: 18px; line-height: 1.6; opacity: 0.8; margin-bottom: 40px; font-style: italic;"></p>
+                <div id="modal-table-container"></div>
+            </div>
+
+            <div id="modal-editorial-container"></div>
+
+            <div id="modal-video-container"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-main">
+            <div class="footer-col">
+                <h4>Destinations</h4>
+                <ul>
+                    <li><a href="cambodia.html">Cambodia</a></li>
+                    <li><a href="Laos.html">Laos</a></li>
+                    <li><a href="Vietnam.html">Vietnam</a></li>
+                    <li><a href="Thailand.html">Thailand</a></li>
+                    <li><a href="Multi-country.html">Multi-Country</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Experiences</h4>
+                <ul>
+                    <li><a href="Culture-Heritage.html">Culture & Heritage</a></li>
+                    <li><a href="Romantic-Journeys.html">Romantic Getaways</a></li>
+                    <li><a href="Nature-Adventure.html">Nature & Adventure</a></li>
+                    <li><a href="Wellness-Rejuvenation.html">Wellness & Rejuvenation</a></li>
+                    <li><a href="Family-Journeys.html">Family Journeys</a></li>
+                    <li><a href="Culinary-Journeys.html">Culinary Journeys</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col footer-contact">
+                <h4>Connect with Us</h4>
+                <p>+855 95 267 257</p>
+                <p>contact@l'indochine.com</p>
+                
+                <div class="footer-social">
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-2.21c0-.837.39-1.29 1.121-1.29h2.879v-4.498c-.443-.059-1.968-.202-3.726-.202-3.689 0-6.274 2.247-6.274 6.46v1.74z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-cta-box" style="background: rgba(194, 157, 107, 0.05); padding: 30px; border: 1px solid rgba(194, 157, 107, 0.2);">
+                    <h4 style="margin-bottom: 20px;">Curate Your Legacy</h4>
+                    <a href="Plan-Your-Trip.html" class="btn-plan" style="display: block; text-align: center; margin-bottom: 20px;">Plan Your Trip</a>
+                    <div style="display: flex; justify-content: space-between;">
+                        <a href="About-Us.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ABOUT US</a>
+                        <a href="Accommodation.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ACCOMMODATION</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="copyright">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+            <div class="footer-bottom-links">
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="Terms&Conditions.html">Terms & Conditions</a>
+                <a href="#" id="back-to-top">BACK TO TOP &#10142;</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Cursor Logic
+        const follower = document.getElementById('cursor-follower');
+        const fText = follower.querySelector('span');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(follower, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: "power2.out" });
+        });
+        document.querySelectorAll('a, .mega-item, .showcase-nav-item').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(follower, { width: 100, height: 100, background: 'rgba(194, 157, 107, 0.15)', border: 'none' });
+                fText.style.opacity = 1;
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(follower, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+                fText.style.opacity = 0;
+            });
+        });
+
+      // Unique Editorial Showcase Dataset 
+const regionData = [
+    { name: 'Siem Reap', title: 'Kingdom of Temples', url: 'Siem-reap.html', img: 'angkor_wat_sunrise2712_67ddcbab8b.jpg', desc: 'Gateway to the sacred stone profiles of Angkor. From the architectural precision of Angkor Wat to the jungle-entangled spires of Ta Prohm, look deep into the legacy of the historic Khmer civilization.' },
+    { name: 'Phnom Penh', title: 'Riverside Majesty', url: 'phnom-penh.html', img: 'Royal-Palace.webp', desc: 'The historic capital balances timeless tradition with dynamic modernity, situated elegantly right along the confluence points of the Mekong and the Tonle Sap rivers.' },
+    { name: 'Kep', title: 'Coastal Serenity', url: 'kep.html', img: '173634624.jpg', desc: 'A nostalgic and tranquil colonial seaside destination classic, celebrated across the region for its French architecture, pristine sunsets, and premium fresh seafood markets.' },
+    { name: 'Kampot', title: 'Colonial Charm', url: 'kampot.html', img: 'kampot_0_feature.webp', desc: 'Framed quietly by the serene context of the Bokor Mountains, this river town offers an organic layout of expansive salt flats and world-famous pepper farms.' },
+    { name: 'Mondulkiri', title: 'Emerald Highlands', url: 'mondulkiri.html', img: 'DSC01022-1.jpg', desc: 'A high-altitude paradise defining Cambodia’s wild east, complete with pristine hidden mountain views, dynamic roaring waterfalls, and ethical forest sanctuaries.' },
+    
+    // Added Battambang
+    { name: 'Battambang', title: 'Artistic Rice Bowl', url: 'battambang.html', img: 'bat-cave.jpg', desc: 'Cambodia’s leading cultural and agricultural hub, celebrated for its beautifully preserved French colonial architecture, a thriving modern arts scene, and legendary creative heritage.' },
+    
+    // Added Kratie
+    { name: 'Kratie', title: 'Mekong Sanctuary', url: 'kratie.html', img: 'mekong_river_dolphin.jpg', desc: 'A peaceful riverside escape defined by the gentle flow of the Mekong River, offering a glimpse into traditional island life and acting as a sanctuary for rare, endangered Irrawaddy dolphins.' },
+
+    // Added Sihanoukville
+    { name: 'Sihanoukville', title: 'The Coastal Playground', url: 'sihanoukville.html', img: 'koh-rong-activities.webp', desc: 'Cambodia’s premier coastal gateway to the azure waters of the Gulf of Thailand. Famed for its expansive white-sand shorelines and serving as the exclusive launching pad to breathtaking, pristine tropical island sanctuaries.' },
+    
+    // Added Kampong Cham
+    { name: 'Kampong Cham', title: 'The Mekong’s Colonial Riverside', url: 'kampong-cham.html', img: 'PI47724-hr.jpg', desc: 'A charming riverside province where the mighty Mekong shapes local life. Famed for its elegant French colonial architecture, ancient multi-tiered pagodas, and vibrant agricultural landscapes, it offers an authentic glimpse into Cambodia’s peaceful rural heartbeat.' },
+
+    // Added Kampong Thom
+    { name: 'Kampong Thom', title: 'The Cradle of Pre-Angkorian Heritage', url: 'kampong-thom.html', img: 'Sambor-Prei-Kuk-Temple-Group-17.jpg', desc: 'An archaeological treasury deeply rooted in Cambodian history. Serving as the gateway to the magnificent, forest-cloaked 7th-century temples of Sambor Prei Kuk, this province captivates travelers with its timeless heritage and serene countryside.' },
+
+    // Added Kampong Speu
+    { name: 'Kampong Speu', title: 'The Sugar Palm Highlands', url: 'kampong-speu.html', img: 'Palms-Koh-Ker.jpg', desc: 'A landscape defined by rolling hills, emerald rice fields, and iconic sugar palm trees. Nestled at the foothills of the Cardamom Mountains, it offers a refreshing blend of eco-tourism retreats, cascading waterfalls, and authentic cultural traditions.' },
+
+    // Added Koh Kong
+    { name: 'Koh Kong', title: 'The Untamed Wilds of the Cardamoms', url: 'koh-kong.html', img: 'Kambodscha__Koh_Kong.jpg', desc: 'Cambodia’s premier eco-adventure frontier, cradled by the Cardamom Mountains rainforest and the Gulf of Thailand. Famed for its vast, pristine mangrove sanctuaries, hidden waterfalls, and ruggedly beautiful coastlines where the jungle meets the sea.' }
+];
+
+        // Re-building the Interactive Editorial Showcase with Inline Design Configurations
+const navList = document.getElementById('showcase-nav');
+const imgContainer = document.getElementById('showcase-images');
+const descContainer = document.getElementById('showcase-desc-container');
+const showcaseLink = document.getElementById('showcase-link');
+
+regionData.forEach((region, index) => {
+    const li = document.createElement('li');
+    li.className = `showcase-nav-item inline showcase-nav-item-inline ${index === 0 ? 'active' : ''}`;
+    li.innerHTML = region.name;
+    li.addEventListener('mouseenter', () => switchShowcaseElement(index));
+    li.addEventListener('click', () => switchShowcaseElement(index)); // Mobile accessible backup trigger
+    navList.appendChild(li);
+
+    const img = document.createElement('img');
+    img.src = region.img;
+    img.className = `showcase-img-pane ${index === 0 ? 'active' : ''}`;
+    imgContainer.appendChild(img);
+
+    const p = document.createElement('p');
+    p.className = `showcase-desc ${index === 0 ? 'active' : ''}`;
+    p.innerHTML = `<strong>${region.title}</strong> — ${region.desc}`;
+    descContainer.appendChild(p);
+});
+
+showcaseLink.href = regionData[0].url;
+
+function switchShowcaseElement(index) {
+    document.querySelectorAll('.showcase-nav-item-inline').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.showcase-img-pane').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.showcase-desc').forEach(el => el.classList.remove('active'));
+
+    navList.children[index].classList.add('active');
+    imgContainer.children[index].classList.add('active');
+    descContainer.children[index].classList.add('active');
+    showcaseLink.href = regionData[index].url;
+}
+
+        // Back to top
+        document.getElementById('back-to-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Accommodation Details Database mapping
+        const hotelDetails = {
+            "Raffles Hotel Le Royal": {
+                desc: "A landmark of French colonial style, this historic sanctuary has hosted royalty and legends since 1929.",
+                images: ["a5e0-1.webp", "aja_p_7238-77.webp", "Raffles-Hotel-Le-Royal-State-Room-1043x546.jpg"],
+                highlights: ["Home to the legendary Elephant Bar", "Historic timber elevator", "24-hour butler service"],
+                amenities: ["Two Pools", "Raffles Spa", "Fine Dining"],
+                rooms: [
+                    { type: "State Room", size: "32 sqm", features: "Pool or garden view", photo: "aja_p_5603-71.webp" },
+                    { type: "Landmark Room", size: "32 sqm", features: "Colonial furnishings", photo: "Balcony-Suite-Balcony-View_1626039_high-replace-3.jpg" }
+                ],
+    experiments: [
+        "Sip a signature Femme Fatale cocktail at the legendary Elephant Bar, birthplace of Cambodia's most storied gin",
+        "Ascend in the hotel's original 1929 timber elevator en route to a Landmark Room tour",
+        "Join a guided walk through the hotel's archive of royal and diplomatic history with the resident historian",
+        "Savor a French-Khmer afternoon tea beneath the colonnades of the Elephant Terrace"
+    ],
+    experimentsImage: "aja_p_5804-95.webp",
+    extraordinary: "Step into a private after-hours evening at the Elephant Bar, where a dedicated mixologist walks you through a century of cocktail history, followed by a candlelit dinner in the hotel's private dining room beneath crystal chandeliers, curated from recipes once served to visiting heads of state.",
+    extraordinaryImage: "Cambodia-3.jpg",
+    ethics: "Raffles Hotel Le Royal is committed to preserving Phnom Penh's architectural heritage, maintaining its original 1929 structure through careful restoration rather than replacement, while supporting local Cambodian artisans and staff training programs that sustain traditional craftsmanship for future generations.",
+    ethicsImage: "raffles-hotel-le-royal-general-1399ba97.jpg",
+    video: "Raffles Hotel Le Royal, Phnom Pen, Cambodia - Knight Travel - Luxury Travel Specialists (1080p).mp4"
+
+            },
+            "Amansara": {
+                desc: "Formerly the guest villa of King Sihanouk, this mid-century masterpiece offers a private, serene retreat.",
+                images: ["amansara_-cambodia-main-swimming-pool_high-res_10083.jpg", "Pool Suite, Amansara, Cambodia_2.jpg", "Amansara-F_B-Dining-Room-1024x683.webp"],
+                highlights: ["Former royal residence", "Custom remork excursions", "Temple blessings"],
+                amenities: ["Aman Spa", "Yoga Studio", "Lap Pool"],
+                rooms: [
+                    { type: "Suite", size: "80 sqm", features: "Private courtyard", photo: "Amansara-Cambodia-Accommodation-Suite-Bedroom_35798.jpg" },
+                    { type: "Pool Suite", size: "80 sqm", features: "Private swimming pool", photo: "Bedroom1.avif" }
+                ],
+    experiments: [
+        "Arrive at Angkor Wat before sunrise aboard a private remork with an Amansara guide",
+        "Receive a private blessing ceremony from local monks at a secluded temple site",
+        "Take a private cooking lesson centered on the King's own favored Khmer recipes",
+        "Cycle through rural villages surrounding Siem Reap on a guided countryside excursion"
+    ],
+    experimentsImage: "Amansara, Cambodia_058  Amansara, Camboida - Activities, Angkor Temple Tour, Angkor Wat, Apsara Carvings, Sculptural Stone Walls(1) (1).jpg",
+    extraordinary: "Dine beneath the stars in the hotel's private courtyard, where a personal chef prepares a candlelit Khmer tasting menu accompanied by a live traditional apsara dance performance staged exclusively for your party.",
+    extraordinaryImage: "Amansara_Khmer-Village-House.jpg",
+    ethics: "Amansara actively supports the local Siem Reap community through longstanding partnerships with Angkor-area temple preservation projects and local artisan cooperatives, while its guides are trained local historians committed to responsible, low-impact access to the region's UNESCO World Heritage temples.",
+    ethicsImage: "m.jpg",
+    video: "amansara-luxury-resort-in-siem-reap-cambodia-1080-ytshorts.savetube.me.mp4"
+
+            },
+            "Shinta Mani Wild": {
+                desc: "A radical glamping experience by Bill Bensley, perched over waterfalls in a private nature sanctuary.",
+                images: ["shinta-mani-wild-bensley.jpg", "Copy-of-Shinta-Mani-Wild-X-AVS-33-4-1920x1080.jpg", "Shinta-Mani-Wild-11.jpg"],
+                highlights: ["Zipline arrival", "Adventure Butlers", "Wildlife patrols"],
+                amenities: ["Riverside Spa", "All-Inclusive", "Excursions"],
+                rooms: [
+                    { type: "Wild Tent", size: "100 sqm", features: "Waterfall views", photo: "Shinta Mani Wild - Tents - 11.jpg" }
+                ],
+    experiments: [
+        "Arrive via zipline soaring above the jungle canopy directly into camp",
+        "Join an Adventure Butler on a guided wildlife anti-poaching patrol through the private nature corridor",
+        "Swim beneath a private waterfall accessible only to camp guests",
+        "Unwind with a riverside spa treatment set within the open jungle air"
+    ],
+    experimentsImage: "SHINTAMANIWILD_EliseHassey2019_0208.jpg",
+    extraordinary: "Journey by boat to a secluded riverbank for a private candlelit dinner beneath the forest canopy, prepared tableside by your camp chef and served alongside stories from the resident conservation rangers who patrol this critical wildlife corridor.",
+    extraordinaryImage: "Shinta Mani Wild - Bensley Collection 3.jpg",
+    ethics: "Shinta Mani Wild was founded to protect a vital wildlife corridor linking two national parks; resort revenue directly funds an anti-poaching ranger team and community conservation initiatives through the Shinta Mani Foundation, making every stay a direct contribution to Cambodia's wilderness preservation.",
+    ethicsImage: "Jungle Walk 1 (K1).jpg",
+    video: "02 Wild Web 4K.webm"
+
+            },
+            "Raffles Grand Hotel D’Angkor": {
+                desc: "The 'Grande Dame' of Siem Reap combines Art Deco elegance with French colonial charm.",
+                images: ["Raffles-Grand-Hotel-dAngkor.webp", "Raffles-Siem-Reap-Elephants-Bar-5.jpg", "raffles-grand-hotel-d.jpg"],
+                highlights: ["Siem Reap's largest pool", "Afternoon Tea", "1930s elevator"],
+                amenities: ["Elephant Bar", "Royal Garden", "Spa"],
+               rooms: [
+         { 
+    type: "State Room", 
+    size: "32 sqm", 
+    features: "Garden or pool view, colonial charm, writing desk", 
+    photo: "RGA_State-Room_04-copy-1.jpg" 
+  },
+  { 
+    type: "Royal Villas", 
+    size: "318 sqm", 
+    features: "Private 2-bedroom villa, wine cellar pantry, 24-hour butler, master four-poster bed", 
+    photo: "1O8A3104.jpg" 
+  },
+  { 
+    type: "Raffles Suite", 
+    size: "92 sqm", 
+    features: "Direct pool access, spacious layout, private terrace", 
+    photo: "RGA_RafflesSuite.jpg" 
+  },
+  { 
+    type: "Personality Suite", 
+    size: "48 sqm", 
+    features: "Dedicated to historic luminaries, claw-foot bathtub, pool views from private balcony", 
+    photo: "1O8A2809.jpg" 
+  },
+  { 
+    type: "Landmark Suite", 
+    size: "72 sqm", 
+    features: "Separate living room, historic Heritage Building layout, floor-to-ceiling windows", 
+    photo: "V1100945-landmark suite 3102.jpg" 
+  },
+  { 
+    type: "Landmark Room", 
+    size: "36 sqm", 
+    features: "Original main building heritage, private balcony, garden or pool view, personal butler", 
+    photo: "V1100645-landmark king garden 4117.jpg" 
+  },
+  { 
+    type: "Colonial Suite", 
+    size: "48 sqm", 
+    features: "French doors to spacious balcony, walk-in wardrobe, French garden views", 
+    photo: "1O8A4831.jpg" 
+  }
+                ],
+    experiments: [
+        "Take afternoon tea in the historic Elephant Bar, a Siem Reap institution since the 1930s",
+        "Explore Angkor Wat with a private guide before returning to the hotel's largest pool in the city",
+        "Wander the manicured Royal Garden on a guided botanical walking tour",
+        "Ride the hotel's original 1930s elevator en route to a heritage room tour"
+    ],
+    experimentsImage: "Lost Civilisations of Angkor by Vespa_2.jpg",
+    extraordinary: "Host a private candlelit dinner beneath the tropical canopy of the Royal Garden, where a dedicated butler and live traditional musicians recreate the elegance once reserved for the hotel's earliest royal and diplomatic guests.",
+    extraordinaryImage: "RGA_Kravan Temple Dinner_CambodianRoyalBallet.jpg",
+    ethics: "Raffles Grand Hotel d'Angkor supports the preservation of Siem Reap's colonial-era architecture and invests in training local Cambodian hospitality talent, while its gardens are maintained using sustainable, low-chemical horticultural practices in keeping with the hotel's century-long legacy.",
+    ethicsImage: "Reflections of Angkor-2.jpg",
+    video: "Raffles Grand Hotel d'Angkor, Siem Reap Cambodia - Raffles Grand Hotel d'Angkor (1080p).mp4"
+
+            },
+            "Zannier Hotels Phum Baitang": {
+                desc: "A 'green village' of stilted wooden villas designed to mimic a traditional Cambodian hamlet.",
+                images: ["Zannier-Hotels-Phum-Baitang.webp", "Pool-Villa_1000x600-copy.jpg", "inside-view (1).jpg"],
+                highlights: ["Rice paddy setting", "100-year-old farmhouse bar", "Temple spa"],
+                amenities: ["Infinity Pool", "Sunset Bar", "Cooking Classes"],
+                rooms: [
+                    { type: "Terrace Villa", size: "80 sqm", features: "Private terrace", photo: "Zannier-Phum-Baitang-Terrace-Villa-3-©-Zannier-Hotels.webp" },
+                    { type: "Pool Villa", size: "130 sqm", features: "Private plunge pool", photo: "Zannier-Phum-Baitang-Terrace-Villa-13-©-Patricia-Parinejad-for-Zannier-Hotels-scaled.jpg" }
+                ],
+    experiments: [
+        "Cycle through working rice paddies surrounding the resort's private hamlet",
+        "Sip cocktails at sunset inside the 100-year-old restored farmhouse bar",
+        "Join a hands-on Khmer cooking class using ingredients from the on-site organic garden",
+        "Receive a traditional healing treatment inside the resort's temple-inspired spa"
+    ],
+    experimentsImage: "Zannier Phum Baitang - Siem Reap, Cambodia 8 -  © Zannier Hotels.jpg",
+    extraordinary: "Dine privately amid the illuminated rice paddies at dusk, where lanterns line a floating boardwalk to a secluded pavilion and the chef prepares a farm-to-table tasting menu sourced entirely from the property's own organic gardens.",
+    extraordinaryImage: "zannier-hotels-phum-baitang-sunset-1-zannier-hotels.webp",
+    ethics: "Phum Baitang was designed as a working 'green village,' cultivating its own organic rice paddies and gardens to supply the kitchen, employing local Cambodian craftsmen for its stilted wooden architecture, and channeling a share of proceeds into surrounding village education initiatives.",
+    ethicsImage: "Zannier Phum Baitang - Rice Cultivation 2 -  © Zannier Hotels.jpeg",
+    video: "Zannier Phum Baitang - Official Video.mp4"
+
+            },
+            "Park Hyatt Siem Reap": {
+                desc: "A sophisticated urban oasis featuring a dramatic banyan-tree courtyard and tranquil garden pools.",
+                images: ["Hotel-Facade--Park-Hyatt-Siem-Reap-Triple-Crown-March26-PR-Global.webp", "park_hyatt_siem_reap_hotel_review-88.jpg", "Park-Hyatt-Siem-Reap-P238-The-Dining-Room.16x9 (1).webp"],
+                highlights: ["Banyan Tree courtyard", "Khmer art gallery", "Saltwater pool"],
+                amenities: ["Living Room Bar", "Luxury Spa", "Fitness Centre"],
+                rooms: [
+                    { type: "Park Room", size: "35 sqm", features: "Italian marble bath", photo: "room.jpg" },
+                    { type: "Park Suite", size: "71 sqm", features: "Separate living area", photo: "Park-Hyatt-Siem-Reap-P212-Park-Suite.16x9.webp" }
+                ],
+    experiments: [
+        "Sip cocktails beneath the dramatic century-old Banyan Tree courtyard at the Living Room Bar",
+        "Tour the hotel's curated Khmer art gallery with a resident art historian",
+        "Swim in the tranquil saltwater garden pool framed by tropical courtyards",
+        "Book a private spa ritual inspired by traditional Khmer healing techniques"
+    ],
+    experimentsImage: "REPPH-P0331-Couple-Viewing-The-Three-Temple-Adventure-Tour-Bayon-Gate.16x9.webp",
+    extraordinary: "Reserve a private table beneath the illuminated Banyan Tree courtyard for an evening tasting menu paired with rare regional wines, curated exclusively for guests seeking an intimate, art-filled dining experience away from the city's crowds.",
+    extraordinaryImage: "REPPH-P0337-Couple-Enjoying-A-Romantic-Dinner-Apsara-Show.4x3.webp",
+    ethics: "Park Hyatt Siem Reap channels part of its curated art program toward supporting emerging local Khmer artists, uses saltwater filtration to reduce chemical use in its pools, and sources much of its restaurant produce from regional Cambodian farms.",
+    ethicsImage: "sM0BD5IJtlEfjQzT0wcI_full.jpeg",
+    video: "Park-Hyatt-Siem-Reap-An-Oasis-Of-Enrichment-2160-Ytshorts.Savetube.Me.webm"
+
+            },
+            "Song Saa Private Island": {
+                desc: "An ethical luxury sanctuary known for overwater villas and commitment to marine conservation.",
+                images: ["Song-Saa-Private-Island-1.jpg", "Song-saa-3.png", "Song-saa-10.png"],
+                highlights: ["Overwater villas", "Bio-reserve sanctuary", "Island dining"],
+                amenities: ["Overwater Spa", "Watersports", "Infinity Pool"],
+                rooms: [
+                    { type: "Jungle Villa", size: "135 sqm", features: "Private pool", photo: "Royal-Villa-bedroom-.jpg" },
+                    { type: "Overwater Villa", size: "135 sqm", features: "Ocean access", photo: "nyoh0ujb7ovsvrh1792d.jpg" }
+                ],
+    experiments: [
+        "Snorkel the private marine reserve surrounding Song Saa's protected coral gardens",
+        "Join the resort's marine biologists on a guided reef conservation tour",
+        "Kayak between the resort's twin islands at sunrise",
+        "Dine on a secluded sandbar accessible only by private boat"
+    ],
+    experimentsImage: "greg-mo-songsaa-100.jpg",
+    extraordinary: "Arrange a private overwater dinner suspended above the lagoon at sunset, where a personal chef and butler serve a multi-course seafood tasting menu sourced directly from the island's own marine conservation zone, framed entirely in uninterrupted ocean views.",
+    extraordinaryImage: "image1.jpeg",
+    ethics: "Song Saa was built around a marine conservation mission, establishing Cambodia's first locally-managed marine reserve to protect surrounding coral reefs; the resort funds ongoing reef restoration, sustainable fisheries education, and community programs for neighboring island villages.",
+    ethicsImage: "o1000050215389664100.jpg",
+    video: "Song Saa Private Island - Daniel Bowett (1080p).mp4"
+
+            },
+            "Koh Russey Resort": {
+                desc: "A pavilion-style retreat defined by architecture inspired by Khmer 'Krama' fabric.",
+                images: ["64d1bd2b71d9869d27ea474e_Accomodation - Villas 01.jpg", "234222281.jpg", "7999950-beach-shack-dining-alila-villas-koh-russey.webp"],
+                highlights: ["Private copper beach", "Krama-inspired design", "Island ecosystem"],
+                amenities: ["Beach Shack", "Oceanfront Pool", "Yoga"],
+                rooms: [
+                    { type: "Garden Pavilion", size: "50 sqm", features: "Outdoor terrace", photo: "Alila-Villas-Koh-Russey-Garden-Pavilion-1.webp" },
+                    { type: "Beach Villa", size: "110 sqm", features: "Direct beach access", photo: "2e8be96d.avif" }
+                ],
+    experiments: [
+        "Relax on the resort's private copper-sand beach, exclusive to guests",
+        "Practice sunrise yoga overlooking the Gulf of Thailand",
+        "Dine at the open-air Beach Shack with toes in the sand",
+        "Explore the surrounding island ecosystem on a guided nature walk"
+    ],
+    experimentsImage: "Lodge-Country-Destination-Month-Banner-2.jpg",
+    extraordinary: "Arrange a private beachfront dinner beneath the stars on the resort's secluded stretch of copper sand, where a personal chef prepares fresh-caught seafood while lanterns lit in traditional Krama-inspired patterns illuminate the shoreline.",
+    extraordinaryImage: "Koh-Russey-Resort_horizon03c.jpg",
+    ethics: "Koh Russey Resort's pavilion architecture, inspired by traditional Khmer Krama fabric, was designed to minimize its footprint on the island's natural ecosystem, and the resort actively supports the preservation of the surrounding coastal environment through low-impact building and waste-reduction practices.",
+    ethicsImage: "kohrusseyresort-1024x640.jpg",
+    video: "Koh Russey Resort 2025 - Koh Russey Resort (1012p).mp4"
+
+            },
+
+            "JATI Koh Russey": {
+    desc: "A secluded tropical island retreat set within 46 hectares of lush forest, blending understated modern luxury with natural Cambodian touches.",
+    images: ["img_1004-1600x.jpg", "dsc05592-1600x.jpg", "dsc04863-1600x.jpg"],
+    highlights: ["46-hectare lush island ecosystem", "Absolute beachfront villas with private pools", "Multi-venue dining including Koko Steakhouse and Le Manolis"],
+    amenities: ["Oceanfront Pool", "Bamboo Spa & Outdoor Ice Bath", "Koko Steakhouse & Le Manolis Wine Bistro", "Bai Sor Khmer Restaurant", "Seahorse Kids Club"],
+   rooms: [
+    { type: "Garden Pavilions", size: "66 sqm", features: "Lush tropical views, furnished private balcony & contemporary interior", photo: "villa-garden-pavilion-1440x900-crop-q75.webp" },
+    { type: "Garden Villas", size: "88 sqm", features: "Spacious layout surrounded by greenery with private outdoor space", photo: "villas-garden-villas-1440x900-crop-q75.webp" },
+    { type: "Beachfront Pool Villas", size: "104 sqm", features: "Direct beach access, private plunge pool & ocean view", photo: "villas-beachfront-pool-1440x900-crop-q75.webp" },
+    { type: "Two Bedroom Pool Villas", size: "178 sqm", features: "Expansive multi-bedroom villa with private pool set in tropical surroundings", photo: "villas-two-bedroom-pool-1440x900-crop-q75.webp" }
+],
+    experiments: [
+        "Unwind under an ancient Banyan Tree with sunset cocktails directly on the sand",
+        "Dine on prime cuts at Koko or sample Khmer recipes at Bai Sor",
+        "Rejuvenate at Bamboo Spa with a traditional Khmer treatment and ice bath session",
+        "Explore the island's marine life with snorkeling and non-motorized water sports"
+    ],
+    experimentsImage: "dji_20241126143909_0102_d-1600x.jpg",
+    extraordinary: "Experience a private beachfront seafood BBQ under the stars, curated by your personal chef with local catches, paired with fine wine selections from Le Manolis.",
+    extraordinaryImage: "dsc05603-1600x.jpg",
+    ethics: "JATI Koh Russey prioritizes sustainable island living through low-impact architecture, coastal ecosystem protection, and active support for local Cambodian artisans and culinary heritage.",
+    ethicsImage: "jati_140425-00038-1600x.jpg",
+    video: "JATI, every journey is an opportunity to begin anew. - JATI Koh Russey (1080p).mp4"
+},
+            "Rosewood Phnom Penh": {
+                desc: "A vertical sanctuary occupying the top floors of the Vattanac Capital Tower.",
+                images: ["rosewood-phnom-penh-cambodia-facade-hotel.webp", "rwppn-sora-indoor-1_WIDE-LARGE-16-9.webp", "rwppn-mekong-suite-bedroom-2_WIDE-MEDIUM-4-3.webp"],
+                highlights: ["Sora sky bar", "Highest hotel in city", "Butler service"],
+                amenities: ["Indoor Lap Pool", "Sense Spa", "Whisky Library"],
+                rooms: [
+                    { type: "Executive Room", size: "50 sqm", features: "City views", photo: "rwppn-grand-premier-room-2_WIDE-LARGE-16-9.webp" },
+                    { type: "Mekong Suite", size: "95 sqm", features: "River views", photo: "rwppn-monivong-suite-bedroom-jpg_WIDE-LARGE-3-2.webp" }
+                ],
+    experiments: [
+        "Sip cocktails at Sora, the city's highest rooftop sky bar",
+        "Swim in the indoor lap pool framed by panoramic Phnom Penh skyline views",
+        "Sample rare vintages in the hotel's curated Whisky Library",
+        "Book a personalized ritual at the Sense Spa high above the city"
+    ],
+    experimentsImage: "RWPPN_Destination_RoyalPalace_Cambodia.webp",
+    extraordinary: "Reserve a private table at Sora for sunset, where the city's skyline unfolds beneath you as a dedicated sommelier pairs a chef's tasting menu with rare selections from the hotel's whisky and wine collection.",
+    extraordinaryImage: "Rosewood-Sora-Bar-Sunset (1).jpg",
+    ethics: "Rosewood Phnom Penh integrates energy-efficient building systems throughout the Vattanac Capital Tower and supports local Cambodian suppliers and artisans across its dining and wellness programs, reflecting the brand's broader commitment to sustainable luxury development in the capital.",
+    ethicsImage: "rwppn-hydroponic-farm-1.webp",
+    video: "Rosewood Phnom Penh - Vattanac Capital Mall (1080p).mp4"
+
+            },
+            "Sofitel Phnom Penh Phokeethra": {
+                desc: "A stately colonial-style landmark situated in the heart of the capital, blending French elegance with Cambodian hospitality amidst landscaped gardens and the riverside.",
+                images: ["DJI_20241217170357_0091_D-1170x780.jpg", "Sofitel-Phnom-Penh-Phokeethra.gallery_image.1.jpg", "sofitel-phnompenh-phokeethra-pool-relax.jpg"],
+                highlights: ["Colonial-inspired luxury architecture", "Renowned Phokeethra Country Club access", "Centrally located near the Royal Palace"],
+                amenities: ["So SPA with L'Occitane", "Phokeethra Sports Club", "Outdoor swimming pool", "La Coupole signature dining"],
+                rooms: [
+                    { type: "Superior Room", size: "36 sqm", features: "Elegant timber flooring, Sofitel MyBed, and views of the Mekong or city skyline", photo: "1O8A3226-Edit-1170x780.jpg" },
+                    { type: "Opera Suite", size: "190 sqm", features: "Expansive living area, personalized butler service, and private terrace with panoramic views", photo: "RoomSuites-5-1-1170x780.jpg" }
+                ],
+    experiments: [
+        "Tee off at the renowned Phokeethra Country Club, just moments from the hotel",
+        "Stroll to the nearby Royal Palace and Silver Pagoda with a private guide",
+        "Dine on refined French cuisine at La Coupole overlooking the riverside gardens",
+        "Unwind with a signature treatment at So SPA with L'Occitane"
+    ],
+    experimentsImage: "sofitel-phnompenh-phokeethra-sports-tennis.jpg",
+    extraordinary: "Host a private riverside dinner in the hotel's landscaped colonial gardens, where a dedicated butler and live traditional musicians set the scene for an evening menu inspired by the golden age of French Indochine.",
+    extraordinaryImage: "DSC_5658-1170x780.jpg",
+    ethics: "Sofitel Phnom Penh Phokeethra maintains AccorHotels' global Planet 21 sustainability standards, including water and energy conservation systems, waste reduction initiatives, and partnerships with local Cambodian suppliers to support the surrounding community.",
+    ethicsImage: "DSC_7296-1170x780.jpg",
+    video: "Only at Sofitel Phnom Penh Phokeethra - Sofitel Phnom Penh Phokeethra (1080p).mp4"
+
+            },
+            "Hyatt Regency Phnom Penh": {
+                desc: "A seamless blend of modern luxury and heritage charm, featuring a beautifully restored colonial villa as its entrance and contemporary interiors in the heart of the capital's cultural district.",
+                images: ["Hyatt_Regency_Phnom_Penh.jpg", "Hyatt-Regency-Phnom-Penh-P017-Colonial-House-Lobby.16x9.webp", "PNHRP-P0281-Pool-Seating.16x9.webp"],
+                highlights: ["Integration of French colonial and modern architecture", "Award-winning FiveFive Rooftop Bar", "Steps away from the National Museum and Royal Palace"],
+                amenities: ["Jivapita Spa", "24-hour Fitness Center", "Outdoor infinity pool", "Market Café Restaurant & Lounge"],
+                rooms: [
+                    { type: "Standard Room", size: "30-38 sqm", features: "Floor-to-ceiling windows, smart energy-efficient systems, and Khmer-inspired art", photo: "Hyatt-Regency-Phnom-Penh-P030-One-King-Bed.16x9.webp" },
+                    { type: "Royal Suite", size: "101 sqm", features: "Separate living and dining areas, walk-in rain shower, and Regency Club access", photo: "Hyatt-Regency-Phnom-Penh-P196-Two-Bedroom-Royal-Suite-Room.16x9.webp" }
+                ],
+    experiments: [
+        "Sip sundowners at the award-winning FiveFive Rooftop Bar overlooking the city",
+        "Walk to the National Museum and Royal Palace just steps from the hotel",
+        "Relax poolside at the outdoor infinity pool framed by the restored colonial villa",
+        "Book a signature ritual at Jivapita Spa"
+    ],
+    experimentsImage: "phnom-penh-FI.webp",
+    extraordinary: "Reserve a private rooftop dinner at FiveFive at sunset, where the city skyline glows below as a dedicated chef prepares a multi-course tasting menu paired with hand-selected cocktails crafted exclusively for the evening.",
+    extraordinaryImage: "HKGGH-P1841-The-Magic-Table-Guest-Enjoying-The-Show.16x9.webp",
+    ethics: "Hyatt Regency Phnom Penh preserves the site's original colonial villa as its heritage entrance rather than demolishing it, incorporates smart energy-efficient systems throughout its contemporary tower, and sources ingredients from local Cambodian farms for its restaurants.",
+    ethicsImage: "Hyatt_Regency_Phnom_Penh-3.webp",
+    video: "regency_pnhrp_destination_regency_video_0824.webm"
+
+            },
+"FCC Angkor By Avani": {
+    desc: "A historic landmark reimagined, this boutique retreat blends French colonial architecture with contemporary style in the heart of Siem Reap's French Quarter.",
+    images: ["233020.jpg", "bloom-iconic-fcc-angkor-hotel-through-lush-vegetation-cambodia-designboom-1200-2.jpg", "FCC_Angkor_Gallery_Scribe_Day.jpg"],
+    highlights: ["Historic former journalists' club", "Saltwater swimming pool", "Centrally located by the river"],
+    amenities: ["AvaniFit Gym", "Visaya Spa", "The Scribe Bar"],
+    rooms: [
+        { type: "Heritage Deluxe Room", size: "30 sqm", features: "Classic neo-colonial elegance & local craft accents", photo: "FCC_Angkor_by_Avani_Heritage_Deluxe_2.jpg" },
+        { type: "Colonial Premier Room", size: "35 sqm", features: "Spacious layout with mid-century inspired furnishings", photo: "Colonial-Premier-Room-(3).jpg" },
+        { type: "Heritage Courtyard Room", size: "38 sqm", features: "Tranquil balcony & direct courtyard views", photo: "FCC_Angkor_by_Avani_Heritage_Courtyard_1.jpg" },
+        { type: "Colonial Pool Access Room", size: "40 sqm", features: "Direct step-out access to the saltwater pool", photo: "fcc_angkor_avani_colonial_pool_access_room_1600x1000_001.png" },
+        { type: "Governor Suite Room", size: "75 sqm", features: "Expansive historic mansion suite with premium luxury", photo: "FCC_Angkor_by_Avani_Governor_Suite_1.jpg" },
+        { type: "Garden Suite Room", size: "65 sqm", features: "Lush tropical garden settings & private terrace", photo: "23_Garden_Suite_Outdoor_Final.jpg" },
+        { type: "Family Suite Room", size: "70 sqm", features: "Generous multi-room layout tailored for group stays", photo: "xFCC_Angkor_by_Avani_Family_Suite_2.jpg" },
+        { type: "River View Suite Room", size: "60 sqm", features: "Expansive private terrace overlooking Siem Reap River", photo: "FCC_Angkor_by_Avani_River_View_Suite_2.jpg" }
+    ],
+    experiments: [
+        "Sip a classic cocktail at The Scribe Bar, once a haunt of war correspondents and photojournalists",
+        "Swim in the saltwater pool framed by the hotel's colonial verandas",
+        "Explore Siem Reap's French Quarter on a guided heritage walking tour",
+        "Unwind with a traditional Khmer massage at Visaya Spa"
+    ],
+    experimentsImage: "tt-avani-fcc164.JPG",
+    extraordinary: "Join a private after-hours evening at The Scribe Bar, where a resident storyteller shares tales from the property's past as a foreign correspondents' club, paired with a curated tasting of Cambodian rums and classic colonial-era cocktails.",
+    extraordinaryImage: "FCC-Angkor-by-Avani-The-Mansion-Restaurant.jpg",
+    ethics: "FCC Angkor by Avani preserves its historic French Quarter building through sensitive restoration rather than redevelopment, supports local Cambodian artisans through its interior design partnerships, and participates in Avani's group-wide sustainability programs to reduce single-use plastics.",
+    ethicsImage: "tt-avani-fcc245.JPG",
+    video: "FCC Angkor By Avani.mp4"
+
+},
+            "Shinta Mani Angkor": {
+                desc: "An upscale boutique sanctuary designed by acclaimed architect Bill Bensley, featuring bold monochrome interiors and lush courtyards in the heart of the French Quarter.",
+                images: ["IMGL1003 (1).jpg", "pool-bar-thumb-w1550h1400.jpg", "Kroya-by-Bjorn-Teufel-3-1920x1280.jpg"],
+                highlights: ["Bensley Collection Pool Villas", "Shinta Mani Foundation partner", "Stunning monochrome design"],
+                amenities: ["Shinta Mani Spa by Khmer Tonics", "Bensley’s Bar", "The Steakhouse"],
+                 rooms: [
+       { type: "Angkor Superior Room", size: "40 sqm", features: "Modern monochrome finish, private balcony, pool view", photo: "Angkor Superior-King.jpg" },
+        { type: "Angkor Deluxe Room", size: "40 sqm", features: "Custom Khmer artwork, inner courtyard garden views", photo: "Angkor Deluxe-King (1).jpg" },
+        { type: "Bayon Junior Suite", size: "40 sqm", features: "Custom Khmer artwork, spacious lounge area, inner courtyard garden views", photo: "Bayon Junior Suite.jpg" },
+        { type: "Bayon Executive Suite", size: "64 sqm", features: "Custom Khmer artwork, spacious living room, private balcony", photo: "Bayon Executive Suite.jpg" },
+        { type: "Bensley Pool Villa", size: "156 sqm", features: "Two-story private residence, lap pool, personal butler, rooftop sky lounge", photo: "IMGL1046.jpg" },
+    ],
+    experiments: [
+        "Tour the hotel's bold Bill Bensley-designed monochrome interiors and courtyards",
+        "Sip creative cocktails at Bensley's Bar",
+        "Learn about community impact projects supported by the Shinta Mani Foundation",
+        "Dine on premium cuts at The Steakhouse in the heart of the French Quarter"
+    ],
+    experimentsImage: "Siem Reap Adventures (5).jpg",
+    extraordinary: "Reserve the Bensley Collection Pool Villa's private rooftop sky lounge for an evening tasting menu, where a dedicated chef and mixologist craft a bespoke dining experience beneath the Siem Reap skyline.",
+    extraordinaryImage: "BCSMSR - Villa Dining  - EliseHassey (21).jpg",
+    ethics: "Shinta Mani Angkor channels a portion of every stay into the Shinta Mani Foundation, which funds micro-loans, clean water access, and vocational training for surrounding Cambodian communities — making hospitality here directly tied to local development.",
+    ethicsImage: "Hospitality Training School class of 2016..jpg",
+    video: "01 Shinta Mani Angkor Web 4K.webm"
+
+            },
+           "Anantara Angkor Resort": {
+    desc: "An all-suite luxury retreat inspired by ancient Khmer architecture, offering an intimate atmosphere with private butler service and a tranquil garden pool setting.",
+    images: [
+        "0_EXTERIOR-G_17.jpg", 
+        "b171018002-banner-size.jpg", 
+        "Anantara_Angkor_Resort_Restaurant_Dining_By_Design_Private_Dining.png"
+    ],
+    highlights: ["All-suite boutique accommodation", "Signature private Dining by Design", "Award-winning Anantara Spa"],
+    amenities: ["Anantara Spa", "Chi Restaurant & Bar", "Saltwater swimming pool", "Spice Spoons cooking school"],
+    rooms: [
+        { 
+            type: "Suite", 
+            size: "46 sqm", 
+            features: "Classic Khmer comforts with high ceilings, teak furnishings, and views over the central pool courtyard.", 
+            photo: "anantara_angkor_suite_bedroom_angle1_726x392.png" 
+        },
+        { 
+            type: "Premier Suite", 
+            size: "51 sqm", 
+            features: "Private balcony with pool views, standalone deep soaking tub, and handmade teak furniture.", 
+            photo: "Anantara_Angkor_Resort_Terrace_Suite.png" 
+        },
+        { 
+            type: "Terrace Suite", 
+            size: "54 sqm", 
+            features: "Ground-floor sanctuary featuring a private garden deck and outdoor lounge space.", 
+            photo: "Anantara_Angkor_Resort_Terrace_Suite.png" 
+        },
+        { 
+            type: "Premier Terrace Suite", 
+            size: "58 sqm", 
+            features: "Expanded indoor-outdoor living with a private hidden garden terrace and marble bathroom.", 
+            photo: "Anantara_Angkor_Resort_Guest_Room_Premier_Terrace_Suite_Twin_Beds.jpg" 
+        },
+        { 
+            type: "Anantara Suite", 
+            size: "78 sqm", 
+            features: "Expansive layout with separate living room, hand-carved Khmer details, and pool views.", 
+            photo: "ANANTARA-02.jpg" 
+        },
+        { 
+            type: "Sothea Suite", 
+            size: "112 sqm", 
+            features: "Four-poster carved wooden bed, private in-suite spa massage room, Jacuzzi tub, and romantic courtyard balcony.", 
+            photo: "Anantara_Angkor_Resort_Guest_room_Sothea_Suite.png" 
+        },
+        { 
+            type: "Family Suite", 
+            size: "163 sqm", 
+            features: "Two-bedroom layout (Master + Twin) with full ensuite bathrooms, large common lounge, and private balcony.", 
+            photo: "anantara_angkor_family_suite_dining_and_bedroom_1920x600.avif" 
+        },
+        { 
+            type: "Anantara Explorer Suite", 
+            size: "178 sqm", 
+            features: "Jim Thompson silk heritage design, dedicated spa treatment room, private plunge pool, and pet-friendly amenities.", 
+            photo: "007034-anantara-explorer-suite-1.jpg" 
+        },
+        { 
+            type: "Henri Mouhot Two Bedroom Suite", 
+            size: "235 sqm", 
+            features: "Ultra-exclusive multi-room retreat with private plunge pool, courtyard garden, and dedicated dining lounge.", 
+            photo: "Anantara_Angkor_Resort_Guest_room_Henri_Mouhot_Suite_Bedroom.png" 
+        }
+    ],
+    experiments: [
+        "Join a hands-on Khmer cooking class at the Spice Spoons cooking school",
+        "Arrange a private Dining by Design experience in the resort's gardens",
+        "Unwind with a signature ritual at the award-winning Anantara Spa",
+        "Explore Angkor Wat with a private butler-arranged excursion"
+    ],
+    experimentsImage: "anantara_angkor_resort_destination_1_1920x1037.webp",
+    extraordinary: "Reserve the resort's signature Dining by Design experience — a fully private table set wherever you choose across the property, from a moonlit garden to a secluded pool terrace, with a dedicated chef crafting a bespoke Khmer tasting menu just for you.",
+    extraordinaryImage: "Anantara_Angkor_Resort_Restaurant_Dining_By_Design_Private_Dining.png",
+    ethics: "Anantara Angkor Resort supports local Cambodian communities through its Anantara Cares initiatives, sources ingredients for Spice Spoons and Chi Restaurant from regional farms, and trains local Khmer artisans whose handmade teak furniture and craftsmanship feature throughout the suites.",
+    ethicsImage: "anantara_angkorsustainability_resort_gardens_984x532.jpg",
+    video: "anantara-angkor-resort-1080-ytshorts.savetube.me.mp4"
+},
+            "Sala Lodges": {
+    desc: "A boutique sanctuary consisting of 11 authentic, restored traditional Khmer wooden houses raised on stilts, set within lush gardens and rice fields near Siem Reap.",
+    images: [
+        "s1654x900 (2).jpg",
+        "SL-Pool-1600x450.jpg",
+        "8-sala-lodges-hotel-luxe-cambodge-restaurant-2.jpg",
+    ],
+    highlights: [
+        "Authentic historic Khmer houses (built 1956–1985)",
+        "Saltwater swimming pool & tropical gardens",
+        "Personalized open-air dining and poolside lounge"
+    ],
+    amenities: [
+        "Monolith Restaurant",
+        "Saltwater swimming pool & bar",
+        "Bodia Spa amenities",
+        "Bicycle rentals & tour assistance"
+    ],
+    rooms: [
+        { 
+            type: "House Mouy (1-Bedroom)", 
+            size: "50 sqm", 
+            features: "Known for its triple roof, horizontal cladding, and private terrace with garden views.", 
+            photo: "790343651.jpg" 
+        },
+        { 
+            type: "House Bram (1-Bedroom)", 
+            size: "58 sqm", 
+            features: "Nicknamed 'The High House', featuring high stilts, airy natural breezes, and a private balcony.", 
+            photo: "sala-lodges-00.webp" 
+        },
+        { 
+            type: "House Bram Mouy (1-Bedroom)", 
+            size: "58 sqm", 
+            features: "Dated to 1958 ('The Fishmonger's House'), decorated in gentle turquoise tones with a southeast terrace.", 
+            photo: "3-sala-lodges-house-chambre-khmer-hotel-cambodge-2.jpg" 
+        },
+        { 
+            type: "House Bram Pi (1-Bedroom)", 
+            size: "41.5 sqm", 
+            features: "Characterized by distinctive grey shutters, intimate setting, and view over shaded pathways.", 
+            photo: "4.jpg" 
+        },
+        { 
+            type: "House Bram Bei (1-Bedroom)", 
+            size: "38 sqm", 
+            features: "Horizontal wood cladding details with a charming, cozy veranda overlooking the gardens.", 
+            photo: "House-Bram-Bei-Salalodges-Siem-Reap-Hotel-Resort-7.jpg" 
+        },
+        { 
+            type: "House Bram Boun (1-Bedroom)", 
+            size: "42 sqm", 
+            features: "Direct proximity to the pool area, modern rain shower, and traditional stilt architecture.", 
+            photo: "House-Bram-Boun-Salalodges-Siem-Reap-Hotel-Resort-6.jpg" 
+        },
+        { 
+            type: "House Dop Mouy (1-Bedroom)", 
+            size: "46 sqm", 
+            features: "Features a modern bathroom with both a rain shower and bathtub, opening onto lush foliage.", 
+            photo: "House-Dop-Mouy-Salalodges-Siem-Reap-Hotel-Resort-10.jpg" 
+        },
+        { 
+            type: "House Dop Pi (1-Bedroom)", 
+            size: "38.5 sqm", 
+            features: "Cozy layout with an open seating area, sofa bed, and private outdoor terrace.", 
+            photo: "House-Dop-Pi-Salalodges-Siem-Reap-Hotel-Resort-3.jpg" 
+        },
+        { 
+            type: "House Pi & Bei (2-Bedroom Family Suite)", 
+            size: "98 sqm", 
+            features: "The largest roof on the property with two connecting rooms—ideal for up to 6 guests.", 
+            photo: "House-Pi-Bei-7-Salalodges-Siem-Reap-Hotel-Resport.jpg" 
+        }
+    ],
+    experiments: [
+        "Cycle through the surrounding rice fields on resort bicycles",
+        "Tour the property's collection of historic Khmer houses, each dated and restored to its original 1950s–80s character",
+        "Swim in the saltwater pool framed by tropical lodge gardens",
+        "Book a traditional treatment using Bodia Spa's Cambodian botanical products"
+    ],
+    experimentsImage: "SalaLodges-Excursions-Buffalo-scaled.jpg",
+    extraordinary: "Dine privately beneath the stilted houses at dusk, where lanterns illuminate the surrounding rice fields and the chef at Monolith Restaurant prepares a heritage Khmer tasting menu inspired by the recipes once cooked in these very homes.",
+    extraordinaryImage: "6NWFFA4ZPOP_rb-0476.jpg",
+    ethics: "Sala Lodges was built by relocating and restoring 11 authentic traditional Khmer houses rather than constructing new ones, preserving vernacular Cambodian architecture that would otherwise have been lost, while supporting the artisans and carpenters who carried out each restoration.",
+    ethicsImage: "SalaLodges-Experiences-CookingClass-scaled.jpg",
+    video: "Unforgettable Luxury Getaway in Siem Reap - Sala Lodges - Sala Lodges Siem Reap (1080p).mp4"
+
+},
+"Jaya House River Park": {
+        desc: "A riverfront sanctuary known for pioneer sustainability, exceptional service, and peaceful tropical garden settings.",
+        images: ["62947cd3fa42ae010b181a71_60bb8ded0c28d3a68c7280b1_50777486761_4c9f19dfc0_k.jpg", "the-silver-pool-1.jpg", "602b1be3ac6aeb3fcca77baa_Junior Suite1.jpeg"],
+        highlights: ["100% single-use plastic free", "Tree-planting initiative founder", "Silver swimming pool"],
+        amenities: ["River Park Spa", "Trorkuach Restaurant", "Two Swimming Pools"],
+        rooms: [
+            { type: "Deluxe Room", size: "38 sqm", features: "River or garden views with handmade local furnishings", photo: "602569ca7a72dc937517eab5_Deluxe King Main photo.jpeg" },
+            { type: "Junior Suite", size: "55 sqm", features: "Spacious private balcony & outdoor rain shower", photo: "602569e611400d9bd5e1df07_Junior Pool Suite 1.jpeg" }
+        ],
+    experiments: [
+        "Swim in the resort's striking silver swimming pool",
+        "Join the resort's tree-planting initiative with a guided replanting excursion",
+        "Dine on refined Khmer-French cuisine at Trorkuach Restaurant",
+        "Book a treatment at River Park Spa overlooking the tropical gardens"
+    ],
+    experimentsImage: "6025696f2e4fb09cf54f00c7_spa2_40975966080_o.jpeg",
+    extraordinary: "Join the resort's founders for a private riverside dinner showcasing Jaya House's pioneering sustainability story, paired with a guided tour of the tree-planting program that has restored thousands of trees across the Angkor region.",
+    extraordinaryImage: "63688f8264bdf4f43846b5aa_e9cc57836dd1fe5f3e15a40d21e359a3_jh_flower_4_hr_48149350456_o.webp",
+    ethics: "Jaya House River Park was one of the first hotels in Cambodia to eliminate single-use plastics entirely, and its ongoing tree-planting initiative has reforested significant areas around Siem Reap — sustainability isn't an add-on here, it's the resort's founding mission.",
+    ethicsImage: "602569185ac97e1324ad9e4e_refillnotlandfill_42737128792_o.jpeg",
+    video: "Jaya House River Park Siem Reap, Cambodia - Jaya House River Park Hotel (1080p).mp4"
+
+    },
+    "Treeline Urban Resort": {
+        desc: "An eco-chic sanctuary along the Siem Reap River, fusing contemporary Khmer art with pioneering plastic-free sustainability and solar-powered design.",
+        images: ["main-slide-03-1500x1000.webp", "fNabDCRBVDiVA8yVoWGqf9.jpg", "228035.jpg"],
+        highlights: ["100% plastic-free room operations", "Curated local Cambodian art collection", "Solar water heating & riverfront location"],
+        amenities: ["Rooftop Pool & Bar", "Surya Spa", "Hok Noll Restaurant", "Organic Bakery"],
+        rooms: [
+            { type: "Deluxe Urban Room", size: "38 sqm", features: "Local timber furnishings, custom artwork & city/river views", photo: "main-slide-04-1500x1000.webp" },
+            { type: "Executive Suite", size: "72 sqm", features: "Spacious living area, free-standing bathtub & river view balcony", photo: "treeline-urban-resort-siemreap-20.webp" }
+        ],
+    experiments: [
+        "Sip cocktails at the rooftop pool bar overlooking the Siem Reap River",
+        "Tour the hotel's curated collection of contemporary Khmer art",
+        "Sample fresh bakes from the resort's organic bakery",
+        "Book a treatment at Surya Spa using locally sourced ingredients"
+    ],
+    experimentsImage: "spa-slide-01-600x600.webp",
+    extraordinary: "Reserve the rooftop for a private sunset dinner above the Siem Reap River, where Hok Noll's chef prepares a tasting menu built around the resort's organic bakery and locally sourced Cambodian ingredients, framed by uninterrupted city and river views.",
+    extraordinaryImage: "228035 (1).jpg",
+    ethics: "Treeline Urban Resort operates with 100% plastic-free room service, solar-powered water heating throughout the property, and a curated art program that channels proceeds directly to emerging local Khmer artists — sustainability and culture built into the resort's DNA.",
+    ethicsImage: "Treeline-16.webp",
+    video: "Treeline Urban Resort Long - Treeline Urban Resort (720p).mp4"
+
+    },
+    "Anjali by Syphon": {
+        desc: "A boutique sanctuary in Siem Reap blending modern eco-conscious design, lush foliage, and holistic Khmer wellness rituals for a quiet, intimate retreat.",
+        images: ["urban-greenery-garden-anjali-by-sophon.webp", "caption (2).jpg", "anjali-by-syphon-siem-reap-pic-46.jpg"],
+        highlights: ["Lush tropical foliage & outdoor saltwater pool", "Holistic spa treatments & traditional Khmer healing", "Mekhala Restaurant farm-fresh culinary focus"],
+        amenities: ["Saltwater Pool", "Anjali Spa & Wellness", "Mekhala Restaurant", "Garden Lounge & Bar"],
+        rooms: [
+            { type: "Superior Deluxe Room", size: "40 sqm", features: "Private balcony with garden/pool views, teak details & rain shower", photo: "543531070.jpg" },
+            { type: "Deluxe Pool Access Room", size: "40 sqm", features: "Direct terrace step-out into the saltwater pool & lush foliage", photo: "543531071.jpg" },
+            { type: "Deluxe Rooftop Suite", size: "65 sqm", features: "Expansive private rooftop terrace with views across tropical canopy", photo: "379_ps.webp" }
+        ],
+    experiments: [
+        "Swim in the lush saltwater pool framed by tropical foliage",
+        "Book a holistic treatment blending traditional Khmer healing rituals at Anjali Spa",
+        "Dine on farm-fresh Khmer cuisine at Mekhala Restaurant",
+        "Relax in the Garden Lounge & Bar surrounded by tropical greenery"
+    ],
+    experimentsImage: "anjali-by-syphon-wellness.webp",
+    extraordinary: "Arrange a private wellness evening combining a traditional Khmer healing ritual at Anjali Spa with a candlelit farm-to-table dinner at Mekhala Restaurant, curated entirely around the resort's own garden harvest.",
+    extraordinaryImage: "mekhala-bar-and-restaurant-terrace.webp",
+    ethics: "Anjali by Syphon is built around eco-conscious, low-impact design and holistic Khmer wellness traditions, sourcing farm-fresh ingredients for Mekhala Restaurant and integrating traditional healing practices that support local wellness practitioners.",
+    ethicsImage: "1339499.jpg",
+    video: "Anjali by Syphon — A Timeless Retreat in Siem Reap, Cambodia - Anjali By Syphon (972p).mp4"
+
+    },
+
+    "Navutu Dreams Resort & Wellness Retreat": {
+    desc: "Siem Reap's premier eco-chic luxury resort and wellness retreat, featuring lush tropical gardens, three freshwater and saltwater pools, yoga shalas, and holistic healing programs.",
+    images: [
+        "148525499.jpg",
+        "navutu-dreams-swimming-pool-and-grounds-2.jpg",
+        "navutu-dreams-curry.webp"
+    ],
+    highlights: [
+        "Three tropical swimming pools (freshwater and saltwater)",
+        "Daily yoga classes in open-air shalas & holistic detox programs",
+        "Niam Niam Restaurant serving organic farm-to-table cuisine"
+    ],
+    amenities: [
+        "3 Swimming Pools",
+        "Navutu Spa & Wellness Centre",
+        "Yoga Shala",
+        "Niam Niam Restaurant",
+        "Organic Garden"
+    ],
+    rooms: [
+        { type: "The Grand Suite", size: "100 sqm", features: "Expansive suite with king bedroom, private garden enclosure, soaking tub, and convertible living space", photo: "navutu-dreams-grand-suite-room-bed.webp" },
+        { type: "The Grand Tour Family", size: "70 sqm", features: "Family-friendly layout with garden privacy, lap-pool views, king bed, and convertible sofa bed", photo: "navutu-dreams-grand-tour-family-room-bed-2.webp" },
+        { type: "The Grand Tour", size: "70 sqm", features: "Elegant room designed for couples with private garden, lap-pool views, and chic modern layout", photo: "navutu-dreams-grand-tour-room-bed.webp" },
+        { type: "Explorer Room", size: "45 sqm", features: "Eco-chic room with private garden or lagoon views, custom teak details, and rain shower", photo: "navutu-dreams-resort-explorer-double.webp" }
+    ],
+    experiments: [
+        "Swim across three distinct freshwater and saltwater pools surrounded by lush gardens",
+        "Join a daily yoga or meditation class in the open-air wooden shala",
+        "Experience a custom holistic detox, traditional massage, or energy healing session at Navutu Spa",
+        "Savor organic, farm-to-table Asian and Mediterranean dishes at Niam Niam Restaurant",
+        "Enjoy an evening poolside Khmer Apsara dance performance paired with a traditional dinner"
+    ],
+    experimentsImage: "navutu-dreams-apsara-dance.webp",
+    extraordinary: "Book a personalized full-day wellness journey featuring morning yoga, a tailored detox wellness consultation, holistic spa therapy, and a private candlelit healthy dining experience by the pool.",
+    extraordinaryImage: "navutu-dreams-wellness-schedule.webp",
+    ethics: "Navutu Dreams is committed to sustainable luxury through organic garden sourcing, plastic-reduction initiatives, energy-efficient practices, and supporting local artisan communities and wellness practitioners across Siem Reap.",
+    ethicsImage: "navutu-dreams-swimming-pool-2.webp",
+    video: "Navutu Dreams - Siem Reap's Only Resort & Wellness Retreat - Navutu Dreams Resort & Wellness Retreat (1080p).mp4"
+},
+
+    "Templation Hotel": {
+    "desc": "An eco-chic resort nestled in lush, tranquil gardens near Angkor Wat, offering private pool villas, sustainable architecture, and traditional Khmer hospitality.",
+    "images": ["Templation4+29+2.webp", "main-photo_cc3ccc50a35132fb51a45b8bbfcba9f0.jpg", "IMG_7963_cc3ccc50a35132fb51a45b8bbfcba9f0.jpg"],
+    "highlights": ["Lush private tropical gardens & expansive main pool", "Private pool villas with eco-conscious open-air design", "Wellness center & farm-to-table culinary focus"],
+    "amenities": ["Main Outdoor Pool", "Templation Spa & Wellness", "The Restaurant & Bar", "Fitness Center", "Library & Lounge"],
+    "rooms": [
+    { "type": "Garden King/Twin", "size": "60 sqm", "features": "Spacious open-plan living with private terrace and garden views", "photo": "3_a95e3a074bd9596fa5bb95b0dc3e6cd5.webp" },
+    { "type": "1-Bedroom Pool Villa", "size": "100 sqm", "features": "Private swimming pool set within a secluded tropical garden wall", "photo": "1_a95e3a074bd9596fa5bb95b0dc3e6cd5.webp" },
+    { "type": "2-Bedroom Pool Villa", "size": "160 sqm", "features": "Expansive family sanctuary with private lap pool and indoor-outdoor living", "photo": "2_a95e3a074bd9596fa5bb95b0dc3e6cd5.webp" },
+    { "type": "3-Bedroom Pool Villa", "size": "210 sqm", "features": "Grand multi-bedroom villa with expansive private swimming pool and open lounge areas", "photo": "3_a95e3a074bd9596fa5bb95b0dc3e6cd5 (1).webp" },
+    { "type": "Jungloo", "size": "70 sqm", "features": "Eco-designed domed luxury tent featuring a private plunge pool surrounded by dense greenery", "photo": "TPL_Jungloo-12_a95e3a074bd9596fa5bb95b0dc3e6cd5.webp" }
+],
+    "experiments": [
+        "Take a morning swim in your private villa pool surrounded by lush canopy",
+        "Enjoy a tailored herbal massage and body wrap at the Templation Spa",
+        "Sample organic Asian-fusion and Khmer dishes at The Restaurant",
+        "Cycle directly from the resort to the nearby Angkor Wat temple complex"
+    ],
+    "experimentsImage": "0cf0d934.avif",
+    "extraordinary": "Experience an early sunrise temple excursion arranged directly from the resort, returning to a private poolside breakfast surrounded by lotus ponds and peaceful tropical flora.",
+    "extraordinaryImage": "tpl-isabelle-ic-102025-1_90d9d6be7fdafea1314e05dfa5e7fe97.jpg",
+    "ethics": "Templation focuses on green energy practices, local sourcing, and architectural preservation of natural canopy to maintain an eco-friendly footprint in Siem Reap.",
+    "ethicsImage": "templation-hotel-siem-reap-001-35718-900x570.jpg",
+    "video": "Templation - Templation Hotel (1080p).mp4"
+},
+
+"TUI BLUE Angkor Graces": {
+    "desc": "A luxury wellness sanctuary in Siem Reap blending modern apartment-style living with holistic health, serene tropical gardens, and tailored fitness experiences near Angkor Wat.",
+    "images": ["csm_SAI_REP10269_TB_Cambodia_AngkorGrace_Outdoor19_e9b5ec294e.jpg", "657b519e.avif", "9spdj9qhrqzysmrcolo8.jpg"],
+    "highlights": ["Chlorine-free main outdoor pool & dedicated adults-only pool", "Mahalaya Spa & holistic wellness center with hot springs", "On-site yoga platforms, fitness center & organic dining"],
+    "amenities": ["Outdoor Pools", "Mahalaya Spa & Hot Springs", "Main Restaurant & Pizzeria", "Fitness Center & Yoga Studio", "Rooftop Terrace"],
+    "rooms": [
+        { "type": "One-Bedroom Suite", "size": "60 sqm", "features": "Spacious suite featuring a separate living room, full kitchen, and private balcony with garden views", "photo": "photo_2026-01-12_15-39-00-6.jpg" },
+        { "type": "Three-Bedroom Penthouse Suite", "size": "150 sqm", "features": "Expansive top-floor residence with a modern living area, full kitchen, and elevated tropical views", "photo": "photo_2026-01-12_15-53-21.jpg" },
+        { "type": "Four-Bedroom Grand Suite", "size": "200 sqm", "features": "Luxury family residence with multiple private bedrooms, dining space, and full suite amenities", "photo": "photo_2026-01-12_15-38-58-2-1-1024x682.jpg" }
+    ],
+    "experiments": [
+        "Take a refreshing swim in the chlorine-free outdoor pool surrounded by lush greenery",
+        "Join a guided yoga or meditation session on the dedicated outdoor yoga platform",
+        "Rejuvenate with traditional Khmer body wraps and hydrotherapy at Mahalaya Spa",
+        "Enjoy fresh Asian-fusion and international organic cuisine at the main restaurant"
+    ],
+    "experimentsImage": "740670517.jpg",
+    "extraordinary": "Arrange a full-day personalized wellness retreat featuring a morning outdoor yoga session, an organic farm-to-table lunch, and a custom hot spring hydrotherapy ritual at Mahalaya Spa.",
+    "extraordinaryImage": "0J8A2138-1024x682.jpg",
+    "ethics": "TUI BLUE Angkor Grace integrates sustainable architectural design, eco-friendly room amenities, low-impact pool treatment systems, and locally sourced organic ingredients across its wellness dining menus.",
+    "ethicsImage": "vfjXTS2gVfyqDfO3.jpg",
+    "video": "ANGKOR GRACE Residence & Wellness Resort Siem Reap, Cambodia - Oyen Rodriguez (1012p).mp4"
+},
+    "The Beige": {
+        desc: "An exclusive eco-luxury tented retreat tucked away in the Angkor forest, crafted entirely from organic materials with an elevated canopy pool.",
+        images: ["picture-siem-reap-the-beige-99.jpg", "pic-the-beige-siem-reap-20.jpg", "The-Beige.jpg"],
+        highlights: ["100% organic canvas tented suites", "On-site organic farm & zero plastic", "5-meter elevated suspended forest pool"],
+        amenities: ["Suspended Canopy Pool", "Organic Farm-to-Table Dining", "Riverside Firepit", "Butler Service"],
+        rooms: [
+            { type: "Superior Tent", size: "44 sqm", features: "19th-century explorer aesthetic, private butler service & forest views", photo: "26155356-room8_cover_1200x700.jpg" },
+            { type: "Pool Deluxe Suite Tent", size: "44 sqm", features: "Private plunge pool, outdoor terrace & panoramic jungle surroundings", photo: "241689156.jpg" }
+        ],
+    experiments: [
+        "Swim in the resort's 5-meter elevated suspended forest pool",
+        "Tour the on-site organic farm supplying the kitchen",
+        "Gather at the riverside firepit for an evening under the forest canopy",
+        "Explore the surrounding Angkor forest with a private butler-guided walk"
+    ],
+    experimentsImage: "the-beige4.jpg",
+    extraordinary: "Dine privately beneath the forest canopy beside the riverside firepit, where your butler and the resort chef prepare a tasting menu built entirely from the on-site organic farm, framed by the sounds of the surrounding Angkor wilderness.",
+    extraordinaryImage: "picnic11.jpg",
+    ethics: "The Beige operates a zero-plastic policy across the entire property, built its tented suites from 100% organic materials, and grows much of its own produce on-site — an eco-luxury retreat where sustainability shapes every design and dining decision.",
+    ethicsImage: "farm1.jpg",
+    video: "the_beige　−_luxury_glamorous_tented_resort_− (1080p).mp4"
+
+    },
+    "Angkor Village Hotel": {
+        desc: "A boutique sanctuary set among lotus ponds and tropical gardens, reflecting classic Khmer wooden architecture near the heart of Siem Reap.",
+        images: ["421858448.jpg", "Pool_Outside_Spa_Angkor_Village_Cambodia_63331.jpg", "Restaurant_Angkor_Village_Cambodia_63281.jpg"],
+        highlights: ["Traditional Khmer wooden bungalow architecture", "Lush tropical gardens with lotus ponds", "Home to the iconic Apsara Theatre"],
+        amenities: ["River-Shaped Swimming Pool", "Apsara Theatre & Dining", "L'Auberge Restaurant", "Spa & Wellness Center"],
+       rooms: [
+            { type: "Petite", size: "25 sqm", features: "Cozy traditional wooden room, intimate layout & garden view", photo: "petite-room-view.jpg" },
+            { type: "Garden View Double", size: "35 sqm", features: "Classic teakwood craftsmanship, double bed & private garden terrace", photo: "garden-view-double-bed.jpg" },
+            { type: "Garden View Twin", size: "35 sqm", features: "Traditional wooden decor, twin bedding & lush garden views", photo: "garden-view-twin-bed-inside (1).jpg" },
+            { type: "Water View Double", size: "35 sqm", features: "Serene views over the winding pool/lotus ponds with private terrace", photo: "water-view-double-tablet.jpg" },
+            { type: "Water View Twin", size: "35 sqm", features: "Twin beds overlooking the river-style pool and water gardens", photo: "angkor-village-water-view-twin-bed-tablet.jpg" },
+            { type: "Suite", size: "55 sqm", features: "Spacious luxury layout, separate living area & prime pool view", photo: "angkor-village-suite-room-tablet.jpg" }
+        ],
+    experiments: [
+        "Watch a traditional Apsara dance performance at the on-site Apsara Theatre",
+        "Swim in the resort's distinctive river-shaped pool",
+        "Stroll through the lotus ponds and tropical gardens surrounding the wooden bungalows",
+        "Dine on classic Khmer-French cuisine at L'Auberge Restaurant"
+    ],
+    experimentsImage: "apsara-theatre-in-angkor-village-hotel.webp",
+    extraordinary: "Reserve a private table beside the lotus ponds for an evening paired with an exclusive Apsara dance performance staged just for your party — a rare, intimate window into Cambodia's classical royal ballet tradition.",
+    extraordinaryImage: "lounge-bar-about.webp",
+    ethics: "Angkor Village Hotel preserves traditional Khmer wooden bungalow architecture and directly supports Cambodia's Apsara dance heritage through its on-site theatre, employing and training local dancers and musicians to keep the classical art form alive.",
+    ethicsImage: "Apsara-Theatre-by-Angkor-Village-01-853x640-2.jpg",
+    video: "Angkor Village Hotel 30th anniversary - Angkor Village (1080p).mp4"
+
+    },
+
+    "Courtyard by Marriott Siem Reap Resort": {
+    desc: "A modern upscale resort blending contemporary comfort with subtle Khmer-inspired design, located near the city center and just minutes from Angkor Wat.",
+    images: ["repcy-exterior-2189-hor-feat.avif", "649491771.jpg", "repcy-lok-0032-hor-feat.avif"],
+    highlights: ["Rooftop Upper Deck bar with panoramic views of Angkor Wat", "Resort-style outdoor saltwater pool", "Salt n' Pepper All-Day Dining restaurant"],
+    amenities: ["Saltwater Swimming Pool", "Rooftop Upper Deck Lounge", "Quan Spa & Wellness Center", "24/7 Fitness Center", "Kids Club"],
+    rooms: [
+        { type: "Deluxe Room", size: "40 sqm", features: "Modern design, private balcony, marble bathroom & plush King bed", photo: "repcy-room-0018-hor-wide.avif" },
+        { type: "Deluxe Twin Room", size: "40 sqm", features: "Contemporary layout, two double beds, work desk & private balcony", photo: "repcy-deluxe-0050-hor-wide.avif" },
+        { type: "Executive Room", size: "42 sqm", features: "Spacious layout with two double beds and private balcony views", photo: "repcy-guestroom-0048-hor-wide.avif" },
+        { type: "Courtyard Suite", size: "80 sqm", features: "Expansive luxury layout with separate living area, balcony & premium amenities", photo: "repcy-suite-0028-hor-clsc.avif" },
+        { type: "Presidential Suite", size: "125 sqm", features: "Top-tier suite featuring panoramic view balcony, master bedroom & living area", photo: "repcy-suite-0023_Classic-Hor.jpg" }
+    ],
+    experiments: [
+        "Sip sunset cocktails at Upper Deck while watching the sun set over the distant Angkor Wat spires",
+        "Relax with a soothing treatment at the signature Quan Spa",
+        "Enjoy authentic local and international cuisine at Salt n' Pepper restaurant",
+        "Take a refreshing dip in the saltwater pool surrounded by lush tropical greenery"
+    ],
+    experimentsImage: "8e96e2a6.avif",
+    extraordinary: "Book a private rooftop evening at Upper Deck featuring a customized Khmer fusion dining menu paired with unobstructed sunset views over the historic Siem Reap skyline.",
+    extraordinaryImage: "repcy-upperdeck-0038-hor-wide.avif",
+    ethics: "Courtyard by Marriott Siem Reap operates under Marriott's Serve 360 sustainability framework, actively reducing single-use plastics, supporting local community artisans, and implementing energy-efficient practices across the resort.",
+    ethicsImage: "13d3aa91.avif",
+    video: "courtyard-marriott-siem-reap.mp4"
+},
+
+    "Maison Wat Kor": {
+        desc: "A charming eco-heritage lodge set in a traditional Khmer village, featuring authentic wooden architecture, lily ponds, and organic farm-to-table dining.",
+        images: ["156488718.jpg", "Pool-Garden-1.jpg", "maison-wat-kor-surrounding-reception.jpg"],
+        highlights: ["Authentic Khmer wooden architecture", "Local community integration & culture", "Organic lotus pond & garden setting"],
+        amenities: ["Saltwater Pool", "Frangipani Restaurant", "Cultural Excursions", "Massage Services"],
+        rooms: [
+            { type: "Frangipane Room", size: "36 sqm", features: "Ground floor location with private garden terrace & teak decor", photo: "Grand-Lotus-LR9-4.jpg" },
+            { type: "Lotus Suite", size: "45 sqm", features: "Upper floor balcony overlooking lily ponds & village landscape", photo: "8a3f7bd1a722b15adc18df7919a9b2c5.jpg" }
+        ],
+    experiments: [
+        "Wander the surrounding traditional Khmer village on a guided cultural walk",
+        "Swim in the saltwater pool framed by lily ponds and tropical gardens",
+        "Dine on organic farm-to-table cuisine at Frangipani Restaurant",
+        "Join a local cultural excursion arranged by the lodge's community guides"
+    ],
+    experimentsImage: "20210503030212.jpg",
+    extraordinary: "Join a private dinner beside the lily ponds prepared entirely from the lodge's organic farm, followed by a guided evening walk through the surrounding traditional Khmer village to meet local families and artisans.",
+    extraordinaryImage: "DSC01693-copy-2.jpg",
+    ethics: "Maison Wat Kor was built in deep integration with its surrounding traditional village, employing local residents, sourcing ingredients from its own organic farm, and directing a share of proceeds toward community development projects within Wat Kor village.",
+    ethicsImage: "maisons-wat-kor.webp",
+    video: "MAISONS WAT KOR Sanctuary & Spa - Maisons Wat Kor (1080p).mp4"
+
+    },
+    "Hanchey Bamboo Resort": {
+        desc: "A peaceful eco-resort perched on a hilltop overlooking the Mekong River, featuring sustainable bamboo architecture, panoramic views, and wellness-focused dining.",
+        images: ["60748ebc-c426-4ef0-b0d0-d2a428a0f922_rw_1920.jpg", "Pool+(2).webp", "restaurant_view_1.webp"],
+        highlights: ["Sustainable eco-bamboo design", "Panoramic Mekong River views", "Wellness, yoga, and meditation focus"],
+        amenities: ["Infinity Pool", "Bamboo Restaurant", "Yoga Pavilion", "Spa & Wellness Treatments"],
+        rooms: [
+            { type: "Bamboo Bungalow", size: "35 sqm", features: "Private balcony with Mekong River views & natural bamboo interiors", photo: "13Room.webp" },
+            { type: "Traditional Wooden House", size: "45 sqm", features: "Spacious layout with traditional Khmer woodwork & elevated views", photo: "bungalow_inside_2.webp" }
+        ],
+    experiments: [
+        "Practice sunrise yoga at the hilltop pavilion overlooking the Mekong River",
+        "Swim in the infinity pool framed by panoramic river views",
+        "Dine on wellness-focused cuisine at the Bamboo Restaurant",
+        "Book a spa treatment using natural, locally sourced ingredients"
+    ],
+    experimentsImage: "lotus+meditation+hall.webp",
+    extraordinary: "Join a private sunset dinner on the hilltop overlooking the Mekong River, where the resort's wellness chef prepares a plant-forward tasting menu paired with a guided meditation session as the sun sets over the water.",
+    extraordinaryImage: "Chefs+Food+Training+(4).webp",
+    ethics: "Hanchey Bamboo Resort was constructed almost entirely from sustainable bamboo, minimizing its environmental footprint on the hilltop site, and its wellness-focused kitchen prioritizes locally grown, minimally processed ingredients from surrounding Kampong Cham communities.",
+    ethicsImage: "2019-03-09+08.44.06.webp",
+    video: "Hanchey Bamboo Resort - Hanchey Bamboo Resort (1080p).mp4"
+
+    },
+            "Six Senses Krabey Island": {
+                desc: "A sustainable tropical paradise set on a private 30-acre island, featuring floor-to-ceiling glass pool villas, a world-class wellness spa, and an observatory for stargazing.",
+                images: ["1-484.png", "12-451.png", "11-4-1.png"],
+                highlights: ["Private island sanctuary", "Ocean-facing infinity pools", "Alchemy Bar & Earth Lab sustainability"],
+                amenities: ["Six Senses Spa", "The Tree Restaurant", "Aha Restaurant", "Sunset Bar", "Ice Cream Parlor"],
+                rooms: [
+                    { type: "Hideaway Pool Villa Suite", size: "120 sqm", features: "Private deck with infinity pool & lush jungle privacy", photo: "cambodge-hotel-koh-krabey-six-senses-krabey-island-1024-03.jpg" },
+                    { type: "Ocean Pool Villa Reserve", size: "190 sqm", features: "Panoramic Gulf of Thailand views & outdoor rain shower", photo: "Six_Senses_Krabey_Island_Cambodia_2023_wbpstars_SVC-7-1440x810.jpg" }
+                ],
+    experiments: [
+        "Stargaze through the resort's private observatory",
+        "Craft a personalized wellness tonic at the Alchemy Bar",
+        "Tour Earth Lab to see the island's sustainability initiatives firsthand",
+        "Swim in your villa's private ocean-facing infinity pool"
+    ],
+    experimentsImage: "Main_jetty1_8281-A4_1_1089331.jpg",
+    extraordinary: "Reserve a private stargazing dinner at the island's observatory, where a personal chef and astronomer guide craft an evening that blends fine dining with a guided tour of the southern night sky, framed entirely by the Gulf of Thailand.",
+    extraordinaryImage: "Six-Senses-Krabey-Island-Cambodia-5.jpg",
+    ethics: "Six Senses Krabey Island operates an on-site Earth Lab dedicated to sustainability education, composting, and marine conservation, reflecting the brand's global commitment to environmental stewardship — every stay here directly supports the island's ongoing conservation research.",
+    ethicsImage: "Cambodia-Island-Resorts-Featured-Image.jpg",
+    video: "Escape to the hidden gem of Cambodia’s Riviera – Six Senses Krabey Island - Six Senses (900p).mp4"
+
+            },
+
+            "Siempang Forest Lodge": {
+                desc: "An ultra-remote, luxury safari-style eco-retreat tucked deep inside the Siem Pang Wildlife Sanctuary, offering a profound blend of high-end conservation and raw wilderness exploration in Cambodia's last wild frontier.",
+                images: ["1.Aerial Lodge.jpg", "3.Suite Tent Terrace.jpg", "4.Canopy Restaurant Interior.JPG"],
+                highlights: ["Set within a critical global sanctuary for 5 critically endangered bird species", "100% of profits reinvested into Rising Phoenix conservation initiatives", "Exclusive access to rare wildlife tracking, safaris, and Sekong River cruises"],
+                amenities: ["Forest-view dining & lounge", "Pool with view", "Spa and Wellness spaces", "Expert local conservation trackers", "All-inclusive full board & private transfers"],
+                rooms: [
+                    { type: "Deluxe Tent", size: "45 sqm", features: "Raised wooden deck, khaki canvas canopy, king/twin configuration & intimate forest views", photo: "2.Deluxe Couple Tent..JPG" },
+                    { type: "Suite Tent", size: "75 sqm", features: "Expansive layout, private boardwalk access, flagship luxury furniture & panoramic meadow views", photo: "3.Suite Tent interior.JPG" }
+                ],
+    experiments: [
+        "Track rare and critically endangered bird species with expert local conservationists",
+        "Cruise the Sekong River in search of wildlife along its remote banks",
+        "Join an evening safari drive deep into the Siem Pang Wildlife Sanctuary",
+        "Learn about ongoing conservation work directly from Rising Phoenix rangers"
+    ],
+    experimentsImage: "8bd49f_472df81589104b8f9c6146db81eaeda3~mv2.avif",
+    extraordinary: "Join a private sunset river cruise along the Sekong, followed by a candlelit dinner beneath the forest canopy prepared by the lodge's chef, as resident conservationists share stories from the sanctuary's frontline efforts to protect Cambodia's last wild frontier.",
+    extraordinaryImage: "Fire pit (18) copy.avif",
+    ethics: "100% of Siempang Forest Lodge's profits are reinvested into Rising Phoenix conservation initiatives protecting one of the world's most critical sanctuaries for endangered bird species — every stay here directly funds anti-poaching patrols, habitat protection, and community conservation programs.",
+    ethicsImage: "sarus_cymk-1024x494.webp",
+    video: "../videos/siempang-forest-lodge.mp4"
+
+            },
+
+            "Aqua Mekong": {
+                desc: "A contemporary five-star floating sanctuary designed by renowned architects, charting a sophisticated path along the historic Mekong River with an intimate 1:1 crew-to-guest ratio.",
+                images: ["Aqua Mekong_Vessel_03.jpg", "Aqua Mekong_Dining Room_03.jpg", "Aqua Mekong_Plunge Pool_02.jpg"],
+                highlights: ["Twice-daily bespoke skiff, kayak, and biking expeditions led by expert local guides", "World-class Indochine culinary program designed by Michelin-starred Chef David Thompson", "Floor-to-ceiling panoramic river views from every corner of the vessel"],
+                amenities: ["Outdoor plunge pool", "Soothing Spa Treatment Rooms", "Indoor & Outdoor Observation Lounges", "Private Screening Room", "Top-deck Panoramic Gym"],
+                rooms: [
+                    { type: "Design Suite", size: "30 sqm", features: "Floor-to-ceiling panoramic windows, convertible premium king bed, and en-suite bathroom with dual vanity and rain shower", photo: "Aqua Mekong_Design Suite (Non-Balcony)_06.jpg" },
+                    { type: "Design Suite with Balcony", size: "30 sqm", features: "Privately screened outdoor balcony complete with an exterior daybed for uninterrupted river gazing", photo: "Aqua Mekong_Design Suite (Balcony)_05.jpg" }
+                ],
+    experiments: [
+        "Join a twice-daily bespoke skiff or kayak expedition led by expert local guides",
+        "Sample the Indochine culinary program designed by Michelin-starred Chef David Thompson",
+        "Take in panoramic river views from the top-deck panoramic gym",
+        "Unwind at the private screening room after a day exploring the Mekong"
+    ],
+    experimentsImage: "aqua-mekong_excursion-biking_0004.jpg",
+    extraordinary: "Arrange a private candlelit dinner on a secluded riverbank reached exclusively by skiff, where the onboard chef recreates a signature dish from David Thompson's Indochine menu beneath the open Mekong sky.",
+    extraordinaryImage: "cambodia_monastry_0009.jpg",
+    ethics: "Aqua Mekong operates with a deliberately low guest capacity and near 1:1 crew-to-guest ratio to minimize its impact along the Mekong River, while its excursions are led by expert local guides who directly support riverside communities through responsible, small-scale tourism.",
+    ethicsImage: "cambodia_floating-village_0001.jpg",
+    video: "Epic cultural expeditions in Cambodia & Vietnam on board the luxurious Aqua Mekong - Aqua Expeditions (1080p).mp4"
+
+            },
+
+
+             "Heritage Line Cruise Jayavarman": {
+                desc: "A colonial-inspired riverine retreat evoking the golden age of Indochina, gliding between Siem Reap and Saigon along the Tonle Sap and Mekong with teak-panelled elegance and warm, attentive service.",
+                images: ["Heritage_Line_-_Mekong_-_Jayavarman_-_Ship_4.jpg", "5-591.png", "heritage-line-jayavarman-5-restaurant.webp"],
+                highlights: ["Classic Indochine-style design with teak interiors and period details throughout", "Daily shore excursions to temples, floating villages and local markets with expert guides", "Fine dining blending Khmer, Vietnamese and French cuisine"],
+                amenities: ["Sun deck with pool", "Spa Treatment Room", "Bar & Lounge", "Restaurant", "Fitness Corner"],
+                rooms: [
+                    { type: "Superior Cabin", size: "22 sqm", features: "Large picture window, twin or king bed, and en-suite bathroom with shower, finished in warm colonial styling", photo: "Jayavarman_Superior01.png" },
+                    { type: "Deluxe Cabin", size: "26 sqm", features: "Spacious cabin with panoramic windows, sitting area, and en-suite bathroom with rain shower", photo: "11-561.png" },
+                    { type: "Signature Suite", size: "36 sqm", features: "Private balcony, separate lounge area, premium king bed, and en-suite bathroom with bathtub and rain shower", photo: "heritage-line-i-lower-mekong-i-ship-i-jayavarman-i-signature-suite-04_53503559416_o.jpg" }
+                ],
+    experiments: [
+        "Visit a floating village on the Tonle Sap by sampan with a local guide",
+        "Join a hands-on Khmer or Vietnamese cooking demonstration on board",
+        "Cycle through quiet riverside villages along the Mekong",
+        "Unwind on the sun deck as the Mekong delta slips by"
+    ],
+    experimentsImage: "54056568938_0f3de5f178_k.webp",
+    extraordinary: "Arrange a private candlelit dinner on a secluded riverbank reached by sampan, with a menu of Khmer and Vietnamese signature dishes served beneath the open Mekong sky.",
+    extraordinaryImage: "20180301_Cambodia_Vietnam_1109.webp",
+    ethics: "Heritage Line Jayavarman operates a small-scale river cruise model that supports riverside communities through local guides, locally sourced produce, and respectful, low-impact excursions along the Tonle Sap and Mekong.",
+    ethicsImage: "64898bc7797b1.jpg",
+    video: "Luxury cruises on the Mekong River in Vietnam & Cambodia I Heritage Line (Official) - Heritage Line I Refined Waterway Voyages (1080p).mp4"
+
+            }, 
+
+ "Knai Bang Chatt by Kep West": {
+    desc: "A barefoot luxury eco-resort featuring restored modernist villas, focused on regenerative travel, wellness, and coastal charm.",
+    images: ["KNAI-BANG-CHATT_KEP_CAMBODIA_A-HOTEL-LIFE-5-of-12.jpg", "knai-bang-chatt-swimming-pool-1.jpg", "7e98796c.webp"],
+    highlights: ["Restored colonial architecture", "Sailing & Discovery Center", "Sunset ocean views"],
+    amenities: ["Infinity Pool", "Holistic Spa & Yoga", "The Sailing Club Beach Bar"],
+    rooms: [
+       { type: "Classic Room", size: "25 sqm", features: "Garden views & private terrace", photo: "Knai-Bang-Chatt-4.webp" },
+        { type: "Superior Room", size: "35 sqm", features: "Garden views with expanded seating area & private terrace", photo: "Knai Bang Chatt Superior Room.jpg" },
+        { type: "Twin Room", size: "30 sqm", features: "Two twin beds, garden or sea views & private terrace", photo: "twin.jpg" },
+        { type: "Suite Room", size: "80 sqm", features: "Ocean view & Jacuzzi bathtub", photo: "Knai Bang Chatt Classic Single.jpg" }
+    ],
+    experiments: [
+        "Set sail with the resort's Sailing & Discovery Center along the Kep coastline",
+        "Practice sunrise yoga overlooking the Gulf of Thailand",
+        "Sip sundowners at the Sailing Club Beach Bar",
+        "Book a holistic treatment at the resort's wellness spa"
+    ],
+    experimentsImage: "Outdoor Activities.jpg",
+    extraordinary: "Charter a private sunset sail with the Sailing & Discovery Center, followed by a barefoot beachfront dinner at the Sailing Club, where the chef prepares fresh Kep crab and coastal Cambodian specialties beneath the stars.",
+    extraordinaryImage: "The Wave.jpg",
+    ethics: "Knai Bang Chatt was restored rather than rebuilt, preserving a collection of 1960s modernist villas, and the resort is built around a regenerative travel philosophy — supporting local fishing communities, coastal conservation, and low-impact, barefoot-luxury hospitality.",
+    ethicsImage: "Knai Bang Chatt Resort.avif",
+    video: "Knai Bang Chatt by Kep West - Luxury Boutique Resort in Kep, Cambodia - Kep West (1080p).mp4"
+
+},
+"Samanea Wellness Resort": {
+    desc: "A 5-star mountain sanctuary nestled in a 40-hectare rainforest domain in Pursat Province, offering holistic treatments, farm-to-table dining, and immersive nature experiences in the Cardamom Mountains.",
+    images: ["6976dde68ec4e4a809e5ff90_COMP 6900961c5d8e0a9481c5dc9a_DJI_20251018081924_0454_D-min (2).jpg", "697c2762aa0122ce4bed13bb_COMP Pic 1a.jpg", "6976e530d3af34db182e242e_COMP 6924198e2af6be7f5b3c1e72_DSC03865-min.webp"],
+    highlights: ["40-hectare montane rainforest sanctuary", "Holistic Khmer wellness & River Flow Detox", "Panoramas of the Cardamom Mountains"],
+    amenities: ["Open-Air Forest Spa Pavilion", "Farm-to-Table Restaurant & Lounge", "Mountain-View Infinity Pool"],
+    rooms: [
+        { type: "Forest Villa", size: "75 sqm", features: "Private jungle terrace & outdoor rain shower", photo: "69242c471061bcdd39cdcb29_DSC05448-min.webp" },
+        { type: "Mountain View Pool Villa", size: "110 sqm", features: "Panoramas of the Cardamom range & private plunge pool", photo: "208672feecc8d73c7ab1de4b0c01acf6.jpg" }
+    ],
+    experiments: [
+        "Embark on guided rainforest treks to hidden waterfalls along ancient Cardamom trails",
+        "Restore balance with customized herbal therapies and yoga at the open-air spa",
+        "Savor organic, farm-to-table Cambodian cuisine sourced directly from local mountain farms",
+        "Unwind with a sunset herbal infusion by the infinity pool overlooking the valley"
+    ],
+    experimentsImage: "6976e200b7586765c4daf8f6_COMP 693268bd3bc86d4b916487f0_DSC07028-min.jpg",
+    extraordinary: "Embark on a private guided canopy trek into the untouched forest of Pursat, followed by a private candlelit farm-to-table dinner served beside a natural mountain stream beneath the stars.",
+    extraordinaryImage: "697c2761651bcff5b7e4671a_COMP Pic 1b.jpg",
+    ethics: "Designed around a 40-hectare protected site, Samanea operates with zero single-use plastics, integrates solar power, and partners directly with local Pursat mountain communities to safeguard the Cardamom ecosystem.",
+    ethicsImage: "tkm_Samanea-Beach-Resort-Spa__bruce_vincentiis_33_result.webp",
+    video: "Samanea Wellness Resort - Samanea Wellness Resort (1080p).mp4"
+},
+"Cardamom Tented Camp": {
+    desc: "An eco-friendly safari-style camp tucked within the protected wilderness of Botum Sakor National Park in Koh Kong, combining conservation-focused adventures, pristine river views, and comfortable tented accommodations.",
+    images: ["Tent-Walkway-1.jpg", "DSC_1076.webp", "7995464-communal-area-at-ctc.webp"],
+    highlights: ["Set within Botum Sakor National Park", "Direct support for rainforest ranger patrols", "Immersive wilderness & eco-adventure access"],
+    amenities: ["Riverside Restaurant & Lounge", "Eco-Friendly Solar Power", "Kayaking & Trekking Hub"],
+    rooms: [
+        { type: "Luxury Safari Tent", size: "30 sqm", features: "En-suite bathroom, fan, standing balcony with river or jungle views", photo: "Tent-inside-scaled.jpg.webp" }
+    ],
+    experiments: [
+        "Join Wildlife Alliance rangers on morning patrol to learn about local conservation efforts",
+        "Kayak along the quiet Preak Tachan river surrounded by untouched jungle canopy",
+        "Embark on guided wildlife treks through tropical forest trails",
+        "Relax on your private deck listening to the sounds of native birds and wildlife"
+    ],
+    experimentsImage: "3-1.webp",
+    extraordinary: "Take part in an exclusive multi-day conservation patrol experience deeper into the reserve, setting up trail cameras and documenting rare wildlife alongside professional conservationists.",
+    extraordinaryImage: "Cardamom-Forest-Protection-Program-1 (1).jpg",
+    ethics: "Operating under the motto 'Your Stay Keeps the Forest Standing,' Cardamom Tented Camp directly funds ranger patrols, protecting over 18,000 hectares of rainforest from illegal logging and poaching.",
+    ethicsImage: "2-1-1020x697.webp",
+    video: "Your Stay Keeps the Forest Standing Cardamom Tented Camp - Cardamom Tented Camp (1080p).mp4"
+},
+
+"Samanea Beach Resort": {
+    desc: "A coastal barefoot-luxury resort set within a private 4-hectare botanical park in Kep, featuring traditional Khmer-style villas, private boardwalks, and direct oceanfront access.",
+    images: ["0f753332.webp", "748720924.jpg", "tkm_Samanea-Beach-Resort-Spa__bruce_vincentiis_6_result.webp"],
+    highlights: ["Private oceanfront & mangrove sanctuary", "Authentic Khmer-inspired villas", "Panoramas of the Gulf of Thailand & Bokor"],
+    amenities: ["Ocean-Facing Infinity Pool", "Open-Air Spa Pavilion", "Chankiri Restaurant & Jetty Beach Bar"],
+    rooms: [
+        { type: "Junior Suite Villa", size: "70 sqm", features: "Private tropical garden terrace & daybed", photo: "tkm_Samanea-Beach-Resort-Spa__bruce_vincentiis_3_result.webp" },
+        { type: "Executive Ocean View Villa", size: "90 sqm", features: "Direct Gulf views & private jacuzzi bathtub", photo: "secret-retreats-cambodia-samanea-family-suite-01.jpg" }
+    ],
+    experiments: [
+        "Stroll along the private wooden pier stretching into the calm waters of Kep Bay",
+        "Savor fresh Kep crab paired with Kampot green pepper over the ocean at Chankiri Restaurant",
+        "Indulge in a signature coastal herbal massage at the open-air spa pavilion",
+        "Catch the legendary Kep sunset with a handcrafted cocktail at the pier bar"
+    ],
+    experimentsImage: "390810762.jpg",
+    extraordinary: "Charter a private traditional longtail boat directly from Samanea's jetty to Rabbit Island (Koh Tonsay) for a day of secluded beach lounging, followed by a private five-course candlelit dinner over the ocean at the tip of the resort pier.",
+    extraordinaryImage: "samanea-beach-resort-spa-4.jpg",
+    ethics: "Samanea protects its surrounding mangrove ecosystem, uses zero single-use plastics, operates advanced wastewater recycling systems, and directly supports Kep’s artisanal fishing communities.",
+    ethicsImage: "Samanea-Beach-Resort-Spa_bruce_vincentiis_002_web-scaled.webp",
+    video: "Samanea Beach Resort and Spa highlight video - Samanea Beach Resort & Spa (1080p).mp4"
+},
+
+"Orchids & Canvas": {
+    desc: "A boutique luxury haven nestled in the lush tropical rainforests of Koh Kong, seamlessly blending artistic design with pristine wilderness, private riverfront access, and curated botanical beauty.",
+    images: ["orchids-canvas-floating-tent-koh-kong (1).jpg", "canvas-orchids-floating-tents-19.webp", "canvas-orchids-floating-tents-10.webp"],
+    highlights: ["Lush Cardamom jungle & riverfront setting", "Boutique art-infused luxury design", "Private orchid garden sanctuaries"],
+    amenities: ["Riverfront Infinity Pool", "Open-Air Wellness Pavilion", "Artisan Canvas Restaurant & Lounge Bar"],
+    rooms: [
+        { type: "Orchid Villa", size: "70 sqm", features: "Private jungle terrace, outdoor shower & garden views", photo: "canvas-orchids-island-double-tent-17.webp" },
+        { type: "Canvas Riverfront Suite", size: "90 sqm", features: "Panoramic river views, private plunge pool & daybed", photo: "canvas-orchids-floating-tents-12.webp" }
+    ],
+    experiments: [
+        "Glide along the quiet Koh Kong mangrove waterways on a guided sunset kayak tour",
+        "Explore private orchid gardens and learn painting techniques at the open-air studio",
+        "Savor farm-to-table coastal cuisine highlighting fresh local herbs and seafood",
+        "Unwind with a signature floral-infused massage at the riverside wellness pavilion"
+    ],
+    experimentsImage: "cardamom-mountain-valley-biodiversity.jpg",
+    extraordinary: "Charter a private boat through the mangrove estuaries toward Tatai Waterfall for an exclusive gourmet picnic, followed by a private candlelit riverfront dinner beneath the jungle canopy.",
+    extraordinaryImage: "5.-Activities-42-1024x702.jpg",
+    ethics: "Orchids & Canvas is built with a commitment to rainforest preservation, running on low-impact eco-conscious energy, supporting local Koh Kong conservation efforts, and cultivating native floral species.",
+    ethicsImage: "canvas-orchids-restaurant-couple-dining.webp",
+    video: "Cambodia - Considered Among The 10 Best Glamping In The World - Canvas & Orchids Retreat (1080p).mp4"
+},
+
+
+"Shangri-La Phnom Penh": {
+    desc: "A luxurious riverside hotel offering elevated dining, state-of-the-art wellness facilities, and expansive panoramic views of the Mekong River.",
+    images: ["Shangri-La-Phnom-Penh-Hotel-Facade2.jpg", "20250613_slpp_swimmingpool_1920940.png", "Shangri-La-Phnom-Penh-Sky-Lobby.jpg"],
+    highlights: ["Panoramic Mekong River views", "Prime central city location", "World-class signature dining"],
+    amenities: ["Rooftop Infinity Pool", "Health Club & Spa", "Executive Club Lounge"],
+    rooms: [
+        { type: "Deluxe River View Room", size: "45 sqm", features: "Floor-to-ceiling windows & river view", photo: "Deluxe-King-River-View.jpg" },
+        { type: "Executive Suite", size: "90 sqm", features: "Separate living area & Horizon Club access", photo: "{244D7BE7-1F7D-454C-8356-5BD4C112B3B3}20250613_slpp_executivesuiteroom_1.webp" }
+    ],
+    experiments: [
+        "Swim in the rooftop infinity pool overlooking the Mekong River",
+        "Unwind at the Health Club & Spa with panoramic city views",
+        "Sip evening cocktails in the Executive Club Lounge",
+        "Dine on elevated riverside cuisine with sweeping Mekong panoramas"
+    ],
+    experimentsImage: "SLPP_Spa-TreatmentRoom.webp",
+    extraordinary: "Reserve a private rooftop dinner beside the infinity pool at sunset, where the Mekong River unfolds beneath you as a dedicated chef and sommelier craft a bespoke tasting menu paired with rare regional wines.",
+    extraordinaryImage: "644195360.jpg",
+    ethics: "Shangri-La Phnom Penh follows the group's global Sanctuary sustainability program, incorporating energy-efficient building systems, waste reduction, and responsible sourcing practices across its riverside restaurants and wellness facilities.",
+    ethicsImage: "20250108_slpp_lobbygf_banner.png",
+    video: "Be Among The First to Experience Shangri-La Phnom Penh - Shangri-La Phnom Penh (1080p).mp4"
+
+},
+"Le Relais de Chhlong": {
+    desc: "A beautifully restored 1916 French colonial mansion situated along the peaceful banks of the Mekong River, offering an intimate heritage retreat surrounded by serene tropical gardens in Kratie Province.",
+    images: [
+        "1400__1539173785_Pool.jpg", 
+        "restaurant-027ff12875.jpg", 
+        "le-relais-de-chhlong-cambodia-5-p-thumbnail.webp"
+    ],
+    highlights: [
+        "Architectural gem from 1916 blending French colonial and traditional Khmer design", 
+        "Tranquil outdoor swimming pool nestled amidst lush tropical gardens", 
+        "Prime location along the scenic Mekong River, perfect for Irrawaddy dolphin watching"
+    ],
+    amenities: [
+        "Le Relais Restaurant (Khmer & French Fusion)", 
+        "Lakeside Outdoor Swimming Pool", 
+        "Riverview Cocktail Bar", 
+        "Bicycle Rental Services", 
+        "Mekong Sunset Lounge"
+    ],
+    rooms: [
+        { 
+            type: "Heritage Junior Suite", 
+            size: "35 sqm", 
+            features: "High ceilings, period-style wooden furnishings, garden views & refined colonial accents", 
+            photo: "terrace-family-garden-suite-87027f1d99.jpg" 
+        },
+        { 
+            type: "Heritage Suite", 
+            size: "45 sqm", 
+            features: "Spacious colonial layout, private balcony overlooking the gardens & classic hardwood floors", 
+            photo: "d144d7_a0c744d35cdf4ece896218f06021da09~mv2_d_2000_1333_s_2 (1).avif" 
+        },
+        { 
+            type: "Pavilion Suite", 
+            size: "50 sqm", 
+            features: "Secluded setting within tropical greenery, elegant living area & private outdoor veranda", 
+            photo: "fb8cd980.avif" 
+        },
+        { 
+            type: "Pavilion Family Suite", 
+            size: "70 sqm", 
+            features: "Expansive multi-bedroom setup, private terrace, lounge space & direct garden pool access", 
+            photo: "d144d7_fa08da35768a4891a25f255aeacac88e~mv2_d_2000_1333_s_2 (1).avif" 
+        },
+        { 
+            type: "Mekong Signature Suite", 
+            size: "65 sqm", 
+            features: "Panoramic views of the Mekong River, expansive private terrace & vintage colonial decor", 
+            photo: "cde459c6.avif" 
+        }
+    ],
+    experiments: [
+        "Embark on a private boat excursion along the Mekong River to spot the rare freshwater Irrawaddy dolphins at Kampi",
+        "Explore Chhlong’s historic district by bicycle, admiring early 20th-century French colonial architecture and quiet local markets",
+        "Savor authentic regional Indochina dishes prepared with fresh Mekong fish and locally sourced organic ingredients",
+        "Unwind with an evening cocktail on the riverbank while watching the sunset over the Mekong River",
+        "Visit nearby Koh Trong island to experience rural Cambodian life, local pomelo orchards, and peaceful cycling trails"
+    ],
+    experimentsImage: "kratie-1_1296x730xcrop.webp",
+    extraordinary: "Experience a private heritage sunset dinner setup on the banks of the Mekong River. Surrounded by warm lantern lighting and quiet river breezes, you will enjoy a curated multi-course menu inspired by historic French-Khmer recipes, paired with fine wines and personalized butler service.",
+    extraordinaryImage: "le-relais-de-chhlong-cambodia-p-thumbnail.webp",
+    ethics: "Le Relais de Chhlong is dedicated to heritage preservation and community development. The resort preserves early 20th-century architectural heritage while actively minimizing plastic usage, utilizing locally sourced produce from surrounding villages, and supporting community-based eco-tourism initiatives in Kratie.",
+    ethicsImage: "le-relais-de-chhlong-cambodia-1-p.webp",
+    video: "Le Relais de Chhlong Promo.mp4",
+    videoPoster: "Architecture-le-relais-de-chhlong.jpg"
+},
+          
+"Borei Angkor Resort & Spa": {
+    desc: "A luxury family-friendly resort inspired by Angkorian architecture, with Khmer-style rooms decorated in silk and local handicrafts. It sits close to Pub Street and the Old Market, a short drive from Angkor Wat.",
+    images: ["Infront Hotel (1).jpg", "Good evening Borei Angkor siem reap.jpg", "IMG_9006.jpeg"],
+    highlights: ["Mudita Spa with 14 treatment rooms, steam room, sauna & hot tub", "Outdoor pool with a separate children's pool and poolside bar", "Bakan Restaurant and Ox Club serving Cambodian cuisine"],
+    amenities: ["Outdoor Swimming Pool", "Children's Pool", "Mudita Spa", "Fitness Center", "Sauna & Steam Room", "24-Hour Room Service", "Airport Transfer"],
+    rooms: [
+    { type: "Deluxe Room", size: "40 sqm", features: "Khmer-style design, private balcony, sitting area & rain shower", photo: "Deluxe Twin Pool View3.jpg" },
+    { type: "Landmark Room", size: "47 sqm", features: "Spacious king room with private balcony, corner sofa, bathtub & rain shower", photo: "Landmark Twin3.jpg" },
+    { type: "Junior Suite", size: "55 sqm", features: "King bed, sitting area with sofa, private balcony & separate rain shower", photo: "20220420_094528.jpg" },
+    { type: "Club Suite", size: "65 sqm", features: "King bed and elegant bathtub, ideal for honeymooners, overlooking the lobby waterfall", photo: "DSC_0095-Edit.jpg" },
+    { type: "Borei Suite", size: "88 sqm", features: "Lavish king suite with sofa bed and pool or city views", photo: "20220420_095533.jpg" },
+    { type: "Royal Suite", size: "188 sqm", features: "Super king bed connected to a twin room, private living & dining area, pool view", photo: "03 Royal Suite.jpg" }
+],
+    experiments: [
+        "Unwind with a traditional Khmer treatment at Mudita Spa",
+        "Enjoy a Cambodian dinner at Ox Club or Bakan Restaurant",
+        "Relax by the pool with a drink from the poolside bar",
+        "Take an evening trip to Pub Street and the Angkor Night Market, only minutes away"
+    ],
+    experimentsImage: "Traditional Oil Massage.JPG",
+    extraordinary: "Arrange a private Khmer dinner by the pool, with a customized Cambodian menu and traditional music, followed by a couples spa treatment at Mudita Spa.",
+    extraordinaryImage: "Breakfast(1).jpg",
+    ethics: "Borei Angkor Resort & Spa celebrates Khmer heritage through its Angkor-inspired architecture and rooms decorated with traditional silk and handicrafts, showcasing local craftsmanship.",
+    ethicsImage: "FO9.jpg",
+    video: "Img 4525.webm"
+},
+
+"Sofitel Angkor Phokeethra": {
+    desc: "A French colonial-style masterpiece set within lush tropical gardens, offering a refined blend of Khmer hospitality and European elegance near the temples of Angkor.",
+    images: [
+        "Tout-SofitelAngkorPhokeethraGolfandSpaResort-Thailand-CRHotel.webp", 
+        "SOFITEL-SIEM-REAP-DJI_0445-WEB-1170x780.jpg", 
+        "Sofitel-Angkor-Phokeethra-Garden.jpg"
+    ],
+    highlights: [
+        "Award-winning 18-hole golf course", 
+        "Largest free-form swimming pool in Cambodia", 
+        "Steps away from UNESCO World Heritage temples"
+    ],
+    amenities: [
+        "So SPA with L'Occitane", 
+        "The Citadel Restaurant", 
+        "Mouhot's Dream (Fine Dining)", 
+        "Explorer's Tales Bar", 
+        "Phokeethra Country Club"
+    ],
+    rooms: [
+        { 
+            type: "Superior Room", 
+            size: "36 sqm", 
+            features: "Private balcony with garden views & signature Sofitel MyBed", 
+            photo: "Sofitel-Siem-Reap-Hotel-Review-4.webp" 
+        },
+        { 
+            type: "Luxury Room", 
+            size: "45 sqm", 
+            features: "Direct pool access or garden terrace, wooden floors & refined Khmer touches", 
+            photo: "luxury room.jpg" 
+        },
+        { 
+            type: "Junior Suite", 
+            size: "70 sqm", 
+            features: "Separate living area, private balcony & premium Club Millésime privileges", 
+            photo: "Junior Suite.jpg" 
+        },
+        { 
+            type: "Prestige Suite", 
+            size: "90 sqm", 
+            features: "Spacious living area, French colonial decor & deep soaking tub", 
+            photo: "Prestige Suite (1).jpg" 
+        },
+        { 
+            type: "Opera Suite", 
+            size: "140 sqm", 
+            features: "Expansive master suite, separate dining room, private terrace & personalized butler service", 
+            photo: "SOFITEL-SIEM-REAP-18441-WEB-1170x780.jpg" 
+        }
+    ],
+    experiments: [
+        "Tee off at the iconic 18-hole championship Phokeethra Country Club, managed to international PGA tournament standards",
+        "Discover Angkor Wat via custom-tailored private helicopter charters or vintage classic car excursions",
+        "Master the art of Royal Khmer gastronomy during a hands-on culinary masterclass hosted by the Executive Chef",
+        "Unwind with a refined afternoon high tea pairing fine French pastries with organic Cambodian herbal infusions",
+        "Rejuvenate with a targeted Khmer Accord massage or signature French skin therapies at the award-winning Sofitel SPA"
+    ],
+    experimentsImage: "cambodia-half-day-golfing-in-siem-reap-image-by-phokeethra-country-club-1.jpg",
+    extraordinary: "Experience the ultimate romantic indulgence with an exclusive private dinner hosted on a secluded wooden boardwalk extending over the resort's tranquil Sala Lake. Surrounded by hundreds of glowing floating candles and soft lotus blossoms, you will enjoy a curated multi-course gourmet menu under the stars, personally served by a dedicated butler to the ambient sounds of traditional live Khmer harp music.",
+    extraordinaryImage: "SOFITEL-SIEM-REAP-18560-WEB.jpg",
+    ethics: "Sofitel Angkor Phokeethra strictly operates under comprehensive global environmental standards, utilizing advanced energy-saving systems and wastewater treatments to sustain its botanical grounds. The resort champions community welfare by partnering with local craft NGOs, sourcing fresh organic ingredients from local farms, and maintaining a strict plastic-free policy across all guest areas.",
+    ethicsImage: "exp_184404_1688015615_b6c952c8_z.jpg",
+    video: "Couple Escape Version 3.webm",
+    videoPoster: "Tout-SofitelAngkorPhokeethraGolfandSpaResort-Thailand-CRHotel.webp"
+}
+
+        };
+
+        // Builds one ivory editorial breakout block (image + text panel), matching
+        // the "Ethics / The Extraordinary / The Experiments" layout.
+        function buildEditorialBlock({ label, image, text, list, imageLeft }) {
+            const textContent = list
+                ? `<ul style="list-style:none; padding:0; margin:0;">${list.map(item => `
+                        <li style="font-family:'Tenor Sans'; font-size:14px; line-height:1.8; color:var(--ink); opacity:0.75; padding-left:20px; position:relative; margin-bottom:18px;">
+                            <span style="position:absolute; left:0; top:9px; width:8px; height:1px; background:var(--gold);"></span>${item}
+                        </li>`).join('')}</ul>`
+                : `<p style="font-family:'Tenor Sans'; font-size:14px; line-height:1.9; color:var(--ink); opacity:0.75; margin:0;">${text}</p>`;
+
+            const imageBlock = `
+                <div style="flex:1 1 480px; min-height:420px; overflow:hidden;">
+                    <img src="${image}" style="width:100%; height:100%; object-fit:cover; display:block; min-height:420px;">
+                </div>`;
+            const textBlock = `
+                <div style="flex:1 1 420px; padding:70px 60px; position:relative; display:flex; flex-direction:column; justify-content:center;">
+                    <span style="font-family:'Tenor Sans'; letter-spacing:8px; font-size:12px; color:var(--ink); text-transform:uppercase; margin-bottom:24px; display:block;">${label}</span>
+                    ${textContent}
+                    <div style="position:absolute; width:60px; height:60px; border:1px solid var(--gold); border-radius:50%; bottom:35px; ${imageLeft ? 'right:50px;' : 'left:50px;'} opacity:0.5;"></div>
+                </div>`;
+
+            return `<div style="width:100%; background:var(--ivory); display:flex; flex-wrap:wrap;">${imageLeft ? imageBlock + textBlock : textBlock + imageBlock}</div>`;
+        }
+
+        const overlay = document.getElementById('hotel-overlay');
+        const closeBtn = document.getElementById('close-overlay');
+overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) closeBtn.click();
+});
+
+        document.querySelectorAll('.hotel-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                const name = card.querySelector('.hotel-name').innerText;
+                const location = card.querySelector('.hotel-location').innerText;
+                const data = hotelDetails[name];
+            const inquiryLink = overlay.querySelector('.overlay-text .btn-plan');
+            if (inquiryLink) inquiryLink.href = 'Plan-Your-Trip.html?accommodation=' + encodeURIComponent(name);
+                if (!data) return;
+
+                document.getElementById('modal-name').innerText = name;
+                document.getElementById('modal-location').innerText = location;
+                document.getElementById('modal-desc').innerText = data.desc;
+                document.getElementById('modal-img-1').src = data.images[0];
+                document.getElementById('modal-img-2').src = data.images[1];
+                document.getElementById('modal-img-3').src = data.images[2];
+
+                let hHTML = `<h5 style="color:var(--gold); font-size:11px; letter-spacing:2px; text-transform:uppercase; margin-bottom:15px;">Highlights</h5><ul style="list-style:none; padding:0; display:inline-block; text-align:left;">`;
+                data.highlights.forEach(h => { hHTML += `<li style="color:var(--ivory); font-size:14px; margin-bottom:8px; border-left:1px solid var(--gold); padding-left:15px; opacity:0.8;">${h}</li>`; });
+                hHTML += `</ul>`;
+                document.getElementById('modal-highlights-container').innerHTML = hHTML;
+
+                let aHTML = `<div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">`;
+                data.amenities.forEach(a => { aHTML += `<span style="border:1px solid rgba(194,157,107,0.3); padding:5px 12px; font-size:11px; color:var(--ivory); text-transform:uppercase; opacity:0.7;">${a}</span>`; });
+                aHTML += `</div>`;
+                document.getElementById('modal-amenities-container').innerHTML = aHTML;
+
+                let tableHTML = `<div style="margin-top: 60px; border-top: 1px solid rgba(194,157,107,0.3); padding-top: 40px;"><h3 style="font-family: 'Tenor Sans'; color: var(--gold); text-transform: uppercase; letter-spacing: 4px; font-size: 14px; text-align: center; margin-bottom: 50px;">Accommodation Gallery</h3>`;
+                data.rooms.forEach(room => {
+                    tableHTML += `
+                        <div class="room-row">
+                            <div style="flex: 1 1 450px; min-width: 300px; height: 280px; overflow: hidden; border: 1px solid rgba(194,157,107,0.4); background: #000;">
+                                <img src="${room.photo}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+                            </div>
+                            <div style="flex: 1 1 300px; padding-top: 10px;">
+                                <h4 style="font-family: 'Tenor Sans'; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; font-size: 18px; margin-bottom: 15px;">${room.type}</h4>
+                                <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 2px; border-left: 2px solid var(--gold);">
+                                    <div style="margin-bottom: 10px;">
+                                        <span style="color: var(--gold); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Room Size</span>
+                                        <span style="font-family: 'Cormorant Garamond'; font-size: 22px; color: var(--ivory);">${room.size}</span>
+                                    </div>
+                                    <div style="width: 100%; height: 1px; background: rgba(194, 157, 107, 0.2); margin: 15px 0;"></div>
+                                    <div>
+                                        <span style="color: var(--gold); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Key Features</span>
+                                        <p style="font-family: 'Cormorant Garamond'; font-size: 17px; line-height: 1.5; color: var(--ivory); opacity: 0.8; font-style: italic;">${room.features}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                tableHTML += `</div>`;
+                document.getElementById('modal-table-container').innerHTML = tableHTML;
+
+                // Editorial breakout sections — only render the ones a hotel actually has data for
+                let editorialHTML = '';
+                if (data.experiments && data.experiments.length) {
+                    editorialHTML += buildEditorialBlock({
+                        label: 'The Experiments',
+                        image: data.experimentsImage || data.images[0],
+                        list: data.experiments,
+                        imageLeft: true
+                    });
+                }
+                if (data.extraordinary) {
+                    editorialHTML += buildEditorialBlock({
+                        label: 'The Extraordinary',
+                        image: data.extraordinaryImage || data.images[1],
+                        text: data.extraordinary,
+                        imageLeft: false
+                    });
+                }
+                if (data.ethics) {
+                    editorialHTML += buildEditorialBlock({
+                        label: 'Ethics',
+                        image: data.ethicsImage || data.images[2],
+                        text: data.ethics,
+                        imageLeft: true
+                    });
+                }
+                document.getElementById('modal-editorial-container').innerHTML = editorialHTML;
+
+              
+                // Video — the final section of the overlay, with native browser controls (play/scrub,
+                // volume, fullscreen, PiP). Autoplays muted as it scrolls into view, pauses out of view.
+                const videoContainer = document.getElementById('modal-video-container');
+                if (data.video) {
+                    const poster = data.videoPoster || data.images[0];
+                    videoContainer.innerHTML = `
+                        <div style="width:100%; background:var(--ink); padding:90px 0 70px 0; text-align:center;">
+                            <span style="font-family:'Tenor Sans'; letter-spacing:6px; font-size:12px; color:var(--gold); text-transform:uppercase; display:block; margin-bottom:30px;">In Motion</span>
+                            <div style="position:relative; max-width:1000px; margin:0 auto; border:0.5px solid rgba(194,157,107,0.3);">
+                                <video id="modal-hotel-video" src="${data.video}" ${poster ? `poster="${poster}"` : ''} controls muted loop playsinline preload="metadata" style="width:100%; height:auto; max-height:80vh; display:block; object-fit:contain; background:#000;"></video>
+                            </div>
+                        </div>`;
+ 
+                    const modalVideo = document.getElementById('modal-hotel-video');
+
+                    // Vertical video: narrow the frame on desktop so it isn't a giant black-barred box
+                    modalVideo.addEventListener('loadedmetadata', () => {
+                        if (modalVideo.videoHeight > modalVideo.videoWidth) {
+                            modalVideo.parentElement.style.maxWidth = '420px';
+                        }
+                    });
+
+ 
+                    const isVideoFullscreen = () =>
+                        document.fullscreenElement === modalVideo ||
+                        document.webkitFullscreenElement === modalVideo;
+ 
+                    const videoObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (isVideoFullscreen()) return; // never pause while zoomed in / fullscreen
+                            if (entry.isIntersecting) {
+                                modalVideo.play().catch(() => {});
+                            } else {
+                                modalVideo.pause();
+                            }
+                        });
+                    }, { threshold: 0.4, root: overlay });
+                    videoObserver.observe(modalVideo);
+ 
+                    // Entering fullscreen ("zoom in") should always resume playback, never pause
+                    const handleFullscreenChange = () => {
+                        if (isVideoFullscreen()) {
+                            modalVideo.play().catch(() => {});
+                        }
+                    };
+                    document.addEventListener('fullscreenchange', handleFullscreenChange);
+                    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+
+                    // Landscape video on phone: auto-rotate in fullscreen (Android Chrome; iOS ignores)
+                    const lockOrientation = () => {
+                        if (!screen.orientation || !screen.orientation.lock) return;
+                        if (isVideoFullscreen() && modalVideo.videoWidth > modalVideo.videoHeight) {
+                            screen.orientation.lock('landscape').catch(() => {});
+                        } else if (!isVideoFullscreen()) {
+                            try { screen.orientation.unlock(); } catch (e) {}
+                        }
+                    };
+                    document.addEventListener('fullscreenchange', lockOrientation);
+                    document.addEventListener('webkitfullscreenchange', lockOrientation);
+
+                } else {
+                    videoContainer.innerHTML = '';
+                }
+ 
+                overlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+                gsap.to(overlay, { opacity: 1, duration: 0.6 });
+                gsap.from(".overlay-text > *", { y: 20, opacity: 0, stagger: 0.05, duration: 0.8 });
+                gsap.from("#modal-editorial-container > div, #modal-video-container > div", { y: 30, opacity: 0, stagger: 0.1, duration: 0.9, delay: 0.2 });
+            });
+        });
+ 
+        closeBtn.addEventListener('click', () => {
+            gsap.to(overlay, { opacity: 0, duration: 0.4, onComplete: () => {
+                overlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }});
+        });
+
+        // Mobile Menu Toggles
+        const mOpen = document.getElementById('menu-open');
+        const mClose = document.getElementById('menu-close');
+        const mOverlay = document.getElementById('mobile-overlay');
+
+        if(mOpen) mOpen.addEventListener('click', () => mOverlay.classList.add('active'));
+        if(mClose) mClose.addEventListener('click', () => mOverlay.classList.remove('active'));
+
+        // Mobile Mega Menu Accordion Logic
+        document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('span');
+                content.classList.toggle('active');
+                icon.innerText = content.classList.contains('active') ? "−" : "+";
+            });
+        });
+
+        // Original Desktop Hover Positioning
+        document.querySelectorAll('.desktop-nav .dropdown').forEach(drop => {
+            const menu = drop.querySelector('.mega-menu');
+            const link = drop.querySelector('a');
+            drop.addEventListener('mouseenter', () => {
+                if (menu && link) {
+                    const linkRect = link.getBoundingClientRect();
+                    const linkCenter = linkRect.left + (linkRect.width / 2);
+                    menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+                }
+            });
+        });
+        
+    </script>
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>
