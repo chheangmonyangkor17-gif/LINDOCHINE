@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anantara Angkor Resort | L'INDOCHINE — Sovereign Journeys</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ivory: #F0EDE5;
+            --ink: #0A0A0A;
+            --gold: #C29D6B;
+            --clay: #1A1917;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        body {
+            background-color: var(--ivory);
+            color: var(--ink);
+            font-family: 'Tenor Sans', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        .vignette { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%); pointer-events: none; z-index: 100; opacity: 0.4; }
+        .grain { position: fixed; inset: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.07; pointer-events: none; z-index: 1000; mix-blend-mode: multiply; }
+
+        #cursor-follower {
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px;
+            border: 0.5px solid var(--gold); border-radius: 50%; z-index: 10000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear, width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor-follower span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; }
+
+        /* Navigation */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 0 60px;
+            height: 90px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 999; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .nav-links { display: flex; list-style: none; gap: 40px; height: 100%; }
+        .nav-links > li { display: flex; align-items: center; }
+        .nav-links > li > a {
+            text-decoration: none; color: var(--ivory); font-size: 10px; letter-spacing: 3px;
+            text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            transition: color 0.4s var(--ease);
+            padding: 20px 0; position: relative; padding-right: 18px;
+        }
+        .nav-links > li > a:hover { color: var(--gold); }
+        .dropdown > a::after {
+            content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            width: 0; height: 0; border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+            border-top: 4px solid var(--gold); transition: transform 0.4s var(--ease); opacity: 0.6;
+        }
+        .dropdown:hover > a::after { transform: translateY(-50%) rotate(180deg); opacity: 1; }
+        .mega-menu {
+            position: absolute; top: 90px; left: 0; width: 100vw; background: var(--ink); padding: 40px 60px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
+            opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px);
+            transition: all 0.5s var(--ease); border-bottom: 1px solid rgba(194, 157, 107, 0.3); z-index: 1000;
+        }
+        .mega-menu::before {
+            content: ''; position: absolute; top: -10px; left: var(--triangle-left, 50%); transform: translateX(-50%);
+            width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--ink); pointer-events: none;
+        }
+        .dropdown { position: static; }
+        .dropdown:hover .mega-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+        .mega-item { position: relative; height: 250px; overflow: hidden; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+        .mega-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); filter: brightness(0.5); }
+        .mega-item span { position: absolute; z-index: 2; color: var(--ivory); font-family: 'Cormorant Garamond'; font-size: 1.2rem; font-style: italic; letter-spacing: 1px; text-align: center; padding: 0 10px; transition: transform 0.4s var(--ease); }
+        .mega-item:hover img { transform: scale(1.1); filter: brightness(0.7); }
+        .mega-item::after { content: ''; position: absolute; inset: 0; border: 0px solid var(--gold); transition: 0.4s var(--ease); }
+        .mega-item:hover::after { border: 1px solid var(--gold); inset: 10px; }
+        .btn-plan {
+            text-decoration: none; color: var(--gold); font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+            border: 1px solid var(--gold); padding: 12px 25px; background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+            transition: all 0.5s var(--ease); display: inline-block;
+        }
+        .btn-plan:hover { background: var(--gold); color: var(--ink); }
+
+        /* Hero */
+        .hero { height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; background: var(--ink); overflow: hidden; position: relative; }
+        .hero-img { position: absolute; width: 100%; height: 120%; top: -10%; object-fit: cover; opacity: 0.55; }
+        .hero-title { position: relative; z-index: 10; text-align: center; color: var(--ivory); padding: 0 5%; }
+        .hero-title h1 { font-family: 'Cormorant Garamond'; font-size: 8vw; font-weight: 300; font-style: italic; letter-spacing: -0.02em; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .hero-title .line-sub { font-size: 10px; letter-spacing: 12px; text-transform: uppercase; margin-top: 10px; opacity: 0.9; }
+        .hero-scroll {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            z-index: 10; width: 36px; height: 20px; opacity: 0.7;
+            animation: bounce-down 2s var(--ease) infinite;
+        }
+        .hero-scroll svg { width: 100%; height: 100%; stroke: var(--ivory); fill: none; stroke-width: 1; }
+        @keyframes bounce-down {
+            0%, 100% { transform: translate(-50%, 0); }
+            50% { transform: translate(-50%, 10px); }
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            padding: 28px 10%;
+            font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--ink); opacity: 0.5;
+            text-align: center; border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .breadcrumb a { color: var(--ink); text-decoration: none; opacity: 0.6; transition: opacity 0.3s; }
+        .breadcrumb a:hover { opacity: 1; color: var(--gold); }
+        .breadcrumb span { margin: 0 8px; opacity: 0.4; }
+
+        /* Intro */
+        .property-intro { padding: 70px 10% 0; }
+        .property-intro .intro-heading {
+            display: flex; align-items: center; justify-content: center; gap: 30px;
+            margin-bottom: 45px;
+        }
+        .property-intro .intro-heading .line {
+            flex: 1; max-width: 160px; height: 1px; background: var(--gold); opacity: 0.6;
+        }
+        .property-intro h2 {
+            font-family: 'Tenor Sans', sans-serif; font-size: 1.6rem; font-weight: 400;
+            letter-spacing: 4px; text-transform: uppercase; text-align: center; white-space: nowrap;
+        }
+        .property-intro p { font-size: 0.95rem; line-height: 1.9; color: var(--ink); opacity: 0.65; max-width: 1200px; margin: 0 auto 20px; text-align: justify; }
+
+        /* Key Facts Grid */
+        .facts-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;
+            margin: 60px 0 0; padding: 50px 0 80px;
+            border-top: 1px solid rgba(0,0,0,0.08);
+        }
+        .fact-block { text-align: center; }
+        .fact-block h4 { font-size: 12px; letter-spacing: 2px; color: var(--ink); text-transform: uppercase; font-weight: 600; margin-bottom: 18px; }
+        .fact-block p { font-family: 'Tenor Sans', sans-serif; font-size: 0.85rem; line-height: 1.8; font-weight: 400; color: var(--ink); opacity: 0.6; }
+
+        @media (max-width: 992px) {
+            .facts-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 600px) {
+            .facts-grid { grid-template-columns: 1fr; gap: 35px; }
+            .property-intro .intro-heading { gap: 15px; }
+            .property-intro .intro-heading .line { max-width: 40px; }
+            .property-intro h2 { font-size: 1.1rem; letter-spacing: 2px; white-space: normal; }
+        }
+
+        /* Photo Carousel */
+        .property-carousel-wrap { padding: 30px 5% 0; background: var(--ivory); }
+        .property-carousel {
+            position: relative; width: 100%; height: 75vh;
+            background: var(--ink); overflow: hidden;
+        }
+        .carousel-track {
+            display: flex; width: 100%; height: 100%;
+            transition: transform 0.9s var(--ease);
+        }
+        .carousel-slide {
+            position: relative; flex: 0 0 100%; height: 100%;
+        }
+        .carousel-slide img {
+            width: 100%; height: 100%; object-fit: cover; filter: brightness(0.85);
+        }
+        .carousel-caption {
+            position: absolute; bottom: 50px; left: 50px; z-index: 5;
+            color: var(--ivory); font-family: 'Cormorant Garamond'; font-style: italic;
+            font-size: 1.4rem; letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .carousel-counter {
+            position: absolute; bottom: 50px; right: 50px; z-index: 5;
+            color: var(--gold); font-size: 11px; letter-spacing: 4px;
+            text-transform: uppercase; font-weight: bold;
+        }
+        .carousel-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 60px; height: 60px; border: 1px solid var(--gold); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--gold); background: rgba(0,0,0,0.25); backdrop-filter: blur(5px);
+            transition: all 0.5s var(--ease); z-index: 6; font-size: 1.2rem;
+        }
+        .carousel-arrow:hover { background: var(--gold); color: var(--ink); }
+        .carousel-arrow.prev { left: 30px; }
+        .carousel-arrow.next { right: 30px; }
+        @media (max-width: 768px) {
+            .property-carousel { height: 60vh; }
+            .carousel-caption { left: 25px; bottom: 30px; font-size: 1.1rem; }
+            .carousel-counter { right: 25px; bottom: 30px; font-size: 9px; letter-spacing: 2px; }
+            .carousel-arrow { width: 45px; height: 45px; font-size: 1rem; }
+            .carousel-arrow.prev { left: 12px; }
+            .carousel-arrow.next { right: 12px; }
+        }
+
+        /* Split content blocks */
+        .split-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            background: var(--ivory);
+        }
+        .split-visual { position: relative; overflow: hidden; min-height: 320px; }
+        .split-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .split-content {
+            padding: 60px 6%; display: flex; flex-direction: column; justify-content: center;
+        }
+        .split-content h2 {
+            font-family: 'Tenor Sans', sans-serif; font-size: 1.3rem; font-weight: 400;
+            letter-spacing: 3px; text-transform: uppercase; margin-bottom: 25px; color: var(--ink);
+        }
+        .split-content p { font-size: 0.9rem; line-height: 1.85; color: var(--ink); opacity: 0.6; max-width: 480px; }
+        .split-list { list-style: none; max-width: 480px; }
+        .split-list li {
+            font-size: 0.9rem; line-height: 1.85; color: var(--ink); opacity: 0.7;
+            padding-left: 18px; position: relative; margin-bottom: 8px;
+        }
+        .split-list li::before {
+            content: '·'; position: absolute; left: 0; color: var(--gold); font-size: 1.4rem; line-height: 1; top: -2px;
+        }
+        @media (max-width: 900px) {
+            .split-grid { grid-template-columns: 1fr; }
+            .split-visual { min-height: 280px; order: -1; }
+            .split-grid.reverse .split-visual { order: 0; }
+            .split-content { padding: 50px 8%; }
+        }
+
+        /* Final CTA */
+        .final-cta { padding: 100px 10%; text-align: center; background: var(--ivory); border-top: 1px solid rgba(0,0,0,0.08); }
+        .final-cta .cta-text { font-family: 'Cormorant Garamond'; font-size: 3rem; font-style: italic; font-weight: 300; max-width: 800px; margin: 0 auto 50px; line-height: 1.3; }
+        @media (max-width: 600px) {
+            .final-cta { padding: 90px 8%; }
+            .final-cta .cta-text { font-size: 2rem; }
+        }
+
+        /* Footer */
+        footer { background: var(--ivory); padding: 100px 10% 30px; border-top: 1px solid rgba(0,0,0,0.08); }
+        .footer-main { display: grid; grid-template-columns: repeat(4, 1fr); gap: 60px; margin-bottom: 60px; }
+        .footer-col h4 { font-family: 'Tenor Sans', sans-serif; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 35px; color: var(--gold); }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 15px; }
+        .footer-col a { text-decoration: none; color: var(--ink); font-size: 11px; opacity: 0.7; transition: opacity 0.3s; }
+        .footer-col a:hover { opacity: 1; }
+        .footer-contact p { font-size: 12px; margin-bottom: 10px; opacity: 0.8; }
+        .footer-cta-box { border-left: 1px solid var(--gold); padding: 0 0 0 40px; }
+        .footer-social { display: flex; gap: 18px; margin-top: 25px; }
+        .social-icon { width: 28px; height: 28px; opacity: 0.6; transition: 0.3s; }
+        .social-icon svg { width: 100%; height: 100%; fill: var(--ink); }
+        .social-icon:hover { opacity: 1; }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid rgba(0,0,0,1); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+        .footer-bottom-links { display: flex; gap: 30px; }
+        .footer-bottom-links a { color: var(--ink); text-decoration: none; }
+        #back-to-top { cursor: pointer !important; display: flex; align-items: center; gap: 10px; }
+        @media (max-width: 1024px) {
+            .footer-main { grid-template-columns: 1fr 1fr; gap: 60px 20px; }
+        }
+        @media (max-width: 768px) {
+            .footer-main { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 20px; text-align: center; }
+            .breadcrumb { padding: 25px 6% 0; font-size: 9px; }
+            .property-intro { padding: 50px 6% 60px; }
+        }
+
+        @media (min-width: 1025px) {
+            .menu-trigger, .mobile-overlay { display: none; }
+            .desktop-nav { display: flex !important; }
+        }
+        @media (max-width: 1024px) {
+            .desktop-nav { display: none !important; }
+            .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+            .burger .line { width: 25px; height: 1px; background: var(--gold); display: block; margin: 6px 0; }
+            .mobile-overlay {
+                position: fixed; inset: 0; background: var(--ink); z-index: 5000; transform: translateY(-100%);
+                transition: transform 0.8s var(--ease); overflow-y: auto; padding: 100px 40px;
+            }
+            .mobile-overlay.active { transform: translateY(0); }
+            .menu-close { position: absolute; top: 30px; right: 30px; color: var(--gold); font-size: 24px; cursor: pointer; }
+            .mobile-nav-links { list-style: none; }
+            .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+            .mobile-nav-links a, .mobile-drop-trigger { font-family: 'Cormorant Garamond'; font-size: 2rem; color: var(--ivory); text-decoration: none; font-style: italic; }
+            .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+            .mobile-mega-content { display: none; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+            .mobile-mega-content.active { display: grid; }
+            .mobile-mega-item { text-decoration: none; }
+            .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; opacity: 0.7; }
+            .mobile-mega-item span { display: block; color: var(--ivory); font-size: 0.7rem; text-transform: uppercase; margin-top: 5px; letter-spacing: 1px; }
+            .mobile-partner-list { list-style: none; margin-top: 20px; }
+            .mobile-partner-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 8px; }
+            .mobile-partner-list a { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+            .mobile-partner-list .arrow { font-size: 14px; color: var(--gold); font-family: sans-serif; font-style: normal; }
+        }
+        @media (max-width: 768px) {
+            .hero-title h1 { font-size: 14vw; line-height: 1.1; }
+            .hero-title .line-sub { font-size: 8px; letter-spacing: 6px; margin-top: 12px; }
+        }
+        .property-carousel-wrap { margin-bottom: 60px; }
+        .split-grid { margin-bottom: 60px; }
+        .split-grid:last-of-type { margin-bottom: 0; }
+        footer { padding: 100px 60px 40px; background: var(--ivory); border-top: 1px solid rgba(0,0,0,0.05); color: var(--ink); }
+        .footer-main { display: grid; grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr; gap: 60px; margin-bottom: 80px; }
+        .footer-col h4 { font-family: 'Tenor Sans', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 30px; color: var(--gold); font-weight: 600; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 14px; }
+        .footer-col ul li a { text-decoration: none; color: var(--ink); font-size: 14px; letter-spacing: 0.5px; opacity: 0.8; transition: all 0.4s var(--ease); }
+        .footer-col ul li a:hover { opacity: 1; color: var(--gold); padding-left: 8px; }
+        .footer-contact p { font-size: 14px; letter-spacing: 0.5px; margin-bottom: 15px; opacity: 0.9; }
+        .footer-social { display: flex; gap: 15px; margin-top: 25px; }
+        .social-icon { width: 42px; height: 42px; border: 1px solid rgba(0,0,0,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.5s var(--ease); }
+        .social-icon svg { width: 14px; fill: var(--ink); transition: all 0.5s var(--ease); }
+        .social-icon:hover { border-color: var(--gold); background: var(--gold); transform: translateY(-3px); }
+        .social-icon:hover svg { fill: var(--ivory); }
+        .footer-bottom { padding-top: 40px; border-top: 1px solid rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; }
+        .copyright { font-size: 11px; letter-spacing: 1.5px; opacity: 0.6; text-transform: uppercase; }
+        .footer-bottom-links { display: flex; gap: 30px; }
+        .footer-bottom-links a { text-decoration: none; color: var(--ink); font-size: 11px; letter-spacing: 1px; opacity: 0.7; text-transform: uppercase; transition: 0.3s; }
+        @media (max-width: 1024px) { .footer-main { grid-template-columns: 1fr 1fr; gap: 40px; } footer { padding: 80px 30px 40px; } nav { padding: 0 30px; } .nav-links { gap: 20px; } }
+        @media (max-width: 768px) { #cursor-follower { display: none !important; } * { cursor: auto !important; } nav { padding: 0 20px; height: 70px; } .logo { font-size: 1.2rem; } .nav-links { display: none; } .footer-main { grid-template-columns: 1fr; gap: 40px; } .footer-bottom { flex-direction: column; gap: 20px; text-align: center; } .footer-bottom-links { justify-content: center; flex-wrap: wrap; gap: 15px; } }
+        @media (max-width: 480px) { .mega-menu { display: none !important; } }
+
+        /* --- Elegant Cinematic Photo Carousel --- */
+        .property-carousel-wrap { 
+            padding: 60px 7% 40px; 
+            background: var(--ivory); 
+            margin-bottom: 40px;
+        }
+
+        .property-carousel {
+            position: relative; 
+            width: 100%; 
+            height: 70vh; 
+            background: var(--ink); 
+            overflow: hidden;
+            border-radius: 2px;
+            box-shadow: 0 25px 60px rgba(26, 25, 23, 0.12);
+        }
+
+        .carousel-track {
+            display: flex; 
+            width: 100%; 
+            height: 100%;
+            transition: transform 1.1s cubic-bezier(0.25, 1, 0.3, 1);
+        }
+
+        .carousel-slide {
+            position: relative; 
+            flex: 0 0 100%; 
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-slide img {
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            filter: brightness(0.9) contrast(1.01);
+        }
+
+        /* --- Refined Typography & UI Overlays --- */
+        .carousel-caption {
+            position: absolute; 
+            bottom: 35px; 
+            left: 45px; 
+            z-index: 5;
+            color: var(--ivory); 
+            font-family: 'Cormorant Garamond', serif; 
+            font-style: italic;
+            font-size: 1.6rem;
+            letter-spacing: 1.5px;
+            text-shadow: 0 2px 15px rgba(0,0,0,0.6);
+        }
+
+        .carousel-counter {
+            position: absolute; 
+            bottom: 35px; 
+            right: 45px; 
+            z-index: 5;
+            color: var(--gold); 
+            font-size: 11px; 
+            letter-spacing: 4px;
+            text-transform: uppercase; 
+            font-weight: bold;
+            background: rgba(10, 10, 10, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(194, 157, 107, 0.2);
+        }
+
+        /* --- Sleek Floating Arrow Buttons --- */
+        .carousel-arrow {
+            position: absolute; 
+            top: 50%; 
+            transform: translateY(-50%);
+            width: 50px; 
+            height: 50px; 
+            border: 1px solid rgba(194, 157, 107, 0.3); 
+            border-radius: 50%;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            color: var(--gold); 
+            background: rgba(10, 10, 10, 0.3);
+            backdrop-filter: blur(8px);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+            z-index: 6; 
+            font-size: 1.4rem;
+        }
+
+        .carousel-arrow:hover { 
+            background: var(--gold); 
+            color: var(--ink); 
+            border-color: var(--gold);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .carousel-arrow.prev { left: 30px; }
+        .carousel-arrow.next { right: 30px; }
+
+        /* --- Sub-Image Trail Grid System --- */
+        .carousel-thumbnails {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 12px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .thumb-item {
+            position: relative;
+            height: 85px;
+            overflow: hidden;
+            border-radius: 2px;
+            border: 2px solid transparent;
+            transition: border-color 0.4s var(--ease), transform 0.4s var(--ease);
+        }
+
+        .thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.5); 
+            transition: filter 0.4s var(--ease);
+        }
+
+        .thumb-item.active {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        .thumb-item.active img,
+        .thumb-item:hover img {
+            filter: brightness(1) contrast(1.02); 
+        }
+
+        /* --- Responsive Adaptations --- */
+        @media (max-width: 1024px) {
+            .property-carousel-wrap { padding: 40px 4% 20px; }
+            .property-carousel { height: 55vh; }
+            .thumb-item { height: 65px; gap: 8px; }
+        }
+
+        @media (max-width: 768px) {
+            .property-carousel-wrap { padding: 20px 4px 10px; } 
+            .property-carousel { height: 45vh; }
+            .carousel-caption { left: 20px; bottom: 25px; font-size: 1.1rem; }
+            .carousel-counter { right: 20px; bottom: 25px; font-size: 9px; padding: 4px 10px; }
+            .carousel-arrow { width: 40px; height: 40px; font-size: 1.1rem; }
+            .carousel-arrow.prev { left: 15px; }
+            .carousel-arrow.next { right: 15px; }
+            
+            .carousel-thumbnails {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 8px;
+                scroll-snap-type: x mandatory;
+            }
+            .thumb-item {
+                flex: 0 0 75px;
+                height: 55px;
+                scroll-snap-align: start;
+            }
+        }
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div id="cursor-follower"><span>Explore</span></div>
+
+   <nav>
+        <a href="index.html" class="logo">L'INDOCHINE</a>
+        
+        <ul class="nav-links desktop-nav">
+            <li class="dropdown"> 
+                <a href="#">Destinations</a>
+                <div class="mega-menu"> 
+                    <a href="cambodia.html" class="mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                    <a href="Vietnam.html" class="mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                    <a href="Thailand.html" class="mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                    <a href="Laos.html" class="mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                    <a href="Multi-country.html" class="mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                </div>
+            </li>
+            <li class="dropdown"> 
+                <a href="#">Themes</a>
+                <div class="mega-menu" style="grid-template-columns: repeat(6, 1fr);">
+                    <a href="Culture-Heritage.html" class="mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                    <a href="Romantic-Journeys.html" class="mega-item"><img src="penin boat 1.jpg"><span>Romantic Journeys</span></a>
+                    <a href="Wellness-Rejuvenation.html" class="mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                    <a href="Family-Journeys.html" class="mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                    <a href="Nature-Adventure.html" class="mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                    <a href="Culinary-Journeys.html" class="mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Partners</a>
+                <div class="mega-menu" style="grid-template-columns: 1.3fr 1fr; padding: 0; overflow: hidden; min-width: 600px;">
+                    <div style="padding: 50px; background: var(--ink);">
+                        <h4 style="color: var(--gold); font-size: 13px; margin-bottom: 35px; letter-spacing: 4px; text-transform: uppercase; font-family: 'Tenor Sans';">B2B & DMC Services</h4>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="Dmc-services.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>DMC Operational Excellence</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="b2b-rates.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>Confidential B2B Tariffs</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="white-label.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>White-Label Ground Handling</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="mice-groups.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>MICE & Incentive Groups</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <p style="margin-top: 30px; font-size: 10px; color: var(--gold); opacity: 0.7; letter-spacing: 2px; text-transform: uppercase;">Your strategic partner in SouthEast Asia.</p>
+                    </div>
+                    <div style="position: relative; background: var(--clay); overflow: hidden;">
+                        <img src="angkor_wat_sunrise2712_67ddcbab8b.jpg" alt="Siem Reap Hub" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+                        <div style="position: absolute; bottom: 35px; left: 35px;">
+                            <span style="display: block; color: var(--ivory); font-family: 'Cormorant Garamond'; font-style: italic; font-size: 22px;">Regional Operations</span>
+                            <span style="display: block; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px;">Siem Reap, Cambodia</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><a href="Accommodation.html">Accommodation</a></li>
+            <li><a href="About-Us.html">About Us</a></li>
+        </ul>
+
+        <div class="menu-trigger" id="menu-open">
+            <div class="burger"><span class="line"></span><span class="line"></span></div>
+        </div>
+
+        <div class="mobile-overlay" id="mobile-overlay">
+            <div class="menu-close" id="menu-close">✕</div>
+            <div class="mobile-scroll-container">
+                <ul class="mobile-nav-links">
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Destinations <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="cambodia.html" class="mobile-mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                            <a href="Vietnam.html" class="mobile-mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                            <a href="Thailand.html" class="mobile-mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                            <a href="Laos.html" class="mobile-mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                            <a href="Multi-country.html" class="mobile-mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                        </div>
+                    </li>
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Themes <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="Culture-Heritage.html" class="mobile-mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                            <a href="Romantic-Journeys.html" class="mobile-mega-item"><img src="penin boat 1.jpg"><span>Romantic Getaways</span></a>
+                            <a href="Wellness-Rejuvenation.html" class="mobile-mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                            <a href="Family-Journeys.html" class="mobile-mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                            <a href="Nature-Adventure.html" class="mobile-mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                            <a href="Culinary-Journeys.html" class="mobile-mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                        </div>
+                    </li>
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Partners <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <div style="grid-column: span 2; width: 100%;">
+                                <ul class="mobile-partner-list">
+                                    <li><a href="Dmc-services.html"><span>DMC Excellence</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="b2b-rates.html"><span>B2B Tariffs</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="white-label.html"><span>White-Label</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="mice-groups.html"><span>MICE Groups</span> <span class="arrow">→</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a href="Accommodation.html">Accommodation</a></li>
+                    <li><a href="About-Us.html">About Us</a></li>
+                    <li><a href="Plan-Your-Trip.html">Plan Your Trip</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="nav-right desktop-nav"><a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a></div>
+    </nav>
+
+    <section class="hero">
+        <img src="Avvenice - Anantara_Angkor_Resort_Exterior_View_Main_Entrance s.jpg" class="hero-img" alt="Anantara Angkor Resort">
+        <div class="hero-title">
+            <h1>Anantara Angkor Resort</h1>
+            <div class="line-sub">Siem Reap · Cambodia</div>
+        </div>
+        <div class="hero-scroll">
+            <svg viewBox="0 0 36 20"><path d="M2 2 L18 16 L34 2"/></svg>
+        </div>
+    </section>
+
+    <div class="breadcrumb">
+        <a href="index.html">Home</a><span>/</span>
+        <a href="Accommodation.html">Accommodation</a><span>/</span>
+        <a href="cambodia.html">Cambodia</a><span>/</span>
+        <a href="Siem-reap.html">Siem Reap</a><span>/</span>
+        Anantara Angkor Resort
+    </div>
+
+    <section class="property-intro">
+        <div class="intro-heading">
+            <span class="line"></span>
+            <h2>Anantara Angkor Resort, Khmer Villa Grandeur</h2>
+            <span class="line"></span>
+        </div>
+        <p>Anantara Angkor Resort captures the magnificent essence of a grand Khmer villa, serving as an upscale boutique sanctuary for sophisticated modern explorers tracing the nearby ancient wonders of Angkor Wat. Conceived with deep architectural references to traditional royal heritage, the property emphasizes symmetrical columns, rich indigenous woodwork, and beautifully landscaped garden expanses. Positioned flawlessly within easy reach of both the vibrant heart of Siem Reap and the archaeological park checkpoints, the resort frames an intimate pool courtyard inspired by ancient temple pools. Across its 39 luxurious suites, layouts are characterized by highly intricate local textiles, handcrafted details, and sweeping private balconies or terraces. Elite tier configurations feature massive plunge-pool courtyards and dedicated butler provisions to maximize personalized comfort. Dining celebrations present a sensory crossing, where the refined indoor settings and breezy open pavilions serve sophisticated interpretations of ancient Khmer royalty recipes alongside premium global fare, accompanied by a world-class Anantara Spa focused on healing lotus-infused therapies and modern wellness restoration.</p>
+
+        <div class="facts-grid">
+            <div class="fact-block">
+                <h4>Style</h4>
+                <p>Authentic Khmer villa design enriched with heritage woodwork, artisanal sandstone carvings, and contemporary boutique luxury details.</p>
+            </div>
+            <div class="fact-block">
+                <h4>Situation</h4>
+                <p>Conveniently situated in Siem Reap, offering seamless connectivity to both downtown street markets and the temple entry gates.</p>
+            </div>
+            <div class="fact-block">
+                <h4>Capacity</h4>
+                <p>39 beautifully appointed, spacious luxury suites configured around a central verdant courtyard swimming pool.</p>
+            </div>
+            <div class="fact-block">
+                <h4>The Most</h4>
+                <p>An outstanding tradition of genuine, warm hospitality coupled with uniquely structured cultural engagement programs and resort butler care.</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="property-carousel-wrap">
+    <section class="property-carousel">
+        <div class="carousel-track" id="carousel-track">
+            <div class="carousel-slide"><img src="anantara_angkor_chi_restaurant_11_1920x1037.webp" alt="Anantara fine dining hall"></div>
+            <div class="carousel-slide"><img src="Anantara_Angkor_Resort_Exterior_View_Swimming_Pool_Area_Day_Time.png" alt="Anantara courtyard swimming pool"></div>
+            <div class="carousel-slide"><img src="007034-terrace-suite-4.jpg" alt="Anantara luxury suite interior design"></div>
+            <div class="carousel-slide"><img src="Anantara_Angkor_Resort_Pool_Service_unss6g.jpg" alt="Anantara lush inner courtyard green landscapes"></div>
+            <div class="carousel-slide"><img src="anantara-angkor-resort-siem-reap-pic-40.jpg" alt="Anantara heritage lounge area"></div>
+            <div class="carousel-slide"><img src="anantara_angkor_spa_room_1120x608_001.webp" alt="Anantara wellness spa pavillion"></div>
+            <div class="carousel-slide"><img src="Anantara_Angkor_Resort_Guest_room_amenity_Anantara_Explorer_Suite_Private_Pool.png" alt="Anantara private plunge pool suite view"></div>
+        </div>
+        <button class="carousel-arrow prev" id="carousel-prev" aria-label="Previous photo">&#8249;</button>
+        <button class="carousel-arrow next" id="carousel-next" aria-label="Next photo">&#8250;</button>
+        <div class="carousel-caption">Anantara Angkor Resort</div>
+        <div class="carousel-counter"><span id="carousel-current">01</span> / <span id="carousel-total">07</span></div>
+    </section>
+
+    <div class="carousel-thumbnails" id="carousel-thumbnails">
+        <div class="thumb-item active"><img src="anantara_angkor_chi_restaurant_11_1920x1037.webp" alt="Thumb 1"></div>
+        <div class="thumb-item"><img src="Anantara_Angkor_Resort_Exterior_View_Swimming_Pool_Area_Day_Time.png" alt="Thumb 2"></div>
+        <div class="thumb-item"><img src="007034-terrace-suite-4.jpg" alt="Thumb 3"></div>
+        <div class="thumb-item"><img src="Anantara_Angkor_Resort_Pool_Service_unss6g.jpg" alt="Thumb 4"></div>
+        <div class="thumb-item"><img src="anantara-angkor-resort-siem-reap-pic-40.jpg" alt="Thumb 5"></div>
+        <div class="thumb-item"><img src="anantara_angkor_spa_room_1120x608_001.webp" alt="Thumb 6"></div>
+        <div class="thumb-item"><img src="Anantara_Angkor_Resort_Guest_room_amenity_Anantara_Explorer_Suite_Private_Pool.png" alt="Thumb 7"></div>
+    </div>
+</div>
+
+    <section class="split-grid">
+        <div class="split-visual">
+            <img src="anantara_angkor_resort_destination_1_1920x1037.webp" alt="Anantara private temple exploration tours">
+        </div>
+        <div class="split-content">
+            <h2>The Experiments</h2>
+            <ul class="split-list">
+                <li>Traverse majestic temple ruins with customized itineraries organized by the resort's private Experience Gurus</li>
+                <li>Master traditional Cambodian gastronomy through hands-on Spice Spoons culinary masterclasses</li>
+                <li>Receive a meaningful spiritual blessing from local elders at historic neighborhood pagodas</li>
+                <li>Uncover scenic cycling paths and vibrant rural life on curated countryside village excursions</li>
+                <li>Rejuvenate mind and body with sunrise yoga, holistic therapies, and Khmer massage at the signature spa</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="split-grid reverse">
+        <div class="split-content">
+            <h2>The Extraordinary</h2>
+            <p>For the ultimate romantic celebration, enjoy Anantara's tailored 'Dining by Design' experience. Share an elegant multi-course custom meal in a secluded garden corner or under a canopy of tropical flowers, complete with a private chef, dedicated table butler service, and soft traditional string melodies underneath the Siem Reap evening stars.</p>
+        </div>
+        <div class="split-visual">
+            <img src="Anantara_Angkor_Resort_Restaurant_Dining_By_Design_Private_Dining.png" alt="Anantara tailored luxury dining by design">
+        </div>
+    </section>
+
+    <section class="split-grid">
+        <div class="split-visual">
+            <img src="anantara_angkorsustainability_resort_gardens_984x532.jpg" alt="Community support initiatives run by Anantara">
+        </div>
+        <div class="split-content">
+            <h2>Ethics</h2>
+            <p>Anantara Angkor Resort remains committed to community empowerment by actively sourcing raw decor elements from local weaving cooperatives. The resort supports local neighborhood orphanages, funds essential healthcare drives, and promotes eco-friendly plastic elimination strategies to protect the fragile heritage ecosystems of Siem Reap.</p>
+        </div>
+    </section>
+
+    <section class="final-cta">
+        <div class="cta-text">"The soul is the same the world over, the difference is the scenery."</div>
+        <a href="Plan-Your-Trip.html" class="btn-main btn-plan" style="color: var(--ink); border-color: var(--ink); background: transparent;">Design Your Journey</a>
+    </section>
+
+   <footer>
+    <div class="footer-main">
+        <div class="footer-col">
+            <h4>Destinations</h4>
+            <ul>
+                <li><a href="cambodia.html">Cambodia</a></li>
+                <li><a href="Laos.html">Laos</a></li>
+                <li><a href="Vietnam.html">Vietnam</a></li>
+                <li><a href="Thailand.html">Thailand</a></li>
+                <li><a href="Multi-country.html">Multi-Country</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-col">
+            <h4>Experiences</h4>
+            <ul>
+                <li><a href="Culture-Heritage.html">Culture & Heritage</a></li>
+                <li><a href="Romantic-Journeys.html">Romantic Getaways</a></li>
+                <li><a href="Nature-Adventure.html">Nature & Adventure</a></li>
+                <li><a href="Wellness-Rejuvenation.html">Wellness & Rejuvenation</a></li>
+                <li><a href="Family-Journeys.html">Family Journeys</a></li>
+                <li><a href="Culinary-Journeys.html">Culinary Journeys</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col footer-contact">
+            <h4>Connect with Us</h4>
+            <p>+855 95 267 257</p>
+            <p>contact@l'indochine.com</p>
+            
+            <div class="footer-social">
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-2.21c0-.837.39-1.29 1.121-1.29h2.879v-4.498c-.443-.059-1.968-.202-3.726-.202-3.689 0-6.274 2.247-6.274 6.46v1.74z"/></svg>
+                </a>
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <div class="footer-cta-box" style="background: rgba(194, 157, 107, 0.05); padding: 30px; border: 1px solid rgba(194, 157, 107, 0.2);">
+                <h4 style="margin-bottom: 20px;">Curate Your Legacy</h4>
+                <a href="Plan-Your-Trip.html" class="btn-plan" style="display: block; text-align: center; margin-bottom: 20px;">Plan Your Trip</a>
+                <div style="display: flex; justify-content: space-between;">
+                    <a href="About-Us.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ABOUT US</a>
+                    <a href="Accommodation.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ACCOMMODATION</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="copyright">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+        <div class="footer-bottom-links">
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="Terms&Conditions.html">Terms & Conditions</a>
+            <a href="#" id="back-to-top">BACK TO TOP &#10142;</a>
+        </div>
+    </div>
+</footer>
+
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const follower = document.getElementById('cursor-follower');
+        const fText = follower.querySelector('span');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(follower, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: "power2.out" });
+        });
+
+        document.querySelectorAll('a, .carousel-arrow, .mega-item, .fact-block').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(follower, { width: 100, height: 100, background: 'rgba(194, 157, 107, 0.15)', border: 'none' });
+                fText.innerText = "EXPLORE";
+                gsap.to(fText, { opacity: 1 });
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(follower, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+                gsap.to(fText, { opacity: 0 });
+            });
+        });
+
+        document.querySelectorAll('.dropdown').forEach(drop => {
+            const menu = drop.querySelector('.mega-menu');
+            const link = drop.querySelector('a');
+            drop.addEventListener('mouseenter', () => {
+                const linkRect = link.getBoundingClientRect();
+                const linkCenter = linkRect.left + (linkRect.width / 2);
+                menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+            });
+        });
+
+        gsap.to(".hero-img", { yPercent: 20, ease: "none", scrollTrigger: { trigger: ".hero", scrub: true } });
+        gsap.from(".property-intro", { opacity: 0, y: 50, duration: 1.5, scrollTrigger: { trigger: ".property-intro", start: "top 80%" } });
+
+        const mOpen = document.getElementById('menu-open');
+        const mClose = document.getElementById('menu-close');
+        const mOverlay = document.getElementById('mobile-overlay');
+        if (mOpen) mOpen.addEventListener('click', () => mOverlay.classList.add('active'));
+        if (mClose) mClose.addEventListener('click', () => mOverlay.classList.remove('active'));
+
+        document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('span');
+                content.classList.toggle('active');
+                icon.innerText = content.classList.contains('active') ? "−" : "+";
+            });
+        });
+
+        document.getElementById('back-to-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Photo Carousel — Dynamic Captions, Arrows & Interactive Thumbnail Trail
+        const track = document.getElementById('carousel-track');
+        const slides = document.querySelectorAll('.carousel-slide');
+        const thumbs = document.querySelectorAll('.thumb-item');
+        const captionContainer = document.querySelector('.carousel-caption');
+        const total = slides.length;
+        const currentLabel = document.getElementById('carousel-current');
+        const totalLabel = document.getElementById('carousel-total');
+
+        totalLabel.textContent = String(total).padStart(2, '0');
+        let current = 0;
+
+        // Captions corresponding precisely with the 7 slides
+        const captions = [
+            "Gourmet Crossings at the Signature Fine Dining Room",
+            "Serene Oasis Courtyard & Swimming Pool",
+            "Handcrafted Textiles & Luxury Suite Interiors",
+            "The Tropical Central Courtyard Gardens",
+            "Intimate Corridors & Heritage Pathways",
+            "Lotus-Infused Therapies at the Sanctuary Spa Pavillion",
+            "Exclusive Plunge Pool Suite Private Residence"
+        ];
+
+        function updateCarousel() {
+            // 1. Core Glide Animation
+            gsap.to(track, { xPercent: -100 * current, duration: 0.9, ease: "power3.inOut" });
+            
+            // 2. Counter Adjustments
+            currentLabel.textContent = String(current + 1).padStart(2, '0');
+            
+            // 3. Update Active Sub-Image Border State
+            thumbs.forEach((thumb, idx) => {
+                if (idx === current) {
+                    thumb.classList.add('active');
+                    thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } else {
+                    thumb.classList.remove('active');
+                }
+            });
+            
+            // 4. Quiet Luxury Text Cross-Fade
+            gsap.to(captionContainer, {
+                opacity: 0,
+                y: 8,
+                duration: 0.3,
+                ease: "power2.in",
+                onComplete: () => {
+                    captionContainer.textContent = captions[current];
+                    gsap.to(captionContainer, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.4,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        }
+
+        // Arrow Nav Action Points
+        document.getElementById('carousel-next').addEventListener('click', () => {
+            current = (current + 1) % total;
+            updateCarousel();
+        });
+        document.getElementById('carousel-prev').addEventListener('click', () => {
+            current = (current - 1 + total) % total;
+            updateCarousel();
+        });
+
+        // Interactive Trail Sub-Image click action items
+        thumbs.forEach((thumb, index) => {
+            thumb.addEventListener('click', () => {
+                current = index;
+                updateCarousel();
+            });
+            
+            thumb.addEventListener('mouseenter', () => {
+                gsap.to(follower, { width: 100, height: 100, background: 'rgba(194, 157, 107, 0.15)', border: 'none' });
+                fText.innerText = "VIEW";
+                gsap.to(fText, { opacity: 1 });
+            });
+            thumb.addEventListener('mouseleave', () => {
+                gsap.to(follower, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+                gsap.to(fText, { opacity: 0 });
+            });
+        });
+
+        // Initialize first layout load state frame
+        captionContainer.textContent = captions[0];
+    </script>
+
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>
