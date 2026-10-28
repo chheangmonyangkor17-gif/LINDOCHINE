@@ -1,0 +1,2327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness & Rejuvenation | Multi-Country | L'INDOCHINE Sovereign Journeys</title>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        /* Customizing Leaflet Popup Aesthetic */
+.leaflet-popup-content-wrapper {
+    background: #F0EDE5 !important; /* var(--ivory) */
+    border-radius: 0 !important;
+    border: 1px solid #C29D6B;
+}
+.leaflet-popup-tip {
+    background: #C29D6B !important;
+}
+.leaflet-container {
+    background: #F0EDE5 !important;
+}
+/* Completely hide any remaining attribution just in case */
+.leaflet-control-attribution {
+    display: none !important;
+}
+        :root {
+            --ivory: #F0EDE5;
+            --ink: #0A0A0A;
+            --gold: #C29D6B;
+            --clay: #1A1917;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        body { 
+            background-color: var(--ivory); 
+            color: var(--ink); 
+            font-family: 'Tenor Sans', sans-serif; 
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        /* Cinematic Overlays */
+        .vignette { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%); pointer-events: none; z-index: 100; opacity: 0.4; }
+        .grain { position: fixed; inset: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.07; pointer-events: none; z-index: 1000; mix-blend-mode: multiply; }
+
+        /* Bespoke Cursor */
+        #cursor-follower {
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px;
+            border: 0.5px solid var(--gold); border-radius: 50%; z-index: 10000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear, width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor-follower span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; }
+
+        /* Navigation */
+        nav { 
+            position: fixed; top: 0; width: 100%; padding: 0 60px; 
+            height: 90px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 999; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        .nav-links { display: flex; list-style: none; gap: 40px; height: 100%; }
+        .nav-links > li { display: flex; align-items: center; }
+        .nav-links > li > a {
+            text-decoration: none; color: var(--ivory); font-size: 10px; letter-spacing: 3px;
+            text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            transition: color 0.4s var(--ease);
+            padding: 20px 0;
+            position: relative;
+            padding-right: 18px;
+        }
+        .nav-links > li > a:hover { color: var(--gold); }
+
+        .dropdown > a::after {
+            content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            width: 0; height: 0; border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+            border-top: 4px solid var(--gold); transition: transform 0.4s var(--ease); opacity: 0.6;
+        }
+
+        .dropdown:hover > a::after { transform: translateY(-50%) rotate(180deg); opacity: 1; }
+
+        .mega-menu {
+            position: absolute; top: 90px; left: 0; width: 100vw; background: var(--ink); padding: 40px 60px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; opacity: 0; visibility: hidden; 
+            pointer-events: none; transform: translateY(15px); transition: all 0.5s var(--ease);
+            border-bottom: 1px solid rgba(194, 157, 107, 0.3); z-index: 1000;
+        }
+
+        .mega-menu::before {
+            content: ''; position: absolute; top: -10px; left: var(--triangle-left, 50%); transform: translateX(-50%);
+            width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--ink); pointer-events: none;
+        }
+
+        .dropdown { position: static; } 
+        .dropdown:hover .mega-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+
+        .mega-item {
+            position: relative; height: 250px; overflow: hidden; text-decoration: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .mega-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); filter: brightness(0.5); }
+        .mega-item span {
+            position: absolute; z-index: 2; color: var(--ivory); font-family: 'Cormorant Garamond'; 
+            font-size: 1.2rem; font-style: italic; letter-spacing: 1px; text-align: center; padding: 0 10px;
+            transition: transform 0.4s var(--ease);
+        }
+        .mega-item:hover img { transform: scale(1.1); filter: brightness(0.7); }
+        .mega-item::after { content: ''; position: absolute; inset: 0; border: 0px solid var(--gold); transition: 0.4s var(--ease); }
+        .mega-item:hover::after { border: 1px solid var(--gold); inset: 10px; }
+
+        .btn-plan {
+            text-decoration: none; color: var(--gold); font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+            border: 1px solid var(--gold); padding: 12px 25px; background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+            transition: all 0.5s var(--ease); display: inline-block;
+        }
+        .btn-plan:hover { background: var(--gold); color: var(--ink); }
+
+        /* Sections */
+        .page-header {
+            height: 100vh;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%), url('kampicformastercardpriceless02__L.jpg'); 
+            background-size: cover; background-position: center; background-attachment: fixed; 
+            display: flex; align-items: center; justify-content: center; text-align: center; color: var(--ivory); position: relative;
+        }
+
+        .hero-subtitle { display: block; letter-spacing: 12px; text-transform: uppercase; font-size: 16px; color: var(--gold); font-weight: 700; margin-bottom: 25px; }
+        .page-header h1 { font-family: 'Cormorant Garamond'; font-size: 6vw; font-style: italic; font-weight: 300; }
+
+        /* Overview Section */
+        .overview-section { padding: 120px 60px; background-color: var(--ivory); }
+        .overview-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.5fr; gap: 80px; }
+        .section-label { display: block; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+        .overview-title-box h2 { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; font-weight: 300; font-style: italic; line-height: 1.1; }
+        .accent-line { width: 60px; height: 1px; background: var(--gold); margin-top: 30px; }
+        .lead-text { font-size: 1.2rem; line-height: 1.8; margin-bottom: 25px; color: var(--clay); font-weight: 500; }
+
+        /* Itinerary Section Styles */
+        .itinerary-section { padding: 100px 60px; background: var(--ivory); }
+        .itinerary-container { max-width: 1000px; margin: 0 auto; }
+        .itinerary-main-title { 
+            font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; font-style: italic; 
+            font-weight: 300; margin-bottom: 80px; text-align: center; color: var(--ink); 
+        }
+        .itinerary-day { margin-bottom: 100px; border-bottom: 1px solid rgba(194, 157, 107, 0.2); padding-bottom: 80px; }
+        .day-heading { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 300; color: var(--gold); margin-bottom: 40px; }
+        .day-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
+        .photo-box { height: 400px; overflow: hidden; position: relative; }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+        .photo-box:hover img { transform: scale(1.08); }
+        .day-details { font-family: 'Tenor Sans', sans-serif; line-height: 1.8; color: var(--clay); }
+        .day-details p { margin-bottom: 20px; font-size: 1rem; }
+        .detail-label { color: var(--gold); font-weight: bold; letter-spacing: 2px; font-size: 0.75rem; text-transform: uppercase; margin-right: 12px; }
+
+        .meal-highlight-box {
+            background: rgba(194, 157, 107, 0.04);
+            border-left: 2px solid var(--gold);
+            padding: 25px;
+            margin-top: 35px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .meal-entry { display: flex; align-items: center; gap: 20px; }
+        .meal-entry i { color: var(--gold); font-size: 1.1rem; width: 25px; text-align: center; }
+        .meal-info { display: flex; flex-direction: column; }
+        .meal-tag { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 2px; }
+        .meal-name { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-style: italic; line-height: 1.2; color: var(--ink); }
+
+        .itinerary-quick-facts { display: flex; gap: 40px; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(194, 157, 107, 0.2); }
+        .fact-item .fact-label { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: var(--gold); margin-bottom: 5px; }
+        .fact-item .fact-value { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-style: italic; }
+
+        @media (max-width: 992px) {
+            .overview-container, .day-photos { grid-template-columns: 1fr; }
+            .overview-section, .itinerary-section { padding: 80px 30px; }
+            .itinerary-main-title { font-size: 2.5rem; }
+        }
+
+        /* Accommodation Section */
+        .accommodation-section { padding: 120px 60px; background: var(--ivory); }
+        .accommodation-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-top: 60px; max-width: 1000px; margin: 0 auto; }
+        .hotel-card { text-decoration: none; color: var(--ink); display: block; }
+        .hotel-image-container { height: 300px; overflow: hidden; margin-bottom: 20px; border: 0.5px solid rgba(194, 157, 107, 0.2); position: relative; }
+        .hotel-image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+        .hotel-card:hover .hotel-image-container img { transform: scale(1.05); }
+        .hotel-info { display: flex; justify-content: space-between; align-items: flex-start; }
+        .hotel-name { font-family: 'Cormorant Garamond'; font-size: 1.4rem; font-style: italic; margin-bottom: 5px; }
+        .hotel-location { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+        .view-hotel-btn { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); border-bottom: 1px solid var(--gold); padding-bottom: 2px; transition: all 0.4s var(--ease); }
+        .hotel-card:hover .view-hotel-btn { padding-right: 10px; }
+
+        /* --- Refined Easy-to-Read Footer --- */
+footer {
+    padding: 100px 60px 40px;
+    background: var(--ivory);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    color: var(--ink);
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+.footer-col h4 {
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 13px; /* Increased from 11px */
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    color: var(--gold);
+    font-weight: 600; /* Added weight for hierarchy */
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col ul li {
+    margin-bottom: 14px; /* More breathing room */
+}
+
+.footer-col ul li a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 14px; /* Increased from 10px */
+    letter-spacing: 0.5px;
+    opacity: 0.8; /* Increased from 0.6 */
+    transition: all 0.4s var(--ease);
+}
+
+.footer-col ul li a:hover {
+    opacity: 1;
+    color: var(--gold);
+    padding-left: 8px;
+}
+
+.footer-contact p {
+    font-size: 14px; /* Increased from 11px */
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+/* Social Media Icons */
+.footer-social {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.social-icon {
+    width: 42px; /* Slightly larger targets */
+    height: 42px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.5s var(--ease);
+}
+
+.social-icon svg {
+    width: 14px;
+    fill: var(--ink);
+    transition: all 0.5s var(--ease);
+}
+
+.social-icon:hover {
+    border-color: var(--gold);
+    background: var(--gold);
+    transform: translateY(-3px);
+}
+
+.social-icon:hover svg {
+    fill: var(--ivory);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    padding-top: 40px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copyright {
+    font-size: 11px; /* Increased from 9px */
+    letter-spacing: 1.5px;
+    opacity: 0.6;
+    text-transform: uppercase;
+}
+
+.footer-bottom-links {
+    display: flex;
+    gap: 30px;
+}
+
+.footer-bottom-links a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 11px; /* Increased from 9px */
+    letter-spacing: 1px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+@media (max-width: 1024px) {
+    .footer-main { 
+        grid-template-columns: 1fr 1fr; 
+        gap: 40px; 
+    }
+}
+        @media (max-width: 768px) {
+            .footer-main {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .footer-bottom-links {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+        }
+          /* Fix for ultra-small screens */
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 18vw;
+    }
+    
+    .mega-menu {
+        display: none !important; /* Mega menus are non-functional on mobile hover */
+    }
+}
+/* --- Desktop Nav Controls --- */
+@media (min-width: 1025px) {
+    .menu-trigger, .mobile-overlay { display: none; }
+    .desktop-nav { display: flex !important; }
+}
+
+/* --- Mobile Menu & Mega Menu Styles --- */
+@media (max-width: 1024px) {
+    .desktop-nav { display: none !important; }
+    .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+    
+    .burger .line {
+        width: 25px; height: 1px; background: var(--gold);
+        display: block; margin: 6px 0;
+    }
+
+    .mobile-overlay {
+        position: fixed; inset: 0; background: var(--ink);
+        z-index: 5000; transform: translateY(-100%);
+        transition: transform 0.8s var(--ease);
+        overflow-y: auto; padding: 100px 40px;
+    }
+
+    .mobile-overlay.active { transform: translateY(0); }
+
+    .menu-close {
+        position: absolute; top: 30px; right: 30px;
+        color: var(--gold); font-size: 24px; cursor: pointer;
+    }
+
+    .mobile-nav-links { list-style: none; }
+    .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+
+    .mobile-nav-links a, .mobile-drop-trigger {
+        font-family: 'Cormorant Garamond'; font-size: 2rem;
+        color: var(--ivory); text-decoration: none; font-style: italic;
+    }
+
+    .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+
+    /* Mobile Mega Grid */
+    .mobile-mega-content {
+        display: none; grid-template-columns: 1fr 1fr;
+        gap: 15px; margin-top: 20px;
+    }
+
+    .mobile-mega-content.active { display: grid; }
+
+    .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; }
+    .mobile-mega-item span {
+        display: block; color: var(--ivory); font-size: 0.7rem;
+        text-transform: uppercase; margin-top: 5px; letter-spacing: 1px;
+    }
+}
+/* Mobile Menu Styles */
+        @media (max-width: 1024px) {
+            .desktop-nav { display: none !important; }
+            .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+            
+            .burger .line {
+                width: 25px; height: 1px; background: var(--gold);
+                display: block; margin: 6px 0;
+            }
+
+            .mobile-overlay {
+                position: fixed; inset: 0; background: var(--ink);
+                z-index: 5000; transform: translateY(-100%);
+                transition: transform 0.8s var(--ease);
+                overflow-y: auto; padding: 100px 40px;
+            }
+
+            .mobile-overlay.active { transform: translateY(0); }
+
+            .menu-close {
+                position: absolute; top: 30px; right: 30px;
+                color: var(--gold); font-size: 24px; cursor: pointer;
+            }
+
+            .mobile-nav-links { list-style: none; }
+            .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+
+            .mobile-nav-links a, .mobile-drop-trigger {
+                font-family: 'Cormorant Garamond'; font-size: 2rem;
+                color: var(--ivory); text-decoration: none; font-style: italic;
+            }
+
+            .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+
+            /* Mobile Mega Grid */
+            .mobile-mega-content {
+                display: none; grid-template-columns: 1fr 1fr;
+                gap: 15px; margin-top: 20px;
+            }
+
+            .mobile-mega-content.active { display: grid; }
+
+            .mobile-mega-item { text-decoration: none; }
+            .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; opacity: 0.7; }
+            .mobile-mega-item span {
+                display: block; color: var(--ivory); font-size: 0.7rem;
+                text-transform: uppercase; margin-top: 5px; letter-spacing: 1px;
+            }
+            
+            /* Partner Specific Styles in Mobile */
+            .mobile-partner-list { list-style: none; margin-top: 20px; }
+            .mobile-partner-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 8px; }
+            .mobile-partner-list a { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+            .mobile-partner-list .arrow { font-size: 14px; color: var(--gold); font-family: sans-serif; font-style: normal; }
+        }
+
+        @media (min-width: 1025px) {
+            .menu-trigger, .mobile-overlay { display: none; }
+            .desktop-nav { display: flex !important; }
+        }
+.dmc-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 100px;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    @media (max-width: 992px) {
+        #dmc {
+            padding: 80px 5% !important;
+        }
+        .dmc-grid {
+            grid-template-columns: 1fr; /* Stacks the columns */
+            gap: 60px;
+        }
+        .intro-h2 {
+            font-size: 2.2rem !important;
+        }
+        .dmc-features {
+            flex-direction: column; /* Stacks the "Direct Net Rates" and "White Label" */
+            gap: 25px !important;
+        }
+    }
+      /* --- Hotel Overlay Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    /* 1. Adjust the inner container padding for smaller screens */
+    .overlay-inner {
+        margin: 40px auto !important;
+        padding: 0 20px !important;
+    }
+
+    /* 2. Stack the Gallery Grid vertically */
+    .gallery-grid {
+        grid-template-columns: 1fr !important; /* Single column */
+        grid-template-rows: repeat(3, 250px) !important; /* Fixed height for each image */
+        gap: 10px !important;
+        margin-bottom: 30px !important;
+    }
+
+    /* 3. Ensure the first image (which had span 2) resets to normal */
+    .gallery-grid > div:first-child {
+        grid-row: span 1 !important;
+    }
+
+    /* 4. Scale down typography for mobile */
+    #modal-name {
+        font-size: 28px !important;
+        margin-bottom: 15px !important;
+    }
+
+    #modal-desc {
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* 5. Adjust the Close button position for thumbs */
+    #close-overlay {
+        top: 20px !important;
+        right: 20px !important;
+        padding: 10px 15px !important;
+    }
+}
+/* --- Hotel Overlay Mobile Optimization --- */
+@media (max-width: 768px) {
+    /* 1. Ensure the overlay inner container doesn't have too much top margin */
+    .overlay-inner {
+        margin: 20px auto !important;
+        padding: 0 15px !important;
+    }
+
+    /* 2. Reduce the size of the photos so the text fits on the screen */
+    .gallery-grid {
+        grid-template-columns: 1fr !important;
+        /* Lower the heights: First photo 200px, others 120px */
+        grid-template-rows: 200px 120px 120px !important; 
+        gap: 8px !important;
+        margin-bottom: 20px !important;
+    }
+
+    /* 3. Force the first photo to stop spanning multiple rows */
+    .gallery-grid > div:first-child {
+        grid-row: span 1 !important;
+    }
+
+    /* 4. Reduce spacing around the hotel name to pull it up further */
+    .overlay-text {
+        padding-top: 0 !important;
+    }
+
+    #modal-name {
+        font-size: 24px !important; /* Smaller text for mobile */
+        margin-bottom: 8px !important;
+        line-height: 1.2 !important;
+    }
+
+    #modal-location {
+        font-size: 9px !important;
+        margin-bottom: 5px !important;
+    }
+
+    /* 5. Make the description and table follow closely */
+    #modal-desc {
+        font-size: 15px !important;
+        margin-bottom: 20px !important;
+    }
+}
+@media (max-width: 768px) {
+    /* Option 4: Masonry-Style (Pinterest-like) */
+.day-photos.masonry {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    grid-auto-rows: 10px; /* Small row increments for flexible heights */
+}
+ 
+.day-photos.masonry .photo-box {
+    height: auto;
+}
+ 
+.day-photos.masonry .photo-box:nth-child(odd) {
+    grid-row: span 35; /* Taller images */
+}
+ 
+.day-photos.masonry .photo-box:nth-child(even) {
+    grid-row: span 28; /* Shorter images */
+}
+    /* 3. Text becomes wider (Horizontal stretch) */
+    .day-details {
+        width: 100% !important;
+        margin-top: 15px !important;
+    }
+
+    .day-details p {
+        font-size: 1rem !important;
+        line-height: 1.6 !important;
+        text-align: justify; /* Helps the "horizontal" wide feel */
+        padding: 0 5px !important;
+    }
+
+    /* 4. Meal Box & Facts (Wide & not squeezed) */
+    .meal-highlight-box {
+        width: 100% !important;
+        margin: 20px 0 !important;
+        padding: 15px !important;
+        box-sizing: border-box;
+    }
+
+    .itinerary-quick-facts {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+}
+/* Journey Fare Mobile Responsiveness */
+@media (max-width: 992px) {
+    /* Reduce outer padding for mobile */
+    .dossier-section {
+        padding: 100px 20px !important;
+    }
+
+    /* Change grid to single column and remove the 80px side spacing */
+    .dossier-section div[style*="display: grid"] {
+        grid-template-columns: 1fr !important;
+        gap: 40px !important;
+    }
+
+    /* Hide the empty decorative sidebar container if necessary */
+    .dossier-section div[style*="writing-mode: vertical-rl"] {
+        display: none;
+    }
+
+    /* Adjust the dark info box */
+    .dossier-section div[style*="background: var(--ink)"] {
+        padding: 80px 40px !important;
+        border-left: none !important;
+        border-top: 1px solid var(--gold);
+    }
+
+    /* Scale down the large "Journey Fare" title */
+    .dossier-section h3 {
+        font-size: 3.5rem !important;
+        left: 20px !important;
+        top: -30px !important;
+    }
+
+    /* Adjust the overlapping price card */
+    .dossier-section div[style*="margin-left: -100px"] {
+        margin-left: 0 !important; /* Remove negative overlap */
+        margin-top: -60px !important; /* Slight overlap from top instead */
+        padding: 40px !important;
+        width: 90%;
+        margin-inline: auto;
+    }
+
+    /* Scale down the large price text */
+    .dossier-section h5 {
+        font-size: 3.5rem !important;
+    }
+
+    /* Adjust button padding for smaller screens */
+    .btn-plan {
+        padding: 20px 40px !important;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .dossier-section h3 {
+        font-size: 2.8rem !important;
+    }
+    .dossier-section h5 {
+        font-size: 3rem !important;
+    }
+}
+/* Inclusions & Exclusions Mobile Responsiveness */
+@media (max-width: 768px) {
+    /* Reduce outer padding */
+    .logistics-section {
+        padding: 60px 20px !important;
+    }
+
+    /* Change grid from 2 columns to 1 column */
+    .logistics-section div[style*="display: grid"] {
+        grid-template-columns: 1fr !important;
+        gap: 40px !important; /* Slightly reduce gap between boxes */
+    }
+
+    /* Reduce header font size for mobile */
+    .logistics-section h3 {
+        font-size: 2.2rem !important;
+    }
+
+    /* Optional: Make the list items slightly larger for better readability on touch */
+    .logistics-section ul li {
+        font-size: 1.1rem !important;
+        margin-bottom: 15px !important;
+    }
+}
+
+   /* Map Section Mobile Responsiveness */
+@media (max-width: 768px) {
+    /* 1. Reduce outer section padding so map can be wider */
+    .map-section {
+        padding: 40px 10px !important;
+    }
+
+    /* 4. Adjust the main title size */
+    .itinerary-main-title {
+        font-size: 2rem !important;
+        padding: 0 20px;
+        text-align: center;
+    }
+}
+@media (max-width: 480px) {
+    .day-details p {
+        text-align: left !important; /* Prevents awkward gaps between words */
+        font-size: 1.05rem !important; /* Slightly larger for easier reading */
+        line-height: 1.6 !important;
+    }
+    
+    .day-heading {
+        font-size: 1.8rem !important; /* Prevents long day titles from wrapping too much */
+    }
+}
+  /* --- Refined Footer Styles --- */
+footer {
+    padding: 100px 60px 40px;
+    background: var(--ivory);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    color: var(--ink);
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+.footer-col h4 {
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    color: var(--gold);
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col ul li {
+    margin-bottom: 12px;
+}
+
+.footer-col ul li a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 10px;
+    letter-spacing: 1px;
+    opacity: 0.6;
+    transition: all 0.4s var(--ease);
+}
+
+.footer-col ul li a:hover {
+    opacity: 1;
+    color: var(--gold);
+    padding-left: 5px;
+}
+
+.footer-contact p {
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+/* Social Media Icons */
+.footer-social {
+    display: flex;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.social-icon {
+    width: 35px;
+    height: 35px;
+    border: 0.5px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.5s var(--ease);
+}
+
+.social-icon svg {
+    width: 14px;
+    fill: var(--ink);
+    transition: all 0.5s var(--ease);
+}
+
+.social-icon:hover {
+    border-color: var(--gold);
+    background: var(--gold);
+    transform: translateY(-3px);
+}
+
+.social-icon:hover svg {
+    fill: var(--ivory);
+}
+
+/* --- Refined Easy-to-Read Footer --- */
+footer {
+    padding: 100px 60px 40px;
+    background: var(--ivory);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    color: var(--ink);
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+.footer-col h4 {
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 13px; /* Increased from 11px */
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    color: var(--gold);
+    font-weight: 600; /* Added weight for hierarchy */
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col ul li {
+    margin-bottom: 14px; /* More breathing room */
+}
+
+.footer-col ul li a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 14px; /* Increased from 10px */
+    letter-spacing: 0.5px;
+    opacity: 0.8; /* Increased from 0.6 */
+    transition: all 0.4s var(--ease);
+}
+
+.footer-col ul li a:hover {
+    opacity: 1;
+    color: var(--gold);
+    padding-left: 8px;
+}
+
+.footer-contact p {
+    font-size: 14px; /* Increased from 11px */
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+/* Social Media Icons */
+.footer-social {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.social-icon {
+    width: 42px; /* Slightly larger targets */
+    height: 42px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.5s var(--ease);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    padding-top: 40px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copyright {
+    font-size: 11px; /* Increased from 9px */
+    letter-spacing: 1.5px;
+    opacity: 0.6;
+    text-transform: uppercase;
+}
+
+.footer-bottom-links {
+    display: flex;
+    gap: 30px;
+}
+
+.footer-bottom-links a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 11px; /* Increased from 9px */
+    letter-spacing: 1px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+@media (max-width: 1024px) {
+    .footer-main { grid-template-columns: 1fr 1fr; gap: 40px; }
+    footer { padding: 80px 30px 40px; }
+}
+/* --- Responsiveness & Mobile Optimization --- */
+
+@media (max-width: 1024px) {
+    nav { padding: 0 30px; }
+    .nav-links { gap: 20px; }
+    
+    .itinerary-section {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 30px 100px 30px;
+    }
+
+    .accommodation-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .footer-main {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Disable custom cursor on touch devices */
+    #cursor-follower { display: none !important; }
+    * { cursor: auto !important; }
+
+    /* Hero Section Scaling */
+    .page-header h1 {
+        font-size: 15vw; /* Scale up for smaller screens */
+    }
+    .page-header .hero-subtitle {
+        font-size: 14px;
+        letter-spacing: 8px;
+    }
+
+    /* Navigation Adjustment */
+    nav { padding: 0 20px; height: 70px; }
+    .logo { font-size: 1.2rem; }
+    .nav-links { display: none; } /* Usually replaced by a burger menu, but keeping it simple as requested */
+
+    /* Stacking Grids to Single Column */
+    .itinerary-section {
+        grid-template-columns: 1fr;
+        padding: 0 20px 80px 20px;
+    }
+
+    .itin-card {
+        height: 60vh;
+    }
+
+    .accommodation-section {
+        padding: 80px 20px;
+    }
+
+    .accommodation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hotel-image-container {
+        height: 250px;
+    }
+
+    /* Footer Stacking */
+    .footer-main {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .footer-bottom-links {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+}
+
+/* Fix for ultra-small screens */
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 18vw;
+    }
+    
+    .mega-menu {
+        display: none !important; /* Mega menus are non-functional on mobile hover */
+    }
+}
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div id="cursor-follower"><span>Explore</span></div>
+
+   <nav>
+        <a href="index.html" class="logo">L'INDOCHINE</a>
+        
+        <ul class="nav-links desktop-nav">
+            <li class="dropdown"> 
+                <a href="#">Destinations</a>
+                <div class="mega-menu"> 
+                    <a href="cambodia.html" class="mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                    <a href="Vietnam.html" class="mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                    <a href="Thailand.html" class="mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                    <a href="Laos.html" class="mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                    <a href="Multi-country.html" class="mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                </div>
+            </li>
+            <li class="dropdown"> 
+                <a href="#">Themes</a>
+                <div class="mega-menu" style="grid-template-columns: repeat(6, 1fr);">
+                    <a href="Culture-Heritage.html" class="mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                    <a href="Romantic-Journeys.html" class="mega-item"><img src="penin boat 1.jpg"><span>Romantic Journeys</span></a>
+                    <a href="Wellness-Rejuvenation.html" class="mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                    <a href="Family-Journeys.html" class="mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                    <a href="Nature-Adventure.html" class="mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                    <a href="Culinary-Journeys.html" class="mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Partners</a>
+                <div class="mega-menu" style="grid-template-columns: 1.3fr 1fr; padding: 0; overflow: hidden; min-width: 600px;">
+                    <div style="padding: 50px; background: var(--ink);">
+                        <h4 style="color: var(--gold); font-size: 13px; margin-bottom: 35px; letter-spacing: 4px; text-transform: uppercase; font-family: 'Tenor Sans';">B2B & DMC Services</h4>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="Dmc-services.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>DMC Operational Excellence</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="b2b-rates.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>Confidential B2B Tariffs</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="white-label.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>White-Label Ground Handling</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="mice-groups.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>MICE & Incentive Groups</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <p style="margin-top: 30px; font-size: 10px; color: var(--gold); opacity: 0.7; letter-spacing: 2px; text-transform: uppercase;">Your strategic partner in the SouthEast Asia.</p>
+                    </div>
+                    <div style="position: relative; background: var(--clay); overflow: hidden;">
+                        <img src="angkor_wat_sunrise2712_67ddcbab8b.jpg" alt="Siem Reap Hub" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+                        <div style="position: absolute; bottom: 35px; left: 35px;">
+                            <span style="display: block; color: var(--ivory); font-family: 'Cormorant Garamond'; font-style: italic; font-size: 22px;">Regional Operations</span>
+                            <span style="display: block; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px;">Siem Reap, Cambodia</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><a href="Accommodation.html">Accommodation</a></li>
+            <li><a href="About-Us.html">About Us</a></li>
+        </ul>
+
+        <div class="menu-trigger" id="menu-open">
+            <div class="burger"><span class="line"></span><span class="line"></span></div>
+        </div>
+
+        <div class="mobile-overlay" id="mobile-overlay">
+            <div class="menu-close" id="menu-close">✕</div>
+            <div class="mobile-scroll-container">
+                <ul class="mobile-nav-links">
+                    
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Destinations <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="cambodia.html" class="mobile-mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                            <a href="Vietnam.html" class="mobile-mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                            <a href="Thailand.html" class="mobile-mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                            <a href="Laos.html" class="mobile-mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                            <a href="Multi-country.html" class="mobile-mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                        </div>
+                    </li>
+
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Themes <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="Culture-Heritage.html" class="mobile-mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                            <a href="Romantic-Journeys.html" class="mobile-mega-item"><img src="penin boat 1.jpg"><span>Romantic Getaways</span></a>
+                            <a href="Wellness-Rejuvenation.html" class="mobile-mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                            <a href="Family-Journeys.html" class="mobile-mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                             <a href="Nature-Adventure.html" class="mobile-mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                            <a href="Culinary-Journeys.html" class="mobile-mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                        </div>
+                    </li>
+
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Partners <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <div style="grid-column: span 2; width: 100%;">
+                                <ul class="mobile-partner-list">
+                                    <li><a href="Dmc-services.html"><span>DMC Excellence</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="b2b-rates.html"><span>B2B Tariffs</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="white-label.html"><span>White-Label</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="mice-groups.html"><span>MICE Groups</span> <span class="arrow">→</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li><a href="Accommodation.html">Accommodation</a></li>
+                    <li><a href="About-Us.html">About Us</a></li>
+                     <li><a href="Plan-Your-Trip.html">Plan Your Trip</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="nav-right desktop-nav"><a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a></div>
+    </nav>
+<div id="hotel-overlay" style="position: fixed; inset: 0; background: var(--ink); z-index: 2000; display: none; overflow-y: auto; opacity: 0;">
+        <div id="close-overlay" style="position: fixed; top: 40px; right: 60px; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; z-index: 2001; background: rgba(0,0,0,0.5); padding: 12px 20px; backdrop-filter: blur(10px); border: 0.5px solid rgba(194, 157, 107, 0.3);">
+            Close [X]
+        </div>
+        
+        <div class="overlay-inner" style="max-width: 1100px; margin: 60px auto; padding: 0 40px;">
+            <div class="gallery-grid" style="display: grid; grid-template-columns: 1.2fr 1fr; grid-template-rows: 200px 200px; gap: 15px; margin-bottom: 50px;">
+                <div style="grid-row: span 2; border: 0.5px solid rgba(194, 157, 107, 0.3); overflow: hidden; background: #111;">
+                    <img id="modal-img-1" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+                </div>
+                <div style="border: 0.5px solid rgba(194, 157, 107, 0.3); overflow: hidden; background: #111;">
+                    <img id="modal-img-2" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+                </div>
+                <div style="border: 0.5px solid rgba(194, 157, 107, 0.3); overflow: hidden; background: #111;">
+                    <img id="modal-img-3" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+                </div>
+            </div>
+
+            <div class="overlay-text" style="max-width: 700px; margin: 0 auto; text-align: center;">
+                <span id="modal-location" style="font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 15px; opacity: 0.8;"></span>
+                <h2 id="modal-name" style="font-family: 'Cormorant Garamond'; font-size: 3rem; font-style: italic; color: var(--ivory); margin-bottom: 25px; font-weight: 300; line-height: 1.2;"></h2>
+                <div style="width: 40px; height: 1px; background: var(--gold); margin: 0 auto 30px auto; opacity: 0.5;"></div>
+                <p id="modal-desc" style="color: var(--ivory); opacity: 0.7; line-height: 1.8; font-size: 16px; margin-bottom: 40px; font-family: 'Cormorant Garamond'; letter-spacing: 0.5px;"></p>
+                <a href="#" class="btn-plan">Request a Private Stay</a>
+            </div>
+        </div>
+    </div>
+
+    <header class="page-header">
+        <div style="z-index: 2;">
+            <span class="hero-subtitle">20 Days / Cambodia, Vietnam, Laos, Thailand</span>
+            <h1>Grand Indochina Journey: A Four-Country Escape</h1>
+            <div style="width: 100px; height: 1px; background: var(--gold); margin: 30px auto; opacity: 0.6;"></div>
+        </div>
+    </header>
+
+<section class="overview-section">
+    <div class="overview-container">
+        <div class="overview-title-box">
+            <span class="section-label">The Experience</span>
+            <h2>Multi Country Wellness & Rejuvenation </h2>
+            <div class="accent-line"></div>
+        </div>
+
+        <div class="overview-content">
+            <p class="lead-text">
+   20 Days / 19 Nights of Holistic healing, spiritual renewal, mindful experiences, tranquil luxury stays, and invigorating natural beauty.
+            <div class="itinerary-quick-facts">
+                <div class="fact-item"><span class="fact-label">Duration</span><span class="fact-value">20 Days / 19 Nights</span></div>
+                <div class="fact-item"><span class="fact-label">Theme</span><span class="fact-value">Wellness & Rejuvenation</span></div>
+                <div class="fact-item"><span class="fact-label">Location</span><span class="fact-value">Siem Reap, Ho chi Minh, Hoi An, Lang Co, Luang Prabang, Chaing Mai, Koh Samui</span></div>
+                <div class="fact-item"><span class="fact-label">Country</span><span class="fact-value">Cambodia, Vietnam, Laos, Thailand</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+<h3 class="itinerary-main-title">Detailed Map Breakdown</h3>
+<section class="map-section" style="padding: 60px; background-color: var(--ivory);">
+    <div style="max-width: 800px; margin: 0 auto; border: 0.5px solid rgba(194, 157, 107, 0.4); padding: 15px; background: white;">
+        <div id="itinerary-map" style="height: 400px; width: 100%; filter: grayscale(100%) sepia(10%);"></div>
+    </div>
+    <section class="w-full px-4 md:px-10 lg:px-20 py-10 md:py-20 bg-[var(--ivory)]">
+    <div class="max-w-4xl mx-auto border-[0.5px] border-[rgba(194,157,107,0.4)] p-2 md:p-4 bg-white shadow-sm">
+        
+        <div id="itinerary-map" class="h-[300px] md:h-[450px] w-full grayscale-[100%] sepia-[10%]"></div>
+        
+    </div>
+    <p style="text-align: center; font-family: 'Cormorant Garamond'; font-style: italic; font-size: 14px; margin-top: 15px; color: var(--gold);">
+        Route: Siem Reap → Ho chi Minh → Hoi An → Lang Co → Luang Prabang → Chaing Mai → Koh Samui → Bangkok
+    </p>
+    </section>
+<section class="itinerary-section">
+    <div class="itinerary-container">
+  <h3 class="itinerary-main-title">Detailed Itinerary Breakdown</h3>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 1: Arrival in Siem Reap & Serene Welcome</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="amansara_-cambodia-main-swimming-pool_high-res_10083.jpg" alt="Amansara Cambodia Main Swimming Pool">
+        </div>
+        <div class="photo-box">
+            <img src="Amansara-7 (1).png" alt="Phra Nakhon Riverside Dining">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span> Siem Reap</p>
+        <p><span class="detail-label">ACTIVITIES</span> Your wellness journey begins with a private luxury transfer upon arrival at Siem Reap Angkor International Airport (SAI). You'll be whisked away to Amansara, your serene and exclusive luxury retreat, formerly King Sihanouk's guesthouse, now a tranquil oasis perfectly situated for exploring Angkor. Settle into your minimalist-chic suite, designed for ultimate peace and privacy. Begin your rejuvenation with a personalized wellness consultation at Amansara's spa, followed by a bespoke welcome spa treatment designed to alleviate travel fatigue. Enjoy a light, healthy dinner at the resort, focusing on fresh, local ingredients, allowing for a peaceful start to your retreat.</p>
+        <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Amansara</span></p>
+        
+        <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Khmer Flavors: Farm-to-Table at The Dining Room</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 2: Angkor's Spiritual Dawn & Ancient Reflection</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="angkor_wat_sunrise_discovery2712_997b977984.jpg" alt="The Grand Palace and Wat Phra Kaew">
+        </div>
+        <div class="photo-box">
+            <img src="amansara_cambodia_-_experience_lap_pool.jpg" alt="Issaya Siamese Club Garden">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span> Siem Reap</p>
+        <p><span class="detail-label">ACTIVITIES</span> Pre-dawn, embark on an unforgettable private sunrise experience at Angkor Wat, arranged to find a quiet viewing spot away from the main crowds. Witness the magnificent temple bathed in the soft glow of dawn, a truly spiritual moment. Enjoy a gourmet, healthy picnic breakfast specially prepared by Amansara near the temple grounds. Explore the awe-inspiring Angkor Thom, including the captivating faces of Bayon Temple and the serene Terrace of the Leper King, with your expert guide leading you through paths less traveled to maximize tranquility. Return to Amansara for a private yoga or meditation session tailored to your needs, perhaps by the serene pool. Conclude your day with a nourishing, plant-based dinner at the resort, designed for wellness and energy.</p>
+        <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Amansara</span></p>
+        
+        <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Breakfast</span>
+                    <span class="meal-name">Temple-Side Serenity: Gourmet Picnic at Angkor</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Healing Cuisine: Plant-Based Khmer Tasting Menu</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="itinerary-day">
+    <h4 class="day-heading"> Day 3: Forest Temples & Mindful Immersion</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="angkor_wat_temple_complex_ta_prohm.jpg" alt="Ayutthaya Historical Park">
+        </div>
+        <div class="photo-box">
+            <img src="amansara-cambodia-aman-spa.jpg" alt="Thai Fine Dining">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span> Siem Reap</p>
+        <p><span class="detail-label">ACTIVITIES</span> This morning is dedicated to the atmospheric Ta Prohm, where ancient stone meets encroaching jungle, offering a powerful sense of nature's reclaiming power. Follow this with a visit to the intricately carved Banteay Srei Temple, known for its exquisite pink sandstone and delicate artistry, providing a more intimate temple experience. Enjoy a traditional Khmer massage at the resort, focusing on deep relaxation and muscle release. You might also partake in a private, gentle cooking class at Amansara, learning to prepare simple, healthy Khmer dishes using fresh, local ingredients. Dinner at the resort, or a quiet, local restaurant focusing on wholesome Cambodian cuisine.</p>
+        <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Amansara</span></p>
+        
+        <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Cultural Immersion: Traditional Khmer Dinner at the Village House</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 4: Floating Villages & Rural Tranquility</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="Kampong-Khleang-Fishing-VIllage-Taxi-In-Cambodia.jpg" alt="Hue Cooking Class">
+        </div>
+        <div class="photo-box">
+            <img src="Amansara-pool.jpg" alt="Perfume River Views">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span> Siem Reap</p>
+        <p><span class="detail-label">ACTIVITIES</span> Take a private boat trip on Tonle Sap Lake to visit a serene floating village, observing the unique rhythm of life on the water and gaining insight into local Cambodian culture away from the main tourist areas. This experience offers a quiet reflection on connection to nature and community. Return to the resort for leisure time, perhaps enjoying the pool or a quiet walk in the grounds. Engage in a private guided meditation session at Amansara, focusing on grounding and inner peace. Your evening will feature a special private dining experience, potentially a serene garden setting, with a customized healthy menu emphasizing local, organic produce.</p>
+        <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Amansara</span></p>
+        
+      <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Garden Serenity: Private Organic Farm-to-Table Experience</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 5: Artisan Exploration & Journey to Vietnam</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="Amansara_Dining-Hero-2.jpg" alt="Coffee Tasting HCMC">
+        </div>
+        <div class="photo-box">
+            <img src="ParkHyattSaiGon_850x597.jpg" alt="Vespa Food Tour">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span> Ho chi Minh</p>
+        <p><span class="detail-label">ACTIVITIES</span>  Enjoy a relaxed morning. You might choose to visit a local artisan workshop or a silk farm, observing traditional crafts and supporting local communities. This offers a gentle cultural immersion before your journey. Private transfer to Siem Reap Angkor International Airport for your luxury flight to Ho Chi Minh City, Vietnam. Upon arrival at Tan Son Nhat International Airport (SGN), a private luxury transfer will take you to Park Hyatt Saigon, your sophisticated city hotel centrally located. After settling in, enjoy a light and healthy dinner at the hotel or a nearby restaurant known for its fresh, vibrant Vietnamese cuisine.</p>
+        <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Park Hyatt Saigon</span></p>
+        
+        <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Lunch</span>
+                    <span class="meal-name">Farewell Flavors: Wholesome Khmer Fare at Amansara</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Vibrant Vietnam: Contemporary Fine Dining at Square One</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 6: Ho Chi Minh City's Calm & Cultural Insight</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="Notre-Dame-Cathedral-Basilica-of-Saigon.jpg" alt="Local Wet Market">
+        </div>
+        <div class="photo-box">
+            <img src="xuan-spa-park-hyatt-hotel-195533.jpg" alt="Anan Saigon">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span> Ho Chi Minh</p>
+        <p><span class="detail-label">ACTIVITIES</span>  Enjoy a relaxed morning at Park Hyatt Saigon, perhaps with a refreshing swim or a light breakfast. You might opt for a gentle walking tour of the city's charming French colonial architecture, focusing on the beautiful Central Post Office and Notre Dame Cathedral (exterior). Engage in a private Vietnamese healthy cooking class, focusing on fresh herbs and light, vibrant flavors, then enjoy your creations for lunch. Spend the late afternoon at leisure, perhaps a gentle spa treatment at the hotel, designed to unwind from your journey. In the evening, enjoy a sophisticated, healthy dinner at Madame Lam - Vietnamese Contemporary Cuisine, a top restaurant known for its modern Vietnamese cuisine, reflecting on the day's cultural insights.</p>
+        <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Park Hyatt Saigon</span></p>
+        
+       <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Contemporary Soul: Modern Vietnamese at Madame Lam</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 7: Flight to Hoi An & Riverside Serenity</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="1300x820.jpg" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="anantara_hoi_an_resort_restaurant_hoi_an_riverside_indoor_dining_table_1152x608.webp" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Hoi An</p>
+        <p><span class="detail-label">ACTIVITIES</span>Enjoy a leisurely morning before a private transfer to Tan Son Nhat International Airport (SGN) for your luxury domestic flight to Da Nang. Upon arrival at Da Nang International Airport (DAD), a private luxury transfer will take you to Anantara Hoi An Resort, nestled by the Thu Bon River, blending colonial charm with serene natural beauty. Settle into your beautiful riverside resort. Begin your Hoi An experience with a serene boat trip on the Thu Bon River at sunset, enjoying the peaceful views as the ancient town lights up. Follow this with a discovery of Hoi An Ancient Town, a UNESCO World Heritage site, by foot or gentle bicycle, admiring its lantern-lit streets and well-preserved architecture. Enjoy a delicious, light dinner at Hoi An Riverside Restaurant, savoring the tranquility of the illuminated town.
+</p>  
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Anantara Hoi an</span></p>
+        
+       <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Riverside Tranquility: Fresh Local Flavors at Hoi An Riverside</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 8: Hoi An's Artisan Soul & Wellness Immersion</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="Anantara-Personalised-Wellness-Programmes.jpg" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="anantara-hoi-an-resort-07.jpg" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Hoi An</p>
+        <p><span class="detail-label">ACTIVITIES</span>Begin your day with a private outdoor yoga session by the river or at your resort, guided by a local instructor, focusing on breath and gentle movement. Afterwards, visit a local organic farm or herb garden, learning about traditional Vietnamese ingredients and their healing properties. Participate in a traditional Vietnamese healing massage or a bespoke spa treatment at your resort, designed for deep relaxation and rejuvenation. In the late afternoon, enjoy a tranquil tea ceremony, a mindful experience reflecting Vietnamese cultural traditions. Conclude your day with a fresh, farm-to-table dinner at a restaurant emphasizing local, seasonal produce.
+</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Anantara Hoi An</span></p>
+        
+      <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Lunch</span>
+                    <span class="meal-name">Garden Harvest: Organic Farm-to-Table Lunch</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Artisan Flavors: Modern Vietnamese at Art Space</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 9: Coastal Escape & Lagoon Bliss</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="538201-beach-pool-villa-at-banyan-tree-lang-co-vietnam.webp" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="banyan-tree-lang-co-spa.webp" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Lang Co</p>
+        <p><span class="detail-label">ACTIVITIES</span> Enjoy a final leisurely morning in Hoi An. A private luxury transfer will take you on a scenic drive along the coast (potentially via the Hai Van Pass, offering breathtaking views) to Lang Co, home to Banyan Tree Lang Co. This secluded resort is nestled between mountains and a pristine beach, offering a perfect environment for deep relaxation. Settle into your private villa with a pool, designed for ultimate privacy and serenity. Dedicate your afternoon to unwinding at the resort's award-winning spa, indulging in personalized wellness therapies or a refreshing dip in your private plunge pool. Enjoy a healthy, gourmet dinner at one of the resort's exquisite restaurants, savoring the tranquil coastal ambiance.</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Bayan Tree Lang Co</span></p>
+        
+      <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Breakfast</span>
+                    <span class="meal-name">Riverside Farewell: Gourmet Artisan Breakfast in Hoi An</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Saffron: Authentic Thai Flavors with a Coastal View</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 10: Lagoon Wellness & Nature's Embrace</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="bt-langco-yoga.avif" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="bt-langco-sunset-dining.avif" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Lang Co</p>
+        <p><span class="detail-label">ACTIVITIES</span>  Begin your day with a sunrise yoga session on the beach or by your villa, connecting with the peaceful energy of the coast. Enjoy a healthy breakfast featuring fresh fruits and local delights. Spend your morning at leisure, perhaps engaging in a wellness activity offered by the resort, such as a guided meditation walk, a session at the gym, or simply relaxing by the lagoon. Indulge in a holistic spa journey at Banyan Tree Spa, known for its Asian-inspired treatments and focus on mental and physical well-being. Consider a cooking demonstration focusing on healthy Vietnamese cuisine. Your evening will culminate with a private, romantic dinner by the beach or overlooking the lagoon, with a customized menu emphasizing fresh, nourishing ingredients.
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Bayan Tree Lang Co</span></p>
+        
+       <div class="meal-highlight-box">
+    <div class="meal-entry">
+        <i class="fa-solid fa-utensils"></i>
+        <div class="meal-info">
+            <span class="meal-tag">Breakfast</span>
+            <span class="meal-name">Colonial Morning: Indulgent Buffet at the Metropole</span>
+        </div>
+    </div>
+    </div>
+    
+    <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Breakfast</span>
+                    <span class="meal-name">Nourish & Restore: Healthy Superfood Breakfast at The Water Court</span>
+                </div>
+            </div>
+        </div>
+    
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Destination Dining: Private Starlit Dinner on the Sands</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 11: Flight to Luang Prabang & Spiritual Serenity </h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="regular-large-msD-7039_banyan_tree_lăng_cô_saffron_restaurant_-_sunday_brunch.jpg" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="72850950_XL.webp" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Luang Prabang</p>
+        <p><span class="detail-label">ACTIVITIES</span> Enjoy a final leisurely morning in Lang Co. A private luxury transfer will take you to Da Nang International Airport (DAD) for your luxury flight to Luang Prabang, Laos. Upon arrival at Luang Prabang International Airport (LPQ), a private luxury transfer will whisk you to Amantaka, your tranquil luxury hotel, a former French colonial hospital transformed into an elegant sanctuary of peace and minimalist design, perfectly suited for contemplation. Settle into the serene ambiance of Amantaka. Begin your Luang Prabang wellness with a refreshing, light traditional Lao herbal welcome drink and a brief consultation with the resort's wellness specialist. Enjoy a soothing traditional Lao massage at the hotel's spa, designed to promote deep relaxation. Conclude your day with a light, nourishing dinner at your resort, embracing the quietude of Luang Prabang.</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Amantaka</span></p>
+        
+        <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Breakfast</span>
+                    <span class="meal-name">Coastal Departure: Final Gourmet Breakfast at Lang Co</span>
+                </div>
+            </div>
+        </div>
+    
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Lao Mindful Dining: Light & Nourishing Fare at Amantaka</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 12: Alms Giving, Temples & Mindful Mekong Views</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="wat xienng Thong.jpg" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="Terrace-restaurant-view-1024x644.jpg" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Luang Prabang</p>
+        <p><span class="detail-label">ACTIVITIES</span>  Before dawn, participate respectfully in the Alms Giving Ceremony, observing the saffron-robed monks as they collect their daily offerings from locals. A private, respectful setup ensures an intimate and meaningful experience, fostering mindfulness. Return to the hotel for a healthy breakfast. Afterwards, explore the Royal Palace Museum, offering insight into Laos's royal history, and the exquisite Wat Xieng Thong, considered the most beautiful temple in Luang Prabang. Take a private, gentle boat trip along the Mekong River, appreciating the tranquil riverine life. Ascend Mount Phousi for panoramic sunset views over the town and the confluence of the Mekong and Nam Khan rivers, engaging in a mindful observation of the changing light. Conclude your day with a serene dinner at The Belle Rive Terrace, enjoying the peaceful atmosphere of Luang Prabang.</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Amantaka</span></p>
+        
+        <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Breakfast</span>
+                    <span class="meal-name">Spiritual Start: Traditional Lao Khao Piak & Tropical Fruits</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Mekong Sunset: Riverside Dining at The Belle Rive Terrace</span>
+                </div>
+            </div>
+        </div>
+    </div>  
+</div>
+    
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 13: Kuang Si Falls & Nature's Rejuvenation</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="Kuang-Si-Waterfalls-laos-1.jpg" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="aman_essentials_-_yoga_amantaka.jpg" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Luang Prabang</p>
+        <p><span class="detail-label">ACTIVITIES</span>Journey to the stunning multi-tiered Kuang Si Falls. Spend your morning immersed in this natural wonder, where you can swim in the invigorating turquoise pools, walk the forest paths, and visit the adjacent Bear Rescue Centre. This provides a refreshing connection with nature. Enjoy a healthy picnic lunch amidst the beauty of the falls. Return to Amantaka for leisure time, perhaps a period of silent meditation or journaling in your private suite. Engage in a private, gentle yoga session focused on restorative poses. For dinner, savor a bespoke plant-based menu at the resort, emphasizing fresh, local produce to further support your well-being.
+</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Amantaka</span></p>
+        
+       <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Lunch</span>
+                    <span class="meal-name">Wilderness Wellness: Organic Picnic at Kuang Si Falls</span>
+                </div>
+            </div>
+        </div>
+    
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Garden Gastronomy: Bespoke Plant-Based Tasting Menu</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 14: Rural Encounters & Traditional Healing</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="LuangPrabang_header.jpg" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="amantaka-resort-Spa-treatment_Original_1419-980x588.jpg" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Luang Prabang</p>
+        <p><span class="detail-label">ACTIVITIES</span> Take a private excursion to a local village in the Luang Prabang countryside, gaining insight into traditional Lao rural life and sustainable practices. This cultural immersion offers a grounding experience away from urban distractions. You might observe traditional weaving or rice farming. Experience a unique traditional Lao herbal sauna and scrub, known for its therapeutic properties and use of local herbs, followed by a relaxing tea ceremony. In the late afternoon, enjoy a contemplative stroll through the tranquil gardens of Amantaka. Your evening will include a private, serene dining experience with a focus on nourishing, wholesome Lao cuisine, allowing for a quiet conclusion to your day.</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Amantaka</span></p>
+        
+       <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Wellness</span>
+                    <span class="meal-name">Healing Infusion: Traditional Lao Herbal Tea Ceremony</span>
+                </div>
+            </div>
+        </div>
+    
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Village Heritage: Wholesome & Nourishing Private Lao Dinner</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 15: Leisure & Flight to Chiang Mai</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="14-20-800x480.jpg" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="2e3db5ad.avif" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Chiang Mai </p>
+        <p><span class="detail-label">ACTIVITIES</span>Enjoy a leisurely morning at Amantaka, perhaps with a final swim, a quiet meditation session, or a gentle walk around the resort grounds. This provides an opportunity for personal reflection and a relaxed transition. Private transfer to Luang Prabang International Airport for your luxury flight to Chiang Mai, Thailand. Upon arrival at Chiang Mai International Airport (CNX), a private luxury transfer will take you to Raya Heritage, your serene luxury resort nestled amidst lush landscapes by the Ping River. Settle into your tranquil haven. Enjoy a sophisticated, healthy welcome dinner at the resort, embracing the start of your Thai wellness experience.</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Raya Heritage</span></p>
+        
+       <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Breakfast</span>
+                    <span class="meal-name">Lao Farewell: Final Artisanal Breakfast at Amantaka</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Khu Khao: Cross-Cultural Wellness Dining by the Ping River</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 16: Ethical Elephant Connection & Sacred Blessings</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="Ethical-elephant-sanctuary-Chiang-Mai-featured-image.webp" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="c7.jpg" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Chaing Mai</p>
+        <p><span class="detail-label">ACTIVITIES</span>Dedicate your morning to an exclusive, ethical elephant sanctuary, where you'll enjoy a private, unhurried experience interacting respectfully with rescued elephants. Learn about their care, feed them, and observe them in their natural habitat, fostering a deep connection with these magnificent creatures. Visit the revered Wat Phra That Doi Suthep, perched on a mountain overlooking the city. Arrange a private blessing ceremony with monks for spiritual reflection and good fortune for your journey together, a profoundly peaceful and traditional experience. Conclude your day by indulging in a hands-on Thai cooking class at Grandma's Home Cooking School, focusing on healthy, aromatic Thai dishes, which you will then enjoy for dinner.</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Raya Heritage</span></p>
+        
+        <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Breakfast</span>
+                    <span class="meal-name">Sustainable Start: Organic Garden-to-Table Breakfast at Raya</span>
+                </div>
+            </div>
+        </div>
+    
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Grandma's Kitchen: Healthy Organic Thai Cooking Class</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 17: Cultural Wellness & Flight to Koh Samui</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="trails-of-indochina-25.jpg" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="healthy-cuisine-at-kamalaya.jpg" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Koh Samui</p>
+        <p><span class="detail-label">ACTIVITIES</span> Begin your day with a traditional Thai yoga (Ruesi Datton) session, a gentle practice focusing on flexibility and energy flow. Enjoy a wholesome breakfast. Explore Chiang Mai's vibrant artisan scene with a private visit to exclusive artisan workshops (e.g., silk weaving, ceramics), observing traditional craftsmanship and mindful creation. Enjoy a final healthy lunch in Chiang Mai. Private transfer to Chiang Mai International Airport for your luxury domestic flight to Koh Samui. Upon arrival at Samui International Airport (USM), a private luxury transfer will take you to Kamalaya Koh Samui, a world-renowned holistic wellness sanctuary nestled on a hillside overlooking the Gulf of Thailand. Settle into your serene accommodation and begin your personalized wellness program. Enjoy a light, detox-friendly dinner as part of your Kamalaya experience.</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Kamalaya Koh Samui</span></p>
+        
+       <div class="meal-highlight-box">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Lunch</span>
+                    <span class="meal-name">Lanna Vitality: Final Healthy Thai Lunch in Chiang Mai</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="meal-highlight-box" style="margin-top: 10px;">
+            <div class="meal-entry">
+                <i class="fa-solid fa-utensils"></i>
+                <div class="meal-info">
+                    <span class="meal-tag">Dinner</span>
+                    <span class="meal-name">Detox Gastronomy: Healing & Wholesome Dinner at Soma</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 18: Holistic Rejuvenation at Kamalaya </h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="Traditional-Thai-Herbal-Massage-Kamalaya-Koh-Samui-Thailand-scaled-1580x0-c-default.webp" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="Kamalaya1940x1300.jpg" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Koh Samui</p>
+        <p><span class="detail-label">ACTIVITIES</span>  Dedicate your entire day to personalized wellness at Kamalaya Koh Samui. Your program will be tailored to your goals, potentially including: Guided meditation, group yoga or Pilates class; Personalized spa treatment (e.g., Traditional Thai massage, detoxifying wrap, Ayurvedic therapy); Holistic consultation (naturopathy, traditional Chinese medicine), fitness session, or relaxation by the pool. Enjoy a healthy, gourmet wellness dinner, designed to nourish and cleanse, as part of Kamalaya's integrated approach to well-being. Participate in an evening talk or workshop on a wellness topic (e.g., nutrition, mindfulness).</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Kamalaya Koh Samui</span></p>
+        
+       <div class="meal-highlight-box">
+    <div class="meal-entry">
+        <i class="fa-solid fa-utensils"></i>
+        <div class="meal-info">
+            <span class="meal-tag">Breakfast</span>
+            <span class="meal-name">Vitality Start: Nutritive Buffet & Superfood Elixirs at Soma</span>
+        </div>
+    </div>
+</div>
+
+<div class="meal-highlight-box" style="margin-top: 10px;">
+    <div class="meal-entry">
+        <i class="fa-solid fa-utensils"></i>
+        <div class="meal-info">
+            <span class="meal-tag">Dinner</span>
+            <span class="meal-name">Healing Flavors: Gourmet Detox Cuisine Overlooking the Gulf</span>
+        </div>
+    </div>
+</div>
+    </div>
+</div>
+
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 19: Deep Healing & Coastal Tranquility</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="kampicformastercardpriceless02__L.jpg" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="Plunge-Pool-Kamalaya-1440x810.jpg" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Koh Samui</p>
+        <p><span class="detail-label">ACTIVITIES</span> Continue your personalized wellness journey at Kamalaya Koh Samui. Your day could include: Specialized healing session (e.g., reiki, chakra balancing, lymphatic drainage massage); Private yoga or meditation session, or participation in a complimentary activity like a cooking demonstration of healthy cuisine; Time for reflection, journaling, enjoying the serene natural surroundings, or another tailored treatment. Enjoy your final wellness dinner at Kamalaya, perhaps with a special farewell healthy mocktail. Take a quiet evening stroll along the beach or participate in a serene evening ritual.</p>
+     <p><span class="detail-label">ACCOMMODATION</span> <span class="hotel-trigger" style="color:var(--gold); text-decoration:underline; cursor:pointer;">Kamalaya Koh Samui</span></p>
+        
+       <div class="meal-highlight-box">
+    <div class="meal-entry">
+        <i class="fa-solid fa-utensils"></i>
+        <div class="meal-info">
+            <span class="meal-tag">Breakfast</span>
+            <span class="meal-name">Radiant Awakening: Superfood Buffet & Fresh Tropical Fruits at Soma</span>
+        </div>
+    </div>
+</div>
+
+<div class="meal-highlight-box" style="margin-top: 10px;">
+    <div class="meal-entry">
+        <i class="fa-solid fa-utensils"></i>
+        <div class="meal-info">
+            <span class="meal-tag">Dinner</span>
+            <span class="meal-name">Coastal Farewell: Final Wellness Degustation & Signature Mocktails</span>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<div class="itinerary-day">
+    <h4 class="day-heading">Day 20: Departure from Koh Samui</h4>
+    <div class="day-photos">
+        <div class="photo-box">
+            <img src="On-a-teste-pour-vous-KAMALAYA-Luxe-Wellness-Club-02.jpg" alt="Final Breakfast">
+        </div>
+        <div class="photo-box">
+            <img src="1594623175258597.jpg" alt="Departure Transfer">
+        </div>
+    </div>
+    <div class="day-details">
+        <p><span class="detail-label">LOCATION</span>Koh Samui</p>
+        <p><span class="detail-label">ACTIVITIES</span> Enjoy a final healthy breakfast at Kamalaya, perhaps with a last meditation session or a gentle walk to absorb the tranquil energy. Time at leisure to relax, pack, and prepare for your departure, feeling fully rejuvenated. Private luxury transfer to Samui International Airport (USM) for your onward international departure to Bangkok International Airport (BKK), carrying with you a renewed sense of well-being and cherished memories of your transformative journey.</p>
+      <p><span class="detail-label">ACCOMMODATION</span> N/A (Departure)</p>
+        
+       <div class="meal-highlight-box">
+    <div class="meal-entry">
+        <i class="fa-solid fa-utensils"></i>
+        <div class="meal-info">
+            <span class="meal-tag">Breakfast</span>
+            <span class="meal-name">Nourished Departure: Final Wholesome Breakfast at Soma</span>
+        </div>
+    </div>
+</div>
+
+<div class="meal-highlight-box" style="margin-top: 10px;">
+    <div class="meal-entry">
+        <i class="fa-solid fa-utensils"></i>
+        <div class="meal-info">
+            <span class="meal-tag">Lunch</span>
+            <span class="meal-name">Island Fare: Light & Healthy Lakeside Lunch at Amrita</span>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="logistics-section" style="margin-top: -60px; padding: 40px 60px 80px; background-color: var(--ivory); border-top: 1px solid rgba(194, 157, 107, 0.2);">
+    <div class="itinerary-container" style="max-width: 900px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 50px;">
+            <span class="section-label" style="display: block; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 15px;">The Fine Details</span>
+            <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-style: italic; font-weight: 300; color: var(--ink); letter-spacing: -0.5px;">Inclusions & Exclusions</h3>
+            <div style="width: 40px; height: 1px; background: var(--gold); margin: 20px auto;"></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px;">
+            <div class="logistics-box">
+                <h4 style="font-family: 'Tenor Sans', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid rgba(194, 157, 107, 0.3);">What is Included</h4>
+                <ul style="list-style: none; font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; line-height: 1.5; color: var(--clay); letter-spacing: 0.2px;">
+                    <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;"><i class="fas fa-plus" style="color: var(--gold); font-size: 0.6rem; margin-top: 6px;"></i> 19 Nights of Wellness Luxury: Curated stays at Amansara (Siem Reap), Park Hyatt Saigon, Anantara Hoi An, Banyan Tree Lang Co, Rosewood Luang Prabang, Raya Heritage (Chiang Mai), and Kamalaya (Koh Samui).</li>
+                    <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;"><i class="fas fa-plus" style="color: var(--gold); font-size: 0.6rem; margin-top: 6px;"></i> Holistic Wellness Program: Personalized spa consultations, daily private yoga/meditation sessions, and signature treatments including Khmer massages and traditional Lao healing.</li>
+                    <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;"><i class="fas fa-plus" style="color: var(--gold); font-size: 0.6rem; margin-top: 6px;"></i> Spiritual & Natural Immersion: Private sunrise at Angkor Wat, mindful boat trips on Tonle Sap and the Mekong, and heritage walks through Luang Prabang.</li>
+                    <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;"><i class="fas fa-plus" style="color: var(--gold); font-size: 0.6rem; margin-top: 6px;"></i> Curated Healing Gastronomy: Daily breakfast, farm-to-table lunch experiences, and specialized plant-based or contemporary healthy dinner menus.</li>
+                    <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;"><i class="fas fa-plus" style="color: var(--gold); font-size: 0.6rem; margin-top: 6px;"></i> Seamless Regional Logistics: All internal luxury flights (Cambodia-Vietnam-Laos-Thailand) and private chauffeur-driven transfers throughout the journey.</li>
+                </ul>
+            </div>
+
+            <div class="logistics-box">
+                <h4 style="font-family: 'Tenor Sans', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 25px; padding-bottom: 10px; border-bottom: 1px solid rgba(194, 157, 107, 0.3);">What is Excluded</h4>
+                <ul style="list-style: none; font-family: 'Cormorant Garamond', serif; font-size: 1.05rem; line-height: 1.5; color: var(--clay); opacity: 0.7; letter-spacing: 0.2px;">
+                    <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;"><i class="fas fa-minus" style="color: #ccc; font-size: 0.6rem; margin-top: 6px;"></i> International airfare to Siem Reap (SAI) and from Koh Samui (USM).</li>
+                    <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;"><i class="fas fa-minus" style="color: #ccc; font-size: 0.6rem; margin-top: 6px;"></i> Entry visa fees for Cambodia, Vietnam, Laos, and Thailand.</li>
+                    <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;"><i class="fas fa-minus" style="color: #ccc; font-size: 0.6rem; margin-top: 6px;"></i> Personal expenses such as laundry, long-distance calls, and alcoholic beverages not specified in the menus.</li>
+                    <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;"><i class="fas fa-minus" style="color: #ccc; font-size: 0.6rem; margin-top: 6px;"></i> Comprehensive travel insurance (mandatory for participation).</li>
+                    <li style="margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px;"><i class="fas fa-minus" style="color: #ccc; font-size: 0.6rem; margin-top: 6px;"></i> Gratuities for specialist wellness practitioners, private guides, and chauffeurs.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="dossier-section" style="padding: 180px 60px; background-color: var(--ivory); position: relative; overflow: hidden;">
+    
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120%; height: 1px; background: linear-gradient(90deg, transparent, rgba(194, 157, 107, 0.2), transparent); z-index: 1;"></div>
+
+    <div style="max-width: 1000px; margin: 0 auto; position: relative; z-index: 2;">
+        
+        <div style="display: grid; grid-template-columns: 80px 1fr 350px; align-items: center; gap: 0;">
+            
+            <div style="transform: rotate(-180deg); writing-mode: vertical-rl; text-align: right;">
+               </div>
+
+            <div style="background: var(--ink); padding: 120px 80px; position: relative; border-left: 1px solid var(--gold);">
+                <div style="position: absolute; top: -40px; left: 40px;">
+                     <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 5rem; font-style: italic; font-weight: 300; color: var(--gold); line-height: 1; letter-spacing: -2px; margin: 0;">Nature & Wellness</h3>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <p style="font-family: 'Cormorant Garamond'; font-size: 1.15rem; color: var(--ivory); opacity: 0.9; font-style: italic; max-width: 360px; line-height: 1.6;">
+                   A 20-day / 19-night restorative sanctuary through Cambodia, Vietnam, Laos, and Thailand—meticulously designed for physical rejuvenation and spiritual clarity.
+                    </p>
+                    <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 10px;">
+                        <a href="#contact" class="btn-plan" style="display: inline-block; padding: 18px 40px; background: var(--gold); color: var(--ink); text-decoration: none; font-family: 'Tenor Sans'; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-weight: bold; transition: 0.4s var(--ease);">
+                            Begin Consultation
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+          <div style="margin-left: -100px; background: var(--ivory); padding: 60px; border: 1px solid var(--gold); box-shadow: 40px 40px 100px rgba(0,0,0,0.1);">
+    <div style="text-align: center;">
+        <span style="display: block; font-family: 'Tenor Sans'; font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--ink); margin-bottom: 20px; opacity: 0.5;">Investment</span>
+        <h5 style="font-family: 'Cormorant Garamond'; font-size: 1rem; font-weight: 300; color: var(--ink); line-height: 1.4; margin: 0;"><a href="Plan-Your-Trip.html?package=Wellness%20%26%20Rejuvenation%20%7C%20Multi-Country%20%7C%20L'INDOCHINE%20Sovereign%20Journeys" style="font-family: Tenor Sans, sans-serif; font-size: 0.8rem; letter-spacing: 0.15em; color: var(--gold); text-decoration: none; text-transform: uppercase;">Inquire</a></h5>
+        <div style="width: 30px; height: 1px; background: var(--gold); margin: 30px auto;"></div>
+        <span style="display: block; font-family: 'Tenor Sans'; font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--ink); opacity: 0.5;">Price Per Guest</span>
+        <span style="display: block; font-family: 'Tenor Sans'; font-size: 7px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin-top: 10px;">Fully Inclusive Wellness Journey</span>
+    </div>
+</div>
+                
+                <div style="position: absolute; bottom: 15px; right: 15px; width: 40px; height: 40px; border-right: 1px solid var(--gold); border-bottom: 1px solid var(--gold);"></div>
+            </div>
+
+       </section>
+
+    </div>
+</section>
+    </div>
+</section>
+                </div>
+            </div>
+        </div>
+    </section>
+      <footer>
+    <div class="footer-main">
+        <div class="footer-col">
+            <h4>Destinations</h4>
+            <ul>
+                <li><a href="cambodia.html">Cambodia</a></li>
+                <li><a href="Laos.html">Laos</a></li>
+                <li><a href="Vietnam.html">Vietnam</a></li>
+                <li><a href="Thailand.html">Thailand</a></li>
+                <li><a href="Multi-country.html">Multi-Country</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-col">
+            <h4>Experiences</h4>
+            <ul>
+                <li><a href="Culture-Heritage.html">Culture & Heritage</a></li>
+                <li><a href="Romantic-Journeys.html">Romantic Getaways</a></li>
+                <li><a href="Nature-Adventure.html">Nature & Adventure</a></li>
+                <li><a href="Wellness-Rejuvenation.html">Wellness & Rejuvenation</a></li>
+                <li><a href="Family-Journeys.html">Family Journeys</a></li>
+                <li><a href="Culinary-Journeys.html">Culinary Journeys</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col footer-contact">
+            <h4>Connect with Us</h4>
+            <p>+855 95 267 257</p>
+            <p>contact@l'indochine.com</p>
+            
+            <div class="footer-social">
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-2.21c0-.837.39-1.29 1.121-1.29h2.879v-4.498c-.443-.059-1.968-.202-3.726-.202-3.689 0-6.274 2.247-6.274 6.46v1.74z"/></svg>
+                </a>
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <div class="footer-cta-box" style="background: rgba(194, 157, 107, 0.05); padding: 30px; border: 1px solid rgba(194, 157, 107, 0.2);">
+                <h4 style="margin-bottom: 20px;">Curate Your Legacy</h4>
+                <a href="Plan-Your-Trip.html" class="btn-plan" style="display: block; text-align: center; margin-bottom: 20px;">Plan Your Trip</a>
+                <div style="display: flex; justify-content: space-between;">
+                    <a href="About-Us.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ABOUT US</a>
+                    <a href="Accommodation.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ACCOMMODATION</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="copyright">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+        <div class="footer-bottom-links">
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="Terms&Conditions.html">Terms & Conditions</a>
+            <a href="#" id="back-to-top">BACK TO TOP &#10142;</a>
+        </div>
+    </div>
+</footer>
+
+     <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+       // Hotel Detail Data
+const hotelDetails = {
+     "Amansara": {
+        desc: "Formerly the guest villa of King Sihanouk, this mid-century masterpiece offers a private, serene retreat.",
+        images: ["amansara_-cambodia-main-swimming-pool_high-res_10083.jpg", "Pool Suite, Amansara, Cambodia_2.jpg", "Amansara-F_B-Dining-Room-1024x683.webp"],
+    },
+     "Park Hyatt Saigon": {
+        desc: "A sophisticated urban sanctuary overlooking the historic Opera House. It combines a residential feel with timeless French-colonial décor.",
+        images: ["exterior.jpg", "Park-Hyatt-Saigon-10.png", "4-park-hyatt-saigon-opera-43.jpg"]
+        },
+    "Anantara Hoi An": {
+        desc: "Charming French colonial style on the banks of the Thu Bon River. Its lush courtyard gardens offer a sophisticated refuge near the Ancient Town.",
+        images: ["Anantara-5.webp", "anantara_hoi_an_resort_guest_room_anantara_garden_view_suite_living_area_1920x1037.webp", "Anantara_Hoi_An_Resort_Restaurant_Hoi_An_Riverside_Outdoor_Dining_Area.jpg"]
+        },
+    "Bayan Tree Lang Co": {
+        desc: "An all-pool villa sanctuary nestled between the Truong Son Mountains and a private golden beach, inspired by the artistic heritage of Vietnamese dynasties.",
+        images: ["banyan-tree-lang-UNE.png", "banyan-tree-lang-10.png", "BT- Banyan Tree Spa-Treatment Villa 169.jpg"]
+        },
+    "Amantaka": {
+        desc: "Housed in a graceful French colonial estate within the heart of the UNESCO heritage town, Amantaka offers high-ceilinged suites and a profound sense of space. It is a sanctuary of peace just steps from the vibrant night market.",
+        images: ["72850950_XL.webp", "b171005024-banner-size.jpg", "Amantaka-Laos-pool-suite.jpg"]
+    },
+     "Raya Heritage": {
+        desc: "Chiang Mai's first 'artisanal resort,' situated on the tranquil banks of the Ping River. This serene sanctuary features a clean, contemporary take on Lanna culture.",
+        images: ["02-Courtyard-1920x862.jpg", "dining-khukhao-01-hero.jpg", "kramm.jpg"]
+    },
+      "Kamalaya Koh Samui": {
+        desc: "A world-renowned wellness sanctuary built around a century-old meditation cave. It offers a holistic approach to health and emotional healing.",
+        images: ["sea-view-villa-thailand.jpg", "Kamalaya-Koh-Samui-Wellness-Sanctuary_2019_Villa-Sea-View-looking-out (1).webp", "Wellness-Treatment-Room-Kamalaya-1440x810.jpg"]
+    },
+};
+
+const overlay = document.getElementById('hotel-overlay');
+const closeBtn = document.getElementById('close-overlay');
+
+function openHotelDetail(name) {
+    const data = hotelDetails[name];
+    if (!data) return;
+
+    document.getElementById('modal-name').innerText = name;
+    document.getElementById('modal-desc').innerText = data.desc;
+    document.getElementById('modal-location').innerText = data.location;
+    document.getElementById('modal-img-1').src = data.images[0];
+    document.getElementById('modal-img-2').src = data.images[1];
+    document.getElementById('modal-img-3').src = data.images[2];
+
+    overlay.style.display = 'block';
+    gsap.to(overlay, { autoAlpha: 1, duration: 0.6, ease: "power2.out" });
+}
+
+closeBtn.onclick = () => {
+    gsap.to(overlay, { autoAlpha: 0, duration: 0.4, onComplete: () => {
+        overlay.style.display = 'none';
+    }});
+};
+
+// This connects the click event to the spans you created in Step 1
+document.querySelectorAll('.hotel-trigger').forEach(trigger => {
+    trigger.onclick = () => openHotelDetail(trigger.innerText.trim());
+});
+        // Animations
+        gsap.from(".overview-title-box, .overview-content", {
+            scrollTrigger: { trigger: ".overview-section", start: "top 80%" },
+            y: 50, opacity: 0, duration: 1.2, stagger: 0.3, ease: "power3.out"
+        });
+
+         // --- 1. Custom Cursor Logic ---
+    const follower = document.getElementById('cursor-follower');
+    const fText = follower.querySelector('span');
+    
+    document.addEventListener('mousemove', (e) => {
+        gsap.to(follower, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: "power2.out" });
+    });
+
+    document.querySelectorAll('a, .mega-item, .hotel-card, #close-overlay').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            gsap.to(follower, { width: 100, height: 100, background: 'rgba(194, 157, 107, 0.15)', border: 'none' });
+            fText.style.opacity = 1;
+        });
+        el.addEventListener('mouseleave', () => {
+            gsap.to(follower, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+            fText.style.opacity = 0;
+        });
+    });
+         // Back to Top Smooth Scroll
+    document.getElementById('back-to-top').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+     // Mega Menu Caret positioning
+        document.querySelectorAll('.dropdown').forEach(drop => {
+            const menu = drop.querySelector('.mega-menu');
+            const link = drop.querySelector('a');
+            drop.addEventListener('mouseenter', () => {
+                const linkRect = link.getBoundingClientRect();
+                const linkCenter = linkRect.left + (linkRect.width / 2);
+                menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+            });
+        });
+        // 1. Initialize the Map
+const map = L.map('itinerary-map', {
+    center: [14.0, 103.0], 
+    zoom: 5,
+    scrollWheelZoom: false,
+    attributionControl: false
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_2lx1_1_df409c5b8e73db869729b01d', {
+    maxZoom: 19
+}).addTo(map);
+
+// 2. STYLING: Markers
+const starIcon = L.divIcon({
+    className: 'star-marker',
+    html: `<i class="fa-solid fa-star" style="color: #C29D6B; font-size: 18px; text-shadow: 0 0 5px rgba(0,0,0,0.2);"></i>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+});
+
+const dotIcon = L.divIcon({
+    className: 'dot-marker',
+    html: `<div style="background-color: #C29D6B; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid #0A0A0A;"></div>`,
+    iconSize: [10, 10],
+    iconAnchor: [5, 5]
+});
+
+// 3. DATA: Updated Sequence (Stars for Siem Reap and Bangkok only)
+const locations = [
+    { name: "Siem Reap", coords: [13.3671, 103.8448], type: "star", label: "The Journey Begins" },
+    { name: "Ho Chi Minh City", coords: [10.7769, 106.7009], type: "dot", label: "Vibrant Metropolis" },
+    { name: "Hoi An", coords: [15.8801, 108.3273], type: "dot", label: "Ancient Town" },
+    { name: "Lang Co", coords: [16.2307, 108.0163], type: "dot", label: "Coastal Serenity" },
+    { name: "Luang Prabang", coords: [19.8833, 102.1333], type: "dot", label: "Mekong Heritage" },
+    { name: "Chiang Mai", coords: [18.7883, 98.9853], type: "dot", label: "Northern Highlands" },
+    { name: "Koh Samui", coords: [9.5120, 100.0136], type: "dot", label: "Island Paradise" },
+    { name: "Bangkok", coords: [13.7563, 100.5018], type: "star", label: "Final Departure" }
+];
+
+// 4. LOGIC: Add Markers and build Path
+const routeCoords = [];
+
+locations.forEach(loc => {
+    routeCoords.push(loc.coords);
+    
+    L.marker(loc.coords, { icon: loc.type === "star" ? starIcon : dotIcon })
+        .addTo(map)
+        .bindPopup(`
+            <b style="font-family: 'Cormorant Garamond'; color: #0A0A0A; font-size: 14px;">${loc.name}</b><br>
+            <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #C29D6B;">${loc.label}</span>
+        `);
+});
+
+// 5. DRAW PATH: Siem Reap -> ... -> Koh Samui -> Bangkok
+const travelPath = L.polyline(routeCoords, {
+    color: '#C29D6B',
+    weight: 2,
+    opacity: 0.8,
+    dashArray: '5, 10', 
+    smoothFactor: 1
+}).addTo(map);
+
+// Auto-adjust view
+map.fitBounds(travelPath.getBounds(), { padding: [70, 70] });
+    // 1. Mobile Menu Toggles
+const mOpen = document.getElementById('menu-open');
+const mClose = document.getElementById('menu-close');
+const mOverlay = document.getElementById('mobile-overlay');
+
+if(mOpen) mOpen.addEventListener('click', () => mOverlay.classList.add('active'));
+if(mClose) mClose.addEventListener('click', () => mOverlay.classList.remove('active'));
+
+// 2. Mobile Mega Menu Accordion Logic
+document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+    trigger.addEventListener('click', function() {
+        const content = this.nextElementSibling;
+        const icon = this.querySelector('span');
+        content.classList.toggle('active');
+        icon.innerText = content.classList.contains('active') ? "−" : "+";
+    });
+});
+
+// 3. Original Desktop Hover Positioning
+document.querySelectorAll('.desktop-nav .dropdown').forEach(drop => {
+    const menu = drop.querySelector('.mega-menu');
+    const link = drop.querySelector('a');
+    drop.addEventListener('mouseenter', () => {
+        if (menu && link) {
+            const linkRect = link.getBoundingClientRect();
+            const linkCenter = linkRect.left + (linkRect.width / 2);
+            menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+        }
+    });
+});  
+   </script>
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>
+

@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luang Prabang | L'INDOCHINE Sovereign Journeys</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ivory: #F0EDE5;
+            --ink: #0A0A0A;
+            --gold: #C29D6B;
+            --clay: #1A1917;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ==========================================
+           BASE STYLES & CINEMATIC OVERLAYS
+           ========================================== */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            cursor: none !important; 
+        }
+        body { 
+            background-color: var(--ivory); 
+            color: var(--ink); 
+            font-family: 'Tenor Sans', sans-serif; 
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+        .vignette { 
+            position: fixed; 
+            inset: 0; 
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%); 
+            pointer-events: none; 
+            z-index: 100; 
+            opacity: 0.4; 
+        }
+        .grain { 
+            position: fixed; 
+            inset: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: url('https://grainy-gradients.vercel.app/noise.svg'); 
+            opacity: 0.07; 
+            pointer-events: none; 
+            z-index: 1000; 
+            mix-blend-mode: multiply; 
+        }
+
+        /* Bespoke Cursor */
+        #cursor-follower {
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px;
+            border: 0.5px solid var(--gold); border-radius: 50%; z-index: 10000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear, width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor-follower span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; }
+
+        /* ==========================================
+           STABLE DESKTOP NAVIGATION
+           ========================================== */
+        nav { 
+            position: fixed; top: 0; left: 0; width: 100%; padding: 0 60px; 
+            height: 90px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 999; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .nav-links { display: flex; list-style: none; gap: 40px; height: 100%; }
+        .nav-links > li { display: flex; align-items: center; position: relative; }
+        .nav-links > li > a {
+            text-decoration: none; color: var(--ivory); font-size: 10px; letter-spacing: 3px;
+            text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            transition: color 0.4s var(--ease); padding: 35px 0; position: relative; padding-right: 18px;
+        }
+        .nav-links > li > a:hover { color: var(--gold); }
+        
+        .dropdown { position: static; }
+        .dropdown > a::after {
+            content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            width: 0; height: 0; border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+            border-top: 4px solid var(--gold); transition: transform 0.4s var(--ease); opacity: 0.6;
+        }
+        .dropdown:hover > a::after { transform: translateY(-50%) rotate(180deg); opacity: 1; }
+
+        /* Centered CSS Mega Menu */
+        .mega-menu {
+            position: fixed; top: 90px; left: 0; width: 100vw; background: var(--ink); padding: 40px 60px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; opacity: 0; visibility: hidden; 
+            pointer-events: none; transform: translateY(10px); transition: opacity 0.4s var(--ease), transform 0.4s var(--ease), visibility 0.4s;
+            border-bottom: 1px solid rgba(194, 157, 107, 0.3); z-index: 1000;
+        }
+        .mega-menu::before {
+            content: ''; position: absolute; top: -10px; left: var(--triangle-left, 50%); transform: translateX(-50%);
+            width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--ink); pointer-events: none;
+        }
+        .dropdown:hover .mega-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+
+        .mega-item {
+            position: relative; height: 250px; overflow: hidden; text-decoration: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mega-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); filter: brightness(0.5); }
+        .mega-item span {
+            position: absolute; z-index: 2; color: var(--ivory); font-family: 'Cormorant Garamond'; font-size: 1.2rem; 
+            font-style: italic; letter-spacing: 1px; text-align: center; padding: 0 10px; transition: transform 0.4s var(--ease);
+        }
+        .mega-item:hover img { transform: scale(1.1); filter: brightness(0.7); }
+        .mega-item::after { content: ''; position: absolute; inset: 0; border: 0px solid var(--gold); transition: 0.4s var(--ease); }
+        .mega-item:hover::after { border: 1px solid var(--gold); inset: 10px; }
+
+        .btn-plan {
+            text-decoration: none; color: var(--gold); font-size: 9px; letter-spacing: 2px;
+            text-transform: uppercase; border: 1px solid var(--gold); padding: 12px 25px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); transition: all 0.5s var(--ease); display: inline-block;
+        }
+        .btn-plan:hover { background: var(--gold); color: var(--ink); }
+
+        /* ==========================================
+           HERO & EDITORIAL INTRO
+           ========================================== */
+        .siem-reap-hero {
+            height: 75vh;
+            background: linear-gradient(rgba(10,10,10,0.5), rgba(10,10,10,0.2)), url('hero-laos-luang-prabang-1920.webp') center/cover no-repeat;
+            display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 20px;
+        }
+        .hero-title-box h1 {
+            font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 7vw, 6rem);
+            font-style: italic; font-weight: 300; color: var(--ivory); line-height: 1; margin-bottom: 15px;
+        }
+        .hero-title-box p { font-size: 11px; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); }
+
+        .page-header {
+            height: 100vh;
+            display: flex; align-items: center; justify-content: center; text-align: center; color: var(--ivory); position: relative;
+        }
+        .page-header .hero-subtitle {
+            display: block; letter-spacing: 15px; text-transform: uppercase; font-size: 20px; color: #FFFFFF; font-weight: 700; margin-bottom: 25px;
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.8), 0 0 10px rgba(194, 157, 107, 0.5);
+        }
+        .page-header h1 { font-family: 'Cormorant Garamond'; font-size: 9vw; font-style: italic; font-weight: 300; text-shadow: 0 4px 30px rgba(0,0,0,0.6); }
+
+        .editorial-intro {
+            padding: 140px 80px; max-width: 1440px; margin: 0 auto;
+            display: grid; grid-template-columns: 1.1fr 1fr; gap: 80px; align-items: center;
+        }
+        .editorial-text h2 {
+            font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 4vw, 4.2rem);
+            font-weight: 300; line-height: 1.1; color: var(--ink); margin-bottom: 40px;
+        }
+        .editorial-text p { font-size: 15px; line-height: 1.8; opacity: 0.85; margin-bottom: 25px; text-align: justify; }
+        .editorial-gallery { position: relative; height: 620px; width: 100%; }
+        .img-frame { position: absolute; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.15); background: var(--clay); }
+        .img-frame img, .img-frame video { width: 100%; height: 100%; object-fit: cover; }
+        .frame-primary { top: 0; left: 10%; width: 75%; height: 60%; z-index: 2; }
+        .frame-secondary { bottom: 0; right: 0; width: 50%; height: 50%; z-index: 3; border: 8px solid var(--ivory); }
+
+        /* ==========================================
+           INTERACTIVE TEMPLE HIGHLIGHTS GRID
+           ========================================== */
+        .highlights-section { padding: 100px 60px 140px; background: var(--ivory); max-width: 1440px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 80px; }
+        .section-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; font-weight: 300; letter-spacing: 1px; color: var(--ink); }
+        .section-header .line-divider { width: 60px; height: 1px; background: var(--gold); margin: 25px auto 0; }
+
+        .temple-grid { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 35px; row-gap: 50px; min-height: 600px; }
+        .temple-card { display: flex; flex-direction: column; background: transparent; }
+        .temple-img-wrap { position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; background: var(--clay); margin-bottom: 20px; }
+        .temple-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease); }
+        .temple-card:hover .temple-img-wrap img { transform: scale(1.06); }
+        
+        .temple-trigger-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 15px; border-bottom: 1px solid rgba(10, 10, 10, 0.15); transition: border-color 0.4s; }
+        .temple-card:hover .temple-trigger-bar { border-color: var(--gold); }
+        .temple-name { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--ink); font-weight: 400; transition: color 0.4s; }
+        .temple-card:hover .temple-name { color: var(--gold); }
+        
+        .temple-arrow { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; transition: transform 0.5s var(--ease); }
+        .temple-arrow svg { width: 100%; fill: none; stroke: var(--ink); stroke-width: 1.2px; transition: stroke 0.4s; }
+        .temple-card:hover .temple-arrow svg { stroke: var(--gold); }
+
+        .temple-details-drawer { max-height: 0; overflow: hidden; transition: max-height 0.6s var(--ease); }
+        .drawer-inner { padding: 20px 5px 10px; }
+        .drawer-inner p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 17px;
+            line-height: 1.65;
+            color: rgba(10, 10, 10, 0.85);
+            text-align: left;
+        }
+
+        /* Card Active States */
+        .temple-card.is-active .temple-arrow { transform: rotate(180deg); }
+        .temple-card.is-active .temple-trigger-bar { border-color: var(--gold); }
+        .temple-card.is-active .temple-name { color: var(--gold); }
+        .temple-card.is-active .temple-details-drawer { max-height: 300px; }
+
+        /* Editorial Pagination Elements */
+        .pagination-container {
+            display: flex; justify-content: center; align-items: center;
+            gap: 24px; margin-top: 80px; border-top: 1px solid rgba(10, 10, 10, 0.08); padding-top: 40px;
+        }
+        .pag-arrow {
+            background: none; border: 1px solid rgba(10, 10, 10, 0.15);
+            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+            transition: all 0.4s var(--ease); outline: none;
+        }
+        .pag-arrow svg { width: 16px; height: 16px; fill: none; stroke: var(--ink); stroke-width: 1.2px; transition: stroke 0.4s; }
+        .pag-arrow:hover:not(:disabled) { border-color: var(--gold); }
+        .pag-arrow:hover:not(:disabled) svg { stroke: var(--gold); }
+        .pag-arrow:disabled { opacity: 0.25; }
+
+        .pag-numbers { display: flex; gap: 8px; }
+        .pag-num {
+            background: none; border: none; font-family: 'Tenor Sans', sans-serif;
+            font-size: 11px; letter-spacing: 1.5px; color: var(--ink); width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center; opacity: 0.4;
+            transition: all 0.4s var(--ease); outline: none;
+        }
+        .pag-num:hover { opacity: 1; color: var(--gold); }
+        .pag-num.is-active { opacity: 1; color: var(--gold); border-bottom: 1px solid var(--gold); }
+
+        /* ==========================================
+           FOOTER STYLES
+           ========================================== */
+        footer { padding: 100px 60px 40px; background: var(--ivory); border-top: 1px solid rgba(0,0,0,0.08); color: var(--ink); }
+        .footer-main { display: grid; grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr; gap: 60px; margin-bottom: 80px; }
+        .footer-col h4 { font-family: 'Tenor Sans', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 30px; color: var(--gold); font-weight: 600; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 14px; }
+        .footer-col ul li a { text-decoration: none; color: var(--ink); font-size: 14px; letter-spacing: 0.5px; opacity: 0.8; transition: all 0.4s var(--ease); }
+        .footer-col ul li a:hover { opacity: 1; color: var(--gold); padding-left: 8px; }
+        .footer-contact p { font-size: 14px; letter-spacing: 0.5px; margin-bottom: 15px; opacity: 0.9; }
+        .footer-social { display: flex; gap: 15px; margin-top: 25px; }
+        .social-icon { width: 42px; height: 42px; border: 1px solid rgba(0,0,0,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.5s var(--ease); }
+        .social-icon svg { width: 14px; fill: var(--ink); transition: all 0.5s var(--ease); }
+        .social-icon:hover { border-color: var(--gold); background: var(--gold); transform: translateY(-3px); }
+        .social-icon:hover svg { fill: var(--ivory); }
+        .footer-bottom { padding-top: 40px; border-top: 1px solid rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; }
+        .copyright { font-size: 11px; letter-spacing: 1.5px; opacity: 0.6; text-transform: uppercase; }
+        .footer-bottom-links { display: flex; gap: 30px; }
+        .footer-bottom-links a { text-decoration: none; color: var(--ink); font-size: 11px; letter-spacing: 1px; opacity: 0.7; text-transform: uppercase; transition: 0.3s; }
+
+        /* ==========================================
+           RESPONSIVE DESIGN MEDIA QUERIES
+           ========================================== */
+        @media (min-width: 1025px) {
+            .menu-trigger, .mobile-overlay { display: none; }
+            .desktop-nav { display: flex !important; }
+        }
+
+        @media (max-width: 1100px) {
+            .editorial-intro { grid-template-columns: 1fr; gap: 50px; padding: 100px 40px; }
+            .editorial-gallery { height: 500px; }
+            .temple-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 1024px) {
+            nav { padding: 0 30px; }
+            .nav-links { gap: 20px; }
+            .mega-menu { display: none !important; }
+            .footer-main { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+            
+            /* Mobile Overlay Panel Layouts Setup */
+            .desktop-nav { display: none !important; }
+            .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+            .burger .line { width: 25px; height: 1px; background: var(--gold); display: block; margin: 6px 0; }
+            .mobile-overlay { position: fixed; inset: 0; background: var(--ink); z-index: 5000; transform: translateY(-100%); transition: transform 0.8s var(--ease); overflow-y: auto; padding: 100px 40px; }
+            .mobile-overlay.active { transform: translateY(0); }
+            .menu-close { position: absolute; top: 30px; right: 30px; color: var(--gold); font-size: 24px; cursor: pointer; }
+            .mobile-nav-links { list-style: none; }
+            .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+            .mobile-nav-links a, .mobile-drop-trigger { font-family: 'Cormorant Garamond'; font-size: 2rem; color: var(--ivory); text-decoration: none; font-style: italic; }
+            .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+            .mobile-mega-content { display: none; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+            .mobile-mega-content.active { display: grid; }
+            .mobile-mega-item { text-decoration: none; }
+            .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; opacity: 0.7; }
+            .mobile-mega-item span { display: block; color: var(--ivory); font-size: 0.7rem; text-transform: uppercase; margin-top: 5px; letter-spacing: 1px; }
+            .mobile-partner-list { list-style: none; margin-top: 20px; }
+            .mobile-partner-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 8px; }
+            .mobile-partner-list a { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+            .mobile-partner-list .arrow { font-size: 14px; color: var(--gold); font-family: sans-serif; font-style: normal; }
+        }
+
+        @media (max-width: 768px) {
+            #cursor-follower { display: none !important; }
+            * { cursor: auto !important; }
+            nav { padding: 0 20px; height: 70px; }
+            .logo { font-size: 1.2rem; }
+            .page-header h1 { font-size: 15vw; }
+            .page-header .hero-subtitle { font-size: 14px; letter-spacing: 8px; }
+            .temple-grid { grid-template-columns: 1fr; row-gap: 40px; }
+            .highlights-section { padding: 60px 20px 100px; }
+            .footer-main { grid-template-columns: 1fr; gap: 40px; }
+            .footer-bottom { flex-direction: column; gap: 20px; text-align: center; }
+            .footer-bottom-links { justify-content: center; flex-wrap: wrap; gap: 15px; }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 { font-size: 18vw; }
+        }
+       /* Wrapper to align links and pagination in one line */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px; /* Adjust as needed for your layout */
+    margin: 80px auto 0;
+    padding-top: 40px;
+    border-top: 1px solid rgba(10, 10, 10, 0.08);
+}
+
+/* Make destination names larger and prominent */
+.dest-link-big {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; /* Larger font size */
+    font-style: italic;
+    text-decoration: none;
+    color: var(--ink);
+    transition: color 0.4s var(--ease);
+}
+
+.dest-link-big:hover {
+    color: var(--gold);
+}
+
+/* Ensure pagination container sits nicely in the middle */
+.pagination-container {
+    margin-top: 0; /* Override previous margin */
+    border-top: none; /* Remove duplicate border */
+    padding-top: 0;
+}
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+    <!-- SYSTEM OVERLAYS & CURSOR -->
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div id="cursor-follower"><span>Explore</span></div>
+
+    <!-- NAVIGATION HEADER -->
+    <nav>
+        <a href="index.html" class="logo">L'INDOCHINE</a>
+        
+        <ul class="nav-links desktop-nav">
+            <li class="dropdown"> 
+                <a href="#">Destinations</a>
+                <div class="mega-menu"> 
+                    <a href="cambodia.html" class="mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                    <a href="Vietnam.html" class="mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                    <a href="Thailand.html" class="mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                    <a href="Laos.html" class="mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                    <a href="Multi-country.html" class="mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                </div>
+            </li>
+            <li class="dropdown"> 
+                <a href="#">Themes</a>
+                <div class="mega-menu" style="grid-template-columns: repeat(6, 1fr);">
+                    <a href="Culture-Heritage.html" class="mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                    <a href="Romantic-Journeys.html" class="mega-item"><img src="penin boat 1.jpg"><span>Romantic Journeys</span></a>
+                    <a href="Wellness-Rejuvenation.html" class="mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                    <a href="Family-Journeys.html" class="mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                    <a href="Nature-Adventure.html" class="mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                    <a href="Culinary-Journeys.html" class="mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Partners</a>
+                <div class="mega-menu" style="grid-template-columns: 1.3fr 1fr; padding: 0; overflow: hidden; min-width: 600px;">
+                    <div style="padding: 50px; background: var(--ink);">
+                        <h4 style="color: var(--gold); font-size: 13px; margin-bottom: 35px; letter-spacing: 4px; text-transform: uppercase; font-family: 'Tenor Sans';">B2B & DMC Services</h4>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="Dmc-services.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>DMC Operational Excellence</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="b2b-rates.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>Confidential B2B Tariffs</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="white-label.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>White-Label Ground Handling</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="mice-groups.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>MICE & Incentive Groups</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <p style="margin-top: 30px; font-size: 10px; color: var(--gold); opacity: 0.7; letter-spacing: 2px; text-transform: uppercase;">Your strategic partner in SouthEast Asia.</p>
+                    </div>
+                    <div style="position: relative; background: var(--clay); overflow: hidden;">
+                        <img src="angkor_wat_sunrise2712_67ddcbab8b.jpg" alt="Siem Reap Hub" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+                        <div style="position: absolute; bottom: 35px; left: 35px;">
+                            <span style="display: block; color: var(--ivory); font-family: 'Cormorant Garamond'; font-style: italic; font-size: 22px;">Regional Operations</span>
+                            <span style="display: block; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px;">Siem Reap, Cambodia</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><a href="Accommodation.html">Accommodation</a></li>
+            <li><a href="About-Us.html">About Us</a></li>
+        </ul>
+
+        <div class="menu-trigger" id="menu-open">
+            <div class="burger"><span class="line"></span><span class="line"></span></div>
+        </div>
+
+        <div class="mobile-overlay" id="mobile-overlay">
+            <div class="menu-close" id="menu-close">✕</div>
+            <div class="mobile-scroll-container">
+                <ul class="mobile-nav-links">
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Destinations <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="cambodia.html" class="mobile-mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                            <a href="Vietnam.html" class="mobile-mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                            <a href="Thailand.html" class="mobile-mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                            <a href="Laos.html" class="mobile-mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                            <a href="Multi-country.html" class="mobile-mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                        </div>
+                    </li>
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Themes <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="Culture-Heritage.html" class="mobile-mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                            <a href="Romantic-Journeys.html" class="mobile-mega-item"><img src="penin boat 1.jpg"><span>Romantic Getaways</span></a>
+                            <a href="Wellness-Rejuvenation.html" class="mobile-mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                            <a href="Family-Journeys.html" class="mobile-mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                            <a href="Nature-Adventure.html" class="mobile-mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                            <a href="Culinary-Journeys.html" class="mobile-mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                        </div>
+                    </li>
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Partners <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <div style="grid-column: span 2; width: 100%;">
+                                <ul class="mobile-partner-list">
+                                    <li><a href="Dmc-services.html"><span>DMC Excellence</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="b2b-rates.html"><span>B2B Tariffs</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="white-label.html"><span>White-Label</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="mice-groups.html"><span>MICE Groups</span> <span class="arrow">→</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a href="Accommodation.html">Accommodation</a></li>
+                    <li><a href="About-Us.html">About Us</a></li>
+                    <li><a href="Plan-Your-Trip.html">Plan Your Trip</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="nav-right desktop-nav"><a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a></div>
+    </nav>
+    <!-- Destination Hero -->
+    <header class="siem-reap-hero">
+        <div class="hero-title-box">
+            <h1>Luang Prabang</h1>
+            <p>The Sacred Spiritual Heart of Laos</p>
+        </div>
+    </header>
+
+    <!-- Editorial Narrative Block -->
+    <section class="editorial-intro">
+        <div class="editorial-text">
+            <h2>An enchanted UNESCO realm frozen in time</h2>
+            <p>A journey to Luang Prabang is an intimate, serene soul-restoration. Tucked away in northern Laos at the sacred confluence of the Mekong and Nam Khan rivers, this UNESCO World Heritage town exudes an unparalleled harmony of ancient Theravada Buddhist spirituality and French colonial charm.</p>
+            <p>Framed by misty emerald peaks, golden temple sweeping roofs (sims), and tranquil tree-lined avenues, Luang Prabang preserves centuries of royal traditions and artisanal arts. It remains the spiritual beating heart of the Kingdom of a Million Elephants.</p>
+        </div>
+        <div class="editorial-gallery">
+            <div class="img-frame frame-primary"><img src="luang-prabang-view-1600x900-f50_50.webp" alt="Luang Prabang Heritage"></div>
+            <div class="img-frame frame-secondary"><img src="Kuang-Si-Waterfalls-laos-1.jpg" alt="Kuang Si Cascades"></div>
+        </div>
+    </section>
+
+    <!-- Interactive Highlights Section -->
+    <section class="highlights-section">
+        <div class="section-header">
+            <h2>The Highlights of Luang Prabang</h2>
+            <div class="line-divider"></div>
+        </div>
+
+        <div class="temple-grid">
+            <!-- Wat Xieng Thong -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="a4bc3a7dd66f5ed29b0de662ee8a0d-e481c.jpg" alt="Wat Xieng Thong"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Wat Xieng Thong</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>The crown jewel of Lao temple architecture, known for its iconic sweeping roofs that stretch low to the ground. Marvel at the intricate golden stencil work on dark teak pillars and the famous glass mosaic 'Tree of Life' on its rear outer wall.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kuang Si Waterfalls -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Kuang-Si-Waterfalls-laos-1.jpg" alt="Kuang Si Waterfalls"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Kuang Si Waterfalls</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>A multi-tiered turquoise natural marvel hidden inside dense tropical jungle. Take a refreshing dip in limestone-filtered pools, hike the rainforest trails to the top, and visit the nearby Tat Kuang Si Bear Rescue Centre.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mount Phousi -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="3251191b5e0e4c58b9e065cc7efd214d.webp" alt="Mount Phousi Sunset"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Mount Phousi Sunset Peak</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Ascend 355 steps lined with nagas to reach the gilded Wat Chomsi atop Mount Phousi. Enjoy 360-degree panoramic vistas of the ancient peninsula, the Mekong River, and the surrounding foggy mountain peaks at sunset.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Morning Alms Ceremony (Tak Bat) -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="takbat_getty-5905d6445f9b5810dcc28434.jpg" alt="Tak Bat Alms Ceremony"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Tak Bat Morning Alms</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>At dawn, hundreds of saffron-robed monks walk silently through the quiet heritage streets to collect sticky rice offerings from devout locals. A deeply spiritual, ancient ritual preserved through generations.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pak Ou Caves -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="pak-ou-cave-buddha-statues.jpg" alt="Pak Ou Caves"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Pak Ou Holy Caves</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Located upstream along the Mekong River, these dramatic limestone cliff caves house over 4,000 carved Buddha statues left by pilgrims over centuries, creating a quiet sacred shrine reachable by traditional boat.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Royal Palace Museum -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="2b486db4-ca40-453e-80d2-d53d784b7b95.jpg" alt="Royal Palace Museum"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Royal Palace Museum (Haw Kham)</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Built in 1904 during the French colonial era for King Sisavang Vong, this palace blends classic French and traditional Lao architecture. It houses royal heirlooms and the sacred 83cm gold Prabang Buddha statue.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mekong Sunset Cruise -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Sunset-Cruise-banner-1920x800-1.jpg" alt="Mekong Sunset Cruise"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Mekong Sovereign River Cruise</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Drift along the legendary Mekong River aboard a restored luxury wooden longboat. Enjoy cool aperitifs and artisanal appetizers while watching the setting sun paint the river and mountain ridges in brilliant shades of amber.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ock Pop Tok Craft Center -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="opt-laos-lcc-free-demonstrations-2024.webp" alt="Ock Pop Tok Textile Center"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Ock Pop Tok Living Crafts Centre</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Discover the art of traditional Lao silk weaving and natural dyeing. Set beside the Mekong, master weavers demonstrate intricate techniques preserved across ethnic groups in a social enterprise empowering local women.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Luang Prabang Night Market -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="86c1daf38d611f1ee3e0d3903849409347743d67-1600x1066.jpg" alt="Luang Prabang Night Market"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Artisanal Night Market</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>As evening falls, the main street transforms under soft red paper lanterns into a peaceful night market featuring hand-woven textiles, indigo-dyed scarves, silver jewelry, and unique handcrafted souvenirs directly from local hill tribes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Luang Prabang Morning Market -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="7b9e457111b7a04a34c8e7f7f4b15b26.webp" alt="Morning Market"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Luang Prabang Morning Market</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Wander through vibrant narrow alleyways packed with local vendors selling fresh river fish, organic jungle herbs, sticky rice, wild mushrooms, and exotic local spices. An authentic feast of aromas and colors for food lovers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Authentic Lao Cooking Class -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="66d0340ff0967573a6f73c7ee8c8f281.webp" alt="Lao Cooking Class"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Lao Culinary Masterclass</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Master the unique, aromatic flavours of Lao cuisine in an open-air organic farm pavilion. Learn to craft classic dishes like fresh Laap, steamed fish in banana leaves (Mok Pa), and herbal dipping sauces (Jeow) over traditional wood stoves.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tad Sae Waterfalls -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="4d86f2184c92c32d736caf1df8fedd-f33ae.jpg" alt="Tad Sae Waterfalls"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Tad Sae Cascades</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Reachable via a scenic wooden longtail boat ride down the Nam Khan River, Tad Sae features wide terraced limestone pools surrounded by lush jungle foliage—a serene alternative to Kuang Si during the wet season.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Traditional Bamboo Bridge -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="bamboo-bridge-in-luang-prabang-lao-3cqy.webp" alt="Bamboo Bridge"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Seasonal Bamboo Bridge Walk</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Built by hand each dry season across the Nam Khan River, walking across this creaking bamboo bridge connects you directly to quiet artisan villages and authentic riverfront dining spots on the opposite bank.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ban Xang Khong Village -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="24289747516_fa4de3b224_b.jpg" alt="Ban Xang Khong"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Ban Xang Khong Sa Paper Village</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Explore an idyllic craft village famed for handmaking organic Sa (mulberry tree bark) paper decorated with dried flowers, along with traditional silk and cotton handloom weaving workshops.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Traditional Lao Baci Ceremony -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="laos-baci-by-david-allan-1-1-edited-1-2400x1800.jpg" alt="Baci Blessing Ceremony"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Private Baci Blessing Ceremony</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Participate in an ancient Lao spiritual ritual held to welcome guests, invoke health, and call back the 32 guardian spirits (Kwan) to the body. Elders tie white cotton threads around your wrists with sacred chants and good wishes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wat Sensoukharam -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="wat-sensoukaram.jpg" alt="Wat Sensoukharam"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Wat Sensoukharam</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Built in 1718, this vibrant ruby-and-gold painted temple features dazzling red walls adorned with intricate gold stenciling. Its name reflects the initial donation of 100,000 kip used in its original construction.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Traditional Lao Massage & Herbal Spa -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="18192647-sofitel-luang-prabang-le-spa-room-2_cover_1600x1194.webp" alt="Traditional Lao Spa"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Traditional Lao Herbal Wellness</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Rejuvenate with ancient holistic healing rituals using native wild herbs, lemongrass, and steam therapy followed by therapeutic Lao acupressure massage inside tranquil timber sanctuary settings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nam Et-Phou Louey Night Safari Trek -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="YTDDIoAaMjnXsIXT1Zq47rXfbKxYEzRwUquPURW7.webp" alt="Nam Et-Phou Louey Eco Safari"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Nam Et-Phou Louey Eco-Safari</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>An award-winning conservation expedition into one of Laos' largest protected national parks. Spot nocturnal wildlife, wild deer, civets, and primates from longtail boats guided by local indigenous park rangers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mandala Lao Story House & Heritage Trails -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Luang-prabang.jpg" alt="Colonial Architectural Walk"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">French Colonial Heritage Walk</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Take a guided strolling exploration through the quiet back alleys of the historic peninsula. Admire preserved shuttered villas, tropical bougainvillea gardens, and elegant timber-framed French Indochinese residences.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rice Farming Experience at Living Land Farm -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Living-Land-Farm-Laos-14.jpg" alt="Living Land Rice Farm"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Living Land Organic Rice Farm</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Get hands-on with all 13 stages of traditional sticky rice cultivation in an organic community farm. Plow paddies alongside water buffaloes, plant seedlings, thresh grain, and sample freshly roasted Lao rice snacks.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Traditional Arts and Ethnology Centre (TAEC) -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="TAEC-Seeds-of-Culture-New-Exhibition-Luang-Prabang-2.jpg" alt="Traditional Arts and Ethnology Centre"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Traditional Arts & Ethnology Centre</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Gain meaningful insight into the rich cultural diversity of northern Laos' ethnic hill tribes—including the Hmong, Yao, and Khmu—through rare textiles, ceremonial artifacts, and interactive documentary displays.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integrated Navigation and Pagination -->
+        <div class="pagination-wrapper">
+            <a href="luang-prabang.html" class="dest-link-big">Luang Prabang</a>
+            
+            <div class="pagination-container">
+                <button class="pag-arrow prev-btn" aria-label="Previous Page">
+                    <svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <div class="pag-numbers"></div>
+                <button class="pag-arrow next-btn" aria-label="Next Page">
+                    <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
+                </button>
+            </div>
+            
+            <a href="Vientiane.html" class="dest-link-big">Vientiane</a>
+        </div>
+    </section>
+
+     <footer>
+        <div class="footer-main">
+            <div class="footer-col">
+                <h4>Destinations</h4>
+                <ul>
+                    <li><a href="cambodia.html">Cambodia</a></li>
+                    <li><a href="Laos.html">Laos</a></li>
+                    <li><a href="Vietnam.html">Vietnam</a></li>
+                    <li><a href="Thailand.html">Thailand</a></li>
+                    <li><a href="Multi-country.html">Multi-Country</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Experiences</h4>
+                <ul>
+                    <li><a href="Culture-Heritage.html">Culture & Heritage</a></li>
+                    <li><a href="Romantic-Journeys.html">Romantic Getaways</a></li>
+                    <li><a href="Nature-Adventure.html">Nature & Adventure</a></li>
+                    <li><a href="Wellness-Rejuvenation.html">Wellness & Rejuvenation</a></li>
+                    <li><a href="Family-Journeys.html">Family Journeys</a></li>
+                    <li><a href="Culinary-Journeys.html">Culinary Journeys</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col footer-contact">
+                <h4>Connect with Us</h4>
+                <p>+855 95 267 257</p>
+                <p>contact@l'indochine.com</p>
+                
+                <div class="footer-social">
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-2.21c0-.837.39-1.29 1.121-1.29h2.879v-4.498c-.443-.059-1.968-.202-3.726-.202-3.689 0-6.274 2.247-6.274 6.46v1.74z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-cta-box" style="background: rgba(194, 157, 107, 0.05); padding: 30px; border: 1px solid rgba(194, 157, 107, 0.2);">
+                    <h4 style="margin-bottom: 20px;">Curate Your Legacy</h4>
+                    <a href="Plan-Your-Trip.html" class="btn-plan" style="display: block; text-align: center; margin-bottom: 20px;">Plan Your Trip</a>
+                    <div style="display: flex; justify-content: space-between;">
+                        <a href="About-Us.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ABOUT US</a>
+                        <a href="Accommodation.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ACCOMMODATION</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="copyright">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+            <div class="footer-bottom-links">
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="Terms&Conditions.html">Terms & Conditions</a>
+                <a href="#" id="back-to-top">BACK TO TOP &#10142;</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Mobile Menu Toggles
+        const mOpen = document.getElementById('menu-open');
+        const mClose = document.getElementById('menu-close');
+        const mOverlay = document.getElementById('mobile-overlay');
+
+        if(mOpen) mOpen.addEventListener('click', () => mOverlay.classList.add('active'));
+        if(mClose) mClose.addEventListener('click', () => mOverlay.classList.remove('active'));
+
+        // 2. Mobile Mega Menu Accordion Logic
+        document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('span');
+                content.classList.toggle('active');
+                icon.innerText = content.classList.contains('active') ? "−" : "+";
+            });
+        });
+
+        // 3. Desktop Hover Positioning / Mega Menu Caret positioning
+        document.querySelectorAll('.desktop-nav .dropdown').forEach(drop => {
+            const menu = drop.querySelector('.mega-menu');
+            const link = drop.querySelector('a');
+            drop.addEventListener('mouseenter', () => {
+                if (menu && link) {
+                    const linkRect = link.getBoundingClientRect();
+                    const linkCenter = linkRect.left + (linkRect.width / 2);
+                    menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+                }
+            });
+        });
+
+        // 4. Custom Follower Cursor Logic
+        const follower = document.getElementById('cursor-follower');
+        const fText = follower.querySelector('span');
+        
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(follower, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: "power2.out" });
+        });
+
+        document.querySelectorAll('a, .mega-item, .temple-card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(follower, { width: 100, height: 100, background: 'rgba(194, 157, 107, 0.15)', border: 'none' });
+                fText.style.opacity = 1;
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(follower, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+                fText.style.opacity = 0;
+            });
+        });
+
+        // 5. Back to Top Smooth Scroll
+        document.getElementById('back-to-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // 6. Cards and Expand details setup
+        const cards = document.querySelectorAll('.temple-card');
+        cards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Toggles active state independently without closing other open cards
+                this.classList.toggle('is-active');
+            });
+        });
+
+        // 7. Grid Architectural Pagination Logic
+        const itemsPerPage = 9;
+        let currentPage = 1;
+        const totalPages = Math.ceil(cards.length / itemsPerPage);
+
+        const pagNumbersContainer = document.querySelector('.pag-numbers');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+
+        function showPage(page) {
+            currentPage = page;
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+
+            cards.forEach((card, index) => {
+                if (index >= start && index < end) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                    card.classList.remove('is-active'); 
+                }
+            });
+
+            updatePaginationControls();
+        }
+
+        function updatePaginationControls() {
+            pagNumbersContainer.innerHTML = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.classList.add('pag-num');
+                if (i === currentPage) btn.classList.add('is-active');
+                btn.innerText = i;
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showPage(i);
+                    scrollToSection();
+                });
+                pagNumbersContainer.appendChild(btn);
+            }
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        function scrollToSection() {
+            document.querySelector('.highlights-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentPage > 1) {
+                showPage(currentPage - 1);
+                scrollToSection();
+            }
+        });
+
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentPage < totalPages) {
+                showPage(currentPage + 1);
+                scrollToSection();
+            }
+        });
+// Mobile Mega Menu Accordion Logic
+        document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('span');
+                content.classList.toggle('active');
+                icon.innerText = content.classList.contains('active') ? "−" : "+";
+            });
+        });
+
+        // Original Desktop Hover Positioning
+        document.querySelectorAll('.desktop-nav .dropdown').forEach(drop => {
+            const menu = drop.querySelector('.mega-menu');
+            const link = drop.querySelector('a');
+            drop.addEventListener('mouseenter', () => {
+                if (menu && link) {
+                    const linkRect = link.getBoundingClientRect();
+                    const linkCenter = linkRect.left + (linkRect.width / 2);
+                    menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+                }
+            });
+        });
+        // Initialize First View Page
+        showPage(1);
+    </script>
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>

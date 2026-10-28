@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>L'INDOCHINE — Sovereign Journeys of the East</title>
+<meta name="description" content="A curated gateway to Cambodia, Laos, Vietnam and Thailand.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+  :root{
+    --ink:#0A0A0A;
+    --ivory:#F0EDE5;
+    --gold:#C29D6B;
+    --gold-deep:#9C7A3C;
+    --clay:#1A1917;
+    --ease:cubic-bezier(0.16,1,0.3,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{
+    width:100%;height:100%;background:var(--ink);overflow:hidden;
+    font-family:'Tenor Sans',sans-serif;
+  }
+
+  /* ---------- Destination stage (revealed after the gate opens) ---------- */
+  #destination{
+    position:fixed;inset:0;background:var(--ivory);
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;padding:6vw;
+  }
+  #destination .d-inner{max-width:640px;}
+  #destination .d-eyebrow{
+    font-size:.65rem;letter-spacing:5px;text-transform:uppercase;color:var(--gold-deep);margin-bottom:22px;
+  }
+  #destination h1{
+    font-family:'Playfair Display',serif;font-style:italic;font-weight:900;
+    font-size:clamp(2rem,5vw,3.4rem);color:var(--ink);line-height:1.15;margin-bottom:24px;
+  }
+  #destination p{
+    font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.15rem;color:var(--ink);
+    opacity:.65;line-height:1.7;margin-bottom:36px;
+  }
+  #destination a.enter-link{
+    display:inline-block;font-size:.68rem;letter-spacing:4px;text-transform:uppercase;
+    color:var(--ink);text-decoration:none;border-bottom:1px solid var(--gold);padding-bottom:8px;
+    transition:opacity .3s;
+  }
+  #destination a.enter-link:hover{opacity:.55;}
+
+  /* ---------- Gateway (loader) ---------- */
+  #gateway{
+    position:fixed;inset:0;z-index:10;background:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    clip-path:circle(150% at 50% 46%);
+  }
+  #gateway .noise{
+    position:absolute;inset:0;background:url('https://grainy-gradients.vercel.app/noise.svg');
+    opacity:.08;mix-blend-mode:overlay;pointer-events:none;
+  }
+
+  /* left progress rail */
+  .rail{
+    position:absolute;left:6%;top:50%;transform:translateY(-50%);
+    width:1px;height:34vh;background:rgba(240,237,229,.12);
+  }
+  .rail .rail-fill{
+    position:absolute;left:0;bottom:0;width:100%;height:0%;background:var(--gold);
+  }
+  .rail-num{
+    position:absolute;left:6%;bottom:8%;
+    font-size:.65rem;letter-spacing:2px;color:var(--gold);
+    font-variant-numeric:tabular-nums;opacity:0;
+  }
+
+  /* right destination cycler */
+  .cycler{
+    position:absolute;right:6%;top:50%;transform:translateY(-50%);
+    writing-mode:vertical-rl;text-orientation:mixed;
+    font-size:.65rem;letter-spacing:4px;text-transform:uppercase;color:rgba(240,237,229,.5);
+    height:34vh;display:flex;align-items:center;justify-content:center;opacity:0;
+  }
+  .cycler span{position:absolute;opacity:0;}
+  .cycler span.active{opacity:1;transition:opacity .6s ease;}
+
+  /* center composition */
+  .stage-center{position:relative;text-align:center;z-index:2;}
+  .eyebrow{
+    font-size:.62rem;letter-spacing:6px;text-transform:uppercase;color:var(--gold);
+    opacity:0;margin-bottom:8px;
+  }
+  #temple-svg{
+    width:min(58vw,460px);height:auto;display:block;margin:0 auto;overflow:visible;
+  }
+  #temple-svg path{fill:none;stroke:var(--gold);stroke-width:1.2;}
+
+  .wordmark{
+    margin-top:-8px;
+    font-family:'Playfair Display',serif;font-style:italic;font-weight:900;
+    font-size:clamp(2rem,5.6vw,3.8rem);color:var(--ivory);line-height:1;
+    display:flex;justify-content:center;overflow:hidden;
+  }
+  .wordmark span{display:inline-block;transform:translateY(120%);opacity:0;}
+
+  .tagline{
+    margin-top:16px;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
+    font-size:1rem;color:var(--ivory);opacity:0;letter-spacing:.5px;
+  }
+
+  .skip{
+    position:absolute;bottom:5%;left:50%;transform:translateX(-50%);
+    font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:rgba(240,237,229,.4);
+    text-decoration:none;opacity:0;transition:color .3s;padding:6px 10px;
+  }
+  .skip:hover, .skip:focus-visible{color:var(--gold);}
+  .skip:focus-visible{outline:1px solid var(--gold);outline-offset:4px;}
+
+  #dust{position:absolute;inset:0;pointer-events:none;}
+
+  @media (max-width:700px){
+    .rail,.rail-num,.cycler{display:none;}
+    #temple-svg{width:74vw;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .wordmark span{transition:none;}
+  }
+</style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+  <!-- What sits behind the gateway once it opens -->
+  <div id="destination">
+    <div class="d-inner">
+      <div class="d-eyebrow">Sovereign Journeys of the East</div>
+      <h1>Welcome to L'Indochine</h1>
+      <p>Your passport to the Indochina soul — Cambodia, Laos, Vietnam and Thailand, curated with sovereign excellence.</p>
+      <a class="enter-link" href="https://chheangmonyangkor17-gif.github.io/L-INDOCHINE-Sovereign-Journeys-/index.html">Continue to the Site &nbsp;&#10142;</a>
+    </div>
+  </div>
+
+  <!-- The gate itself -->
+  <div id="gateway">
+    <div class="noise"></div>
+    <canvas id="dust"></canvas>
+
+    <div class="rail"><div class="rail-fill" id="rail-fill"></div></div>
+    <div class="rail-num" id="rail-num">00</div>
+
+    <div class="cycler" id="cycler">
+      <span class="active">Cambodia</span>
+      <span>Laos</span>
+      <span>Vietnam</span>
+      <span>Thailand</span>
+    </div>
+
+    <div class="stage-center">
+      <div class="eyebrow" id="eyebrow">Sovereign Journeys of the East</div>
+      <svg id="temple-svg" viewBox="0 0 600 180">
+        <path class="tp base"   d="M40,160 L560,160"/>
+        <path class="tp tower" data-p="1" transform="translate(99,105) scale(0.55)"
+          d="M0,100 L0,85 L5,85 L5,75 L9,75 L9,63 L13,63 L13,50 L16,50 L16,38 L18,38 L18,25 L19,25 L19,12 L20,12 L20,0 L21,12 L21,25 L22,25 L22,38 L24,38 L24,50 L27,50 L27,63 L31,63 L31,75 L35,75 L35,85 L40,85 L40,100 Z"/>
+        <path class="tp tower" data-p="2" transform="translate(214,80) scale(0.8)"
+          d="M0,100 L0,85 L5,85 L5,75 L9,75 L9,63 L13,63 L13,50 L16,50 L16,38 L18,38 L18,25 L19,25 L19,12 L20,12 L20,0 L21,12 L21,25 L22,25 L22,38 L24,38 L24,50 L27,50 L27,63 L31,63 L31,75 L35,75 L35,85 L40,85 L40,100 Z"/>
+        <path class="tp tower" data-p="3" transform="translate(277,45) scale(1.15)"
+          d="M0,100 L0,85 L5,85 L5,75 L9,75 L9,63 L13,63 L13,50 L16,50 L16,38 L18,38 L18,25 L19,25 L19,12 L20,12 L20,0 L21,12 L21,25 L22,25 L22,38 L24,38 L24,50 L27,50 L27,63 L31,63 L31,75 L35,75 L35,85 L40,85 L40,100 Z"/>
+        <path class="tp tower" data-p="4" transform="translate(354,80) scale(0.8)"
+          d="M0,100 L0,85 L5,85 L5,75 L9,75 L9,63 L13,63 L13,50 L16,50 L16,38 L18,38 L18,25 L19,25 L19,12 L20,12 L20,0 L21,12 L21,25 L22,25 L22,38 L24,38 L24,50 L27,50 L27,63 L31,63 L31,75 L35,75 L35,85 L40,85 L40,100 Z"/>
+        <path class="tp tower" data-p="5" transform="translate(479,105) scale(0.55)"
+          d="M0,100 L0,85 L5,85 L5,75 L9,75 L9,63 L13,63 L13,50 L16,50 L16,38 L18,38 L18,25 L19,25 L19,12 L20,12 L20,0 L21,12 L21,25 L22,25 L22,38 L24,38 L24,50 L27,50 L27,63 L31,63 L31,75 L35,75 L35,85 L40,85 L40,100 Z"/>
+      </svg>
+
+      <div class="wordmark" id="wordmark"></div>
+      <div class="tagline" id="tagline">Cambodia · Laos · Vietnam · Thailand</div>
+    </div>
+
+    <a class="skip" id="skip" href="https://chheangmonyangkor17-gif.github.io/L-INDOCHINE-Sovereign-Journeys-/index.html">Skip &nbsp;&#8594;&nbsp; Enter Site</a>
+  </div>
+
+<script>
+(function(){
+  var DEST = "https://chheangmonyangkor17-gif.github.io/L-INDOCHINE-Sovereign-Journeys-/index.html";
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Wordmark letters
+  var word = "L'INDOCHINE";
+  var wordEl = document.getElementById('wordmark');
+  wordEl.innerHTML = word.split('').map(function(ch){
+    return '<span>' + (ch === ' ' ? '&nbsp;' : ch) + '</span>';
+  }).join('');
+
+  // Skip link always reachable
+  var skip = document.getElementById('skip');
+
+  if (reduced || typeof gsap === 'undefined') {
+    // No motion: show the destination immediately, skip the whole sequence
+    document.getElementById('gateway').style.display = 'none';
+    return;
+  }
+
+  gsap.set(skip, { opacity: 0 });
+  gsap.to(skip, { opacity: 1, duration: 1, delay: 1.2 });
+
+  // Ambient gold dust
+  (function dust(){
+    var canvas = document.getElementById('dust');
+    var ctx = canvas.getContext('2d');
+    function size(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+    size(); window.addEventListener('resize', size);
+    var n = innerWidth < 700 ? 16 : 34;
+    var particles = Array.from({length:n}, function(){
+      return {
+        x: Math.random()*innerWidth,
+        y: Math.random()*innerHeight,
+        r: Math.random()*1.4 + 0.3,
+        s: Math.random()*0.25 + 0.05,
+        o: Math.random()*0.35 + 0.08
+      };
+    });
+    var raf;
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(function(p){
+        p.y -= p.s;
+        if (p.y < -10) { p.y = innerHeight + 10; p.x = Math.random()*innerWidth; }
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(194,157,107,' + p.o + ')';
+        ctx.fill();
+      });
+      raf = requestAnimationFrame(draw);
+    }
+    draw();
+    window.__dustStop = function(){ cancelAnimationFrame(raf); };
+  })();
+
+  // Prep temple paths for drawing
+  var paths = Array.prototype.slice.call(document.querySelectorAll('#temple-svg .tp'));
+  paths.forEach(function(p){
+    var len = p.getTotalLength();
+    p.style.strokeDasharray = len;
+    p.style.strokeDashoffset = len;
+  });
+
+  var railFill = document.getElementById('rail-fill');
+  var railNum = document.getElementById('rail-num');
+  var counter = { v: 0 };
+
+  // Destination word cycler
+  var cyclerWrap = document.getElementById('cycler');
+  var cyclerSpans = cyclerWrap.querySelectorAll('span');
+  var cIdx = 0, cyclerTimer;
+  function cycleWords(){
+    cyclerSpans[cIdx].classList.remove('active');
+    cIdx = (cIdx + 1) % cyclerSpans.length;
+    cyclerSpans[cIdx].classList.add('active');
+  }
+
+  var tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+  tl.to('.tp.base', { strokeDashoffset: 0, duration: 0.5, ease: 'power2.inOut' })
+    .to('.tp.tower[data-p="1"]', { strokeDashoffset: 0, duration: 0.55 }, '-=0.1')
+    .to('.tp.tower[data-p="5"]', { strokeDashoffset: 0, duration: 0.55 }, '<')
+    .to('.tp.tower[data-p="2"]', { strokeDashoffset: 0, duration: 0.6 }, '-=0.25')
+    .to('.tp.tower[data-p="4"]', { strokeDashoffset: 0, duration: 0.6 }, '<')
+    .to('.tp.tower[data-p="3"]', { strokeDashoffset: 0, duration: 0.75, ease: 'power2.inOut' }, '-=0.3')
+    .to('#eyebrow', { opacity: 1, duration: 0.6 }, '-=0.4')
+    .to(cyclerWrap, { opacity: 1, duration: 0.5 }, '-=0.3')
+    .to(railNum, { opacity: 1, duration: 0.4 }, '<')
+    .to('.wordmark span', { y: 0, opacity: 1, duration: 0.85, stagger: 0.04, ease: 'power4.out' }, '-=0.2')
+    .to('#tagline', { opacity: 0.75, duration: 0.6 }, '-=0.3')
+    .call(function(){ cyclerTimer = setInterval(cycleWords, 480); })
+    .to(counter, {
+        v: 100, duration: 2.1, ease: 'power1.inOut',
+        onUpdate: function(){ railNum.textContent = String(Math.round(counter.v)).padStart(2,'0'); }
+      }, '-=0.2')
+    .to(railFill, { height: '100%', duration: 2.1, ease: 'power1.inOut' }, '<')
+    .call(function(){ clearInterval(cyclerTimer); })
+    .to(['#eyebrow','#temple-svg','.wordmark','#tagline','.rail','.rail-num','.cycler','.skip'],
+        { opacity: 0, y: -10, duration: 0.5, stagger: 0.03, ease: 'power2.in' }, '+=0.3')
+    .call(function(){ if (window.__dustStop) window.__dustStop(); })
+    .to('#gateway', { clipPath: 'circle(0% at 50% 46%)', duration: 1.1, ease: 'power4.inOut' }, '-=0.1')
+    .call(function(){
+      setTimeout(function(){ window.location.href = DEST; }, 220);
+    });
+})();
+</script>
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>
