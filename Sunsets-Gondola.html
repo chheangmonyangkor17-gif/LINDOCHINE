@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunset Gondola Boat at Angkor Thom | L'INDOCHINE – Siem Reap Experiences</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ivory: #F0EDE5;
+            --ink: #0A0A0A;
+            --gold: #C29D6B;
+            --clay: #1A1917;
+            --warm: #2C2420;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+
+        body {
+            background: var(--ivory);
+            color: var(--ink);
+            font-family: 'Tenor Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Grain + Vignette */
+        .grain { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.06; pointer-events: none; z-index: 1000; mix-blend-mode: multiply; }
+        .vignette { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.35) 100%); pointer-events: none; z-index: 100; opacity: 0.4; }
+
+        /* Custom Cursor */
+        #cursor {
+            position: fixed; width: 60px; height: 60px; top: 0; left: 0;
+            border: 0.5px solid var(--gold); border-radius: 50%; pointer-events: none;
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            transition: width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; transition: opacity 0.3s; }
+
+        /* ── NAV ─────────────────────────────────────────────────── */
+        nav {
+            position: fixed; top: 0; width: 100%; height: 90px;
+            padding: 0 60px; z-index: 999;
+            display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.88) 0%, transparent 100%);
+            transition: background 0.5s;
+        }
+        nav.scrolled { background: rgba(10,10,10,0.97); }
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; }
+        .nav-back {
+            text-decoration: none; color: var(--ivory); font-size: 9px; letter-spacing: 4px;
+            text-transform: uppercase; opacity: 0.7; transition: opacity 0.3s;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .nav-back::before { content: '←'; font-size: 14px; color: var(--gold); }
+        .nav-back:hover { opacity: 1; }
+
+        /* ── CINEMATIC HERO ──────────────────────────────────────── */
+        .hero {
+            height: 100vh; position: relative; overflow: hidden;
+            display: flex; align-items: flex-end;
+        }
+        .hero-img {
+            position: absolute; inset: 0; width: 100%; height: 120%;
+            top: -10%; object-fit: cover; filter: brightness(0.45);
+            transform: scale(1.05);
+            transition: transform 8s ease;
+        }
+        .hero-img.loaded { transform: scale(1); }
+        .hero-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, transparent 50%),
+                        linear-gradient(to right, rgba(10,10,10,0.4) 0%, transparent 60%);
+        }
+
+        .hero-content {
+            position: relative; z-index: 10; padding: 0 10% 80px;
+            width: 100%; display: grid; grid-template-columns: 1fr auto; align-items: flex-end; gap: 60px;
+        }
+        .hero-eyebrow {
+            display: flex; align-items: center; gap: 20px; margin-bottom: 25px;
+        }
+        .hero-tag {
+            font-size: 8px; letter-spacing: 5px; color: var(--gold);
+            text-transform: uppercase; border: 1px solid rgba(194,157,107,0.4);
+            padding: 6px 16px;
+        }
+        .hero-divider { width: 40px; height: 1px; background: rgba(194,157,107,0.4); }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond'; font-size: clamp(3rem, 7vw, 6.5rem);
+            font-style: italic; font-weight: 300; color: var(--ivory); line-height: 1.0;
+            letter-spacing: -0.02em; margin-bottom: 30px;
+        }
+        .hero-subtitle {
+            font-size: 0.9rem; color: rgba(240,237,229,0.6); letter-spacing: 2px; line-height: 1.8;
+            max-width: 500px;
+        }
+        .hero-stats {
+            display: flex; flex-direction: column; gap: 30px; align-items: flex-end;
+        }
+        .hero-stat { text-align: right; }
+        .hero-stat-num {
+            font-family: 'Cormorant Garamond'; font-size: 2.8rem; color: var(--gold);
+            font-weight: 300; line-height: 1; display: block;
+        }
+        .hero-stat-label {
+            font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
+            color: rgba(240,237,229,0.5); margin-top: 5px; display: block;
+        }
+
+        /* Scroll indicator */
+        .scroll-hint {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            z-index: 10; text-align: center;
+        }
+        .scroll-hint span { font-size: 8px; letter-spacing: 5px; color: rgba(240,237,229,0.4); text-transform: uppercase; display: block; margin-bottom: 12px; }
+        .scroll-line { width: 1px; height: 60px; background: linear-gradient(to bottom, var(--gold), transparent); margin: 0 auto; animation: scrollPulse 2s ease-in-out infinite; }
+        @keyframes scrollPulse { 0%,100% { opacity: 0.3; transform: scaleY(1); } 50% { opacity: 1; transform: scaleY(0.6); } }
+
+        /* ── QUICK INFO BAR ──────────────────────────────────────── */
+        .info-bar {
+            background: var(--clay); display: grid; grid-template-columns: repeat(5, 1fr);
+            border-bottom: 1px solid rgba(194,157,107,0.15);
+        }
+        .info-item {
+            padding: 35px 30px; border-right: 1px solid rgba(194,157,107,0.1);
+            text-align: center;
+        }
+        .info-item:last-child { border-right: none; }
+        .info-item-icon { font-size: 1.4rem; margin-bottom: 12px; display: block; }
+        .info-item-label { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: rgba(240,237,229,0.4); display: block; margin-bottom: 8px; }
+        .info-item-val { font-family: 'Cormorant Garamond'; font-size: 1.1rem; font-style: italic; color: var(--ivory); }
+
+        /* ── OVERVIEW ────────────────────────────────────────────── */
+        .overview-section {
+            padding: 130px 10%; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 120px; align-items: start;
+        }
+        .section-eyebrow { font-size: 9px; letter-spacing: 5px; color: var(--gold); text-transform: uppercase; display: block; margin-bottom: 25px; }
+        .section-title {
+            font-family: 'Cormorant Garamond'; font-size: clamp(2.2rem, 4vw, 3.5rem);
+            font-style: italic; font-weight: 300; line-height: 1.15; margin-bottom: 40px;
+        }
+        .body-text { font-size: 1rem; line-height: 1.9; color: #555; margin-bottom: 25px; }
+
+        .feature-list { list-style: none; margin-top: 40px; }
+        .feature-list li {
+            display: flex; align-items: flex-start; gap: 18px; padding: 18px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 0.9rem; color: #444; line-height: 1.6;
+        }
+        .feature-list li::before { content: '◆'; color: var(--gold); font-size: 7px; margin-top: 5px; flex-shrink: 0; }
+
+        /* Right column sticky card */
+        .booking-card {
+            background: var(--clay); padding: 50px 40px;
+            border: 1px solid rgba(194,157,107,0.2);
+            position: sticky; top: 110px;
+        }
+        .booking-card h3 {
+            font-family: 'Cormorant Garamond'; font-size: 1.6rem; font-style: italic;
+            color: var(--ivory); margin-bottom: 30px; line-height: 1.3;
+        }
+        .price-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 30px; border-bottom: 1px solid rgba(194,157,107,0.15); padding-bottom: 25px; }
+        .price-from { font-size: 8px; letter-spacing: 3px; color: rgba(240,237,229,0.4); text-transform: uppercase; }
+        .price-val { font-family: 'Cormorant Garamond'; font-size: 2.4rem; color: var(--gold); }
+        .price-per { font-size: 10px; color: rgba(240,237,229,0.4); margin-left: 5px; }
+
+        .booking-detail { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(194,157,107,0.08); font-size: 11px; }
+        .booking-detail-label { color: rgba(240,237,229,0.45); letter-spacing: 1px; text-transform: uppercase; }
+        .booking-detail-val { color: var(--ivory); }
+
+        .btn-book {
+            display: block; text-align: center; margin-top: 35px;
+            padding: 20px; border: 1px solid var(--gold); color: var(--gold);
+            text-decoration: none; font-size: 9px; letter-spacing: 5px; text-transform: uppercase;
+            transition: 0.5s var(--ease);
+        }
+        .btn-book:hover { background: var(--gold); color: var(--ink); }
+        .btn-enquire {
+            display: block; text-align: center; margin-top: 12px;
+            padding: 16px; color: rgba(240,237,229,0.5); font-size: 9px; letter-spacing: 4px;
+            text-transform: uppercase; text-decoration: none; transition: color 0.3s;
+        }
+        .btn-enquire:hover { color: var(--ivory); }
+
+        .b2b-badge {
+            margin-top: 30px; padding: 18px 20px; background: rgba(194,157,107,0.08);
+            border-left: 2px solid var(--gold);
+        }
+        .b2b-badge p { font-size: 10px; line-height: 1.7; color: rgba(240,237,229,0.6); }
+        .b2b-badge strong { color: var(--gold); }
+
+        /* ── PHOTO GALLERY ───────────────────────────────────────── */
+        .gallery-section { background: var(--ink); padding: 0; }
+        .gallery-label {
+            padding: 80px 10% 50px;
+            font-size: 10px; letter-spacing: 8px; color: var(--gold); text-transform: uppercase;
+            text-align: center;
+        }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-rows: 400px 300px;
+            gap: 3px;
+        }
+        .gallery-item { overflow: hidden; position: relative; }
+        .gallery-item:first-child { grid-row: span 2; }
+        .gallery-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: brightness(0.75);
+            transition: transform 1.4s var(--ease), filter 0.6s;
+        }
+        .gallery-item:hover img { transform: scale(1.06); filter: brightness(0.9); }
+        .gallery-caption {
+            position: absolute; bottom: 20px; left: 20px;
+            font-size: 9px; letter-spacing: 3px; color: rgba(240,237,229,0.6); text-transform: uppercase;
+        }
+
+        /* ── ITINERARY / PROGRAMME ───────────────────────────────── */
+        .programme-section { padding: 130px 10%; background: var(--ivory); }
+        .programme-intro { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-bottom: 80px; align-items: end; }
+
+        .timeline { position: relative; }
+        .timeline::before { content: ''; position: absolute; left: 18px; top: 0; bottom: 0; width: 1px; background: linear-gradient(to bottom, var(--gold), transparent); }
+
+        .timeline-item { display: grid; grid-template-columns: 60px 1fr; gap: 30px; margin-bottom: 60px; position: relative; }
+        .timeline-num {
+            width: 38px; height: 38px; border: 1px solid var(--gold); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Cormorant Garamond'; font-size: 1rem; color: var(--gold);
+            background: var(--ivory); position: relative; z-index: 2; flex-shrink: 0;
+        }
+        .timeline-content { padding-top: 5px; }
+        .timeline-time { font-size: 8px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .timeline-title { font-family: 'Cormorant Garamond'; font-size: 1.5rem; font-style: italic; margin-bottom: 12px; }
+        .timeline-desc { font-size: 0.9rem; line-height: 1.8; color: #666; }
+
+        /* ── WHAT'S INCLUDED ─────────────────────────────────────── */
+        .inclusions-section { background: var(--clay); padding: 100px 10%; color: var(--ivory); }
+        .inclusions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 60px; }
+        .inc-col h4 { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 30px; }
+        .inc-list { list-style: none; }
+        .inc-list li { padding: 14px 0; border-bottom: 1px solid rgba(194,157,107,0.1); font-size: 0.9rem; color: rgba(240,237,229,0.75); display: flex; align-items: center; gap: 15px; line-height: 1.5; }
+        .inc-list li.yes::before { content: '✓'; color: var(--gold); font-weight: bold; flex-shrink: 0; }
+        .inc-list li.no::before { content: '✗'; color: rgba(240,237,229,0.2); flex-shrink: 0; }
+        .inc-list li.no { opacity: 0.45; }
+
+        /* ── CUSTOMISATION OPTIONS ───────────────────────────────── */
+        .custom-section { padding: 120px 10%; background: var(--ivory); }
+        .custom-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; margin-top: 60px; }
+        .custom-card {
+            padding: 45px 35px; background: var(--clay); position: relative;
+            transition: transform 0.5s var(--ease);
+        }
+        .custom-card:hover { transform: translateY(-6px); }
+        .custom-card-num {
+            font-family: 'Cormorant Garamond'; font-size: 4rem; color: rgba(194,157,107,0.12);
+            position: absolute; top: 20px; right: 25px; line-height: 1;
+        }
+        .custom-card h4 { font-family: 'Cormorant Garamond'; font-size: 1.4rem; font-style: italic; color: var(--ivory); margin-bottom: 15px; }
+        .custom-card p { font-size: 0.85rem; color: rgba(240,237,229,0.55); line-height: 1.7; }
+        .custom-card-tag { font-size: 8px; letter-spacing: 3px; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; display: block; }
+
+        /* ── GOOD TO KNOW ────────────────────────────────────────── */
+        .practical-section { background: var(--ink); padding: 100px 10%; color: var(--ivory); }
+        .practical-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 50px; margin-top: 60px; }
+        .practical-item h5 { font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 18px; }
+        .practical-item p { font-size: 0.88rem; line-height: 1.8; color: rgba(240,237,229,0.6); }
+
+        /* ── RELATED EXPERIENCES ─────────────────────────────────── */
+        .related-section { background: var(--ivory); padding: 120px 10%; }
+        .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; margin-top: 60px; }
+        .related-card { position: relative; height: 400px; overflow: hidden; text-decoration: none; }
+        .related-card img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.5); transition: transform 1.2s var(--ease), filter 0.6s; }
+        .related-card:hover img { transform: scale(1.08); filter: brightness(0.7); }
+        .related-card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,10,0.85) 0%, transparent 55%); }
+        .related-card-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 30px; }
+        .related-card-tag { font-size: 8px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; display: block; margin-bottom: 10px; }
+        .related-card-title { font-family: 'Cormorant Garamond'; font-size: 1.5rem; font-style: italic; color: var(--ivory); }
+
+        /* ── BOTTOM CTA ──────────────────────────────────────────── */
+        .bottom-cta {
+            background: var(--clay); padding: 120px 10%; text-align: center;
+            border-top: 1px solid rgba(194,157,107,0.15);
+        }
+        .bottom-cta h2 { font-family: 'Cormorant Garamond'; font-size: clamp(2.5rem, 5vw, 4rem); font-style: italic; font-weight: 300; color: var(--ivory); margin-bottom: 20px; }
+        .bottom-cta p { font-size: 0.9rem; color: rgba(240,237,229,0.5); margin-bottom: 50px; max-width: 600px; margin-inline: auto 50px; }
+        .cta-btns { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .btn-primary { padding: 22px 60px; border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 9px; letter-spacing: 5px; text-transform: uppercase; transition: 0.5s; }
+        .btn-primary:hover { background: var(--gold); color: var(--ink); }
+        .btn-secondary { padding: 22px 60px; color: rgba(240,237,229,0.4); text-decoration: none; font-size: 9px; letter-spacing: 5px; text-transform: uppercase; border: 1px solid rgba(240,237,229,0.1); transition: 0.4s; }
+        .btn-secondary:hover { color: var(--ivory); border-color: rgba(240,237,229,0.4); }
+
+        /* ── FOOTER MINI ─────────────────────────────────────────── */
+        footer {
+            background: var(--ink); padding: 50px 10%;
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid rgba(194,157,107,0.1);
+        }
+        .footer-copy { font-size: 10px; color: rgba(240,237,229,0.3); letter-spacing: 2px; }
+        .footer-links { display: flex; gap: 30px; }
+        .footer-links a { font-size: 10px; color: rgba(240,237,229,0.3); text-decoration: none; letter-spacing: 2px; transition: color 0.3s; }
+        .footer-links a:hover { color: var(--gold); }
+
+        /* ── ANIMATIONS ──────────────────────────────────────────── */
+        .reveal { opacity: 0; transform: translateY(40px); }
+
+        /* ── RESPONSIVE ──────────────────────────────────────────── */
+        @media (max-width: 1024px) {
+            .overview-section { grid-template-columns: 1fr; gap: 60px; }
+            .booking-card { position: static; }
+            .programme-intro { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 280px 280px 280px; }
+            .gallery-item:first-child { grid-row: span 1; }
+            .practical-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+            nav { padding: 0 25px; }
+        }
+        @media (max-width: 768px) {
+            .hero-content { grid-template-columns: 1fr; padding: 0 6% 70px; }
+            .hero-stats { flex-direction: row; align-items: flex-start; }
+            .info-bar { grid-template-columns: 1fr 1fr; }
+            .info-item:nth-child(5) { grid-column: span 2; border-right: none; }
+            .overview-section { padding: 80px 6%; }
+            .inclusions-grid { grid-template-columns: 1fr; gap: 40px; }
+            .custom-grid { grid-template-columns: 1fr; }
+            .related-grid { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: 1fr; grid-template-rows: repeat(5, 250px); }
+            .practical-grid { grid-template-columns: 1fr; }
+            .cta-btns { flex-direction: column; align-items: center; }
+            footer { flex-direction: column; gap: 20px; text-align: center; }
+            * { cursor: auto !important; }
+            #cursor { display: none; }
+        }
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="vignette"></div>
+<div id="cursor"><span>Explore</span></div>
+
+<!-- NAV -->
+<nav id="main-nav">
+    <a href="index.html" class="logo">L'INDOCHINE</a>
+    <a href="Dmc-services.html" class="nav-back">Back to Experiences</a>
+</nav>
+
+<!-- ── HERO ──────────────────────────────────────────────────────────── -->
+<section class="hero">
+    <img
+        src="SiemReap_ElegantGondolaCruisewithChampagneandCanapés.jpg"
+        class="hero-img" id="heroImg" alt="Sunset Gondola Boat at Angkor Thom">
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+        <div>
+            <div class="hero-eyebrow">
+                <span class="hero-tag">Romantic · Private Cruise · Angkor Thom</span>
+                <div class="hero-divider"></div>
+            </div>
+            <h1 class="hero-title">Sunset Gondola Boat<br>at Angkor Thom</h1>
+            <p class="hero-subtitle">Glide along the historic waters of the ancient capital's moat as day turns to dusk, savoring custom canapés and cold drinks away from the crowds.</p>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <span class="hero-stat-num">2</span>
+                <span class="hero-stat-label">Hours</span>
+            </div>
+            <div class="hero-stat">
+                <span class="hero-stat-num">4</span>
+                <span class="hero-stat-label">Max Per Boat</span>
+            </div>
+            <div class="hero-stat">
+                <span class="hero-stat-num">1</span>
+                <span class="hero-stat-label">Corner Temple Stop</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-hint">
+        <span>Discover</span>
+        <div class="scroll-line"></div>
+    </div>
+</section>
+
+<!-- ── INFO BAR ───────────────────────────────────────────────────────── -->
+<div class="info-bar">
+    <div class="info-item">
+        <span class="info-item-icon">⏱</span>
+        <span class="info-item-label">Duration</span>
+        <span class="info-item-val">2 Hours</span>
+    </div>
+    <div class="info-item">
+        <span class="info-item-icon">👥</span>
+        <span class="info-item-label">Capacity</span>
+        <span class="info-item-val">Up to 4 Guests</span>
+    </div>
+    <div class="info-item">
+        <span class="info-item-icon">🕕</span>
+        <span class="info-item-label">Departure</span>
+        <span class="info-item-val">4:30 PM Sharp</span>
+    </div>
+    <div class="info-item">
+        <span class="info-item-icon">📍</span>
+        <span class="info-item-label">Location</span>
+        <span class="info-item-val">Angkor Thom Moat</span>
+    </div>
+    <div class="info-item">
+        <span class="info-item-icon">✦</span>
+        <span class="info-item-label">Vibe</span>
+        <span class="info-item-val">Serene & Elegant</span>
+    </div>
+</div>
+
+<!-- ── OVERVIEW ───────────────────────────────────────────────────────── -->
+<section class="overview-section">
+    <div>
+        <span class="section-eyebrow reveal">The Experience</span>
+        <h2 class="section-title reveal">A golden-hour retreat on the historic waters of the Khmer empire</h2>
+        <p class="body-text reveal">The Sunset Gondola Cruise on the protective moat of Angkor Thom is carefully designed for high-end travelers who value absolute peace, spatial isolation, and historical poetry. As the bulk of temple visitors return to their hotels, your clients cross the stone threshold onto a hand-carved, traditional Khmer rowing boat—vividly reminiscent of the royal watercraft pictured on the walls of Bayon.</p>
+        <p class="body-text reveal">The boat glides along the shadowed stone walls of the final great capital city of the Khmer Empire. With only the rhythmic splash of the oarsman's blade breaking the silence, the journey paths past hidden historical bastions and old canopy banks, offering unique, low-angle vistas of Prasat Chrung temple. As light drops, cold drinks are served alongside artisanal bites directly on deck.</p>
+        <p class="body-text reveal">Built purposefully as a signature luxury add-on for regional premium agencies, this itinerary flows perfectly directly following a busy afternoon of monument walking, operating as a rewarding, slow-paced transition into the evening hours.</p>
+
+        <ul class="feature-list reveal">
+            <li>Private chartered traditional Khmer rowing boat manned by a dedicated local boatman</li>
+            <li>Peaceful navigation along the secluded southwest section of the Angkor Thom city moat</li>
+            <li>Low-impact stopover to view sunset from the ancient stone walls of Prasat Chrung temple</li>
+            <li>Premium onboard refreshment service including tailored snacks and cold selection wines</li>
+            <li>Idyllic lighting windows curated for exclusive, private portrait photography on the water</li>
+            <li>White-label operations effortlessly branded under your distinct agency criteria</li>
+        </ul>
+    </div>
+
+    <!-- Booking Card -->
+    <div class="booking-card reveal">
+        <h3>Reserve This Experience for Your Clients</h3>
+
+        <div class="price-row">
+            <span class="price-from">B2B Net Rate from</span>
+            <div>
+                <span class="price-val">$75</span>
+                <span class="price-per">/ person</span>
+            </div>
+        </div>
+
+        <div class="booking-detail">
+            <span class="booking-detail-label">Category</span>
+            <span class="booking-detail-val">Romantic / Private Cruise</span>
+        </div>
+        <div class="booking-detail">
+            <span class="booking-detail-label">Duration</span>
+            <span class="booking-detail-val">2 Hours</span>
+        </div>
+        <div class="booking-detail">
+            <span class="booking-detail-label">Times Available</span>
+            <span class="booking-detail-val">16:30 · Daily</span>
+        </div>
+        <div class="booking-detail">
+            <span class="booking-detail-label">Min. Group</span>
+            <span class="booking-detail-val">2 Guests</span>
+        </div>
+        <div class="booking-detail">
+            <span class="booking-detail-label">Max. Group</span>
+            <span class="booking-detail-val">4 per boat (Multiple Available)</span>
+        </div>
+        <div class="booking-detail">
+            <span class="booking-detail-label">Lead Time</span>
+            <span class="booking-detail-val">24 Hours Notice</span>
+        </div>
+        <div class="booking-detail">
+            <span class="booking-detail-label">White Label</span>
+            <span class="booking-detail-val">Available</span>
+        </div>
+
+        <a href="mailto:b2b@lindochine.com?subject=Booking: Sunset Gondola Angkor Thom" class="btn-book">Book for My Clients</a>
+        <a href="mailto:b2b@lindochine.com?subject=Enquiry: Sunset Gondola Angkor Thom" class="btn-enquire">Request Full Dossier &rarr;</a>
+
+        <div class="b2b-badge">
+            <p><strong>B2B Partners:</strong> Rates listed are strictly confidential net. Multi-boat bookings for custom incentive sizes up to 24 travelers are managed on direct coordinate requests.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── GALLERY ─────────────────────────────────────────────────────────── -->
+<section class="gallery-section">
+    <div class="gallery-label">Photo Gallery</div>
+    <div class="gallery-grid">
+        <div class="gallery-item">
+            <img src="eyJidWNrZXQiOiJhc3NldHMuYWxsdHJhaWxzLmNvbSIsImtleSI6InVwbG9hZHMvcGhvdG8vaW1hZ2UvMTE5OTc2NTU3L2IxYjg2MmY2YjdlZjAxZGIwYmZkZDNlMWMxOGY0OWIyLmpwZyIsImVkaXRzIjp7InRvRm9ybWF0Ijoid2VicCIsInJlc2l6ZSI6eyJ3aWR0aCI6IjEw.webp" alt="Gondola Boat on the Moat">
+            <span class="gallery-caption">Angkor Thom Waterways</span>
+        </div>
+        <div class="gallery-item">
+            <img src="images (6).jpg" alt="Angkor stone faces sunset">
+            <span class="gallery-caption">The South Gate View</span>
+        </div>
+        <div class="gallery-item">
+            <img src="images (7).jpg" alt="Champagne service">
+            <span class="gallery-caption">Onboard Hospitality</span>
+        </div>
+        <div class="gallery-item">
+            <img src="images (8).jpg" alt="Angkor reflection pool">
+            <span class="gallery-caption">Moat Reflections</span>
+        </div>
+        <div class="gallery-item">
+            <img src="21-photo_2023-11-02_20-56-12-1024x768.jpg" alt="Golden hour sky and water">
+            <span class="gallery-caption">The Golden Hour Glow</span>
+        </div>
+    </div>
+</section>
+
+<!-- ── PROGRAMME ──────────────────────────────────────────────────────── -->
+<section class="programme-section">
+    <div class="programme-intro">
+        <div>
+            <span class="section-eyebrow reveal">The Programme</span>
+            <h2 class="section-title reveal">As the sun sets, hour by hour</h2>
+        </div>
+        <p class="body-text reveal" style="padding-top: 20px;">The cruise is timed strictly to match solar patterns. Departures vary by 15 minutes depending on seasonal shifts between wet and dry conditions, ensuring optimized positioning for your client's twilight viewing window.</p>
+    </div>
+
+    <div class="timeline">
+        <div class="timeline-item reveal">
+            <div class="timeline-num">1</div>
+            <div class="timeline-content">
+                <span class="timeline-time">16:30 · South Gate Arrival</span>
+                <h3 class="timeline-title">Embarkation at the Ancient Gate</h3>
+                <p class="timeline-desc">Your clients are collected from their luxury resort lobby and driven directly to the monumental South Gate of Angkor Thom. After passing the line of stone gods and demons, guests bypass the walking trails and step down to a private boarding jetty on the serene moat waters.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item reveal">
+            <div class="timeline-num">2</div>
+            <div class="timeline-content">
+                <span class="timeline-time">16:45 · Moat Traversal</span>
+                <h3 class="timeline-title">The Silent Moat Drift</h3>
+                <p class="timeline-desc">The gondola sets off, staying close to the base of the massive earth and laterite city walls. The boatman relies purely on classic hand paddles, ensuring an incredibly quiet ride. The setting sun reflects off the giant lily pads, and the calls of hidden forest birds provide a natural soundtrack.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item reveal">
+            <div class="timeline-num">3</div>
+            <div class="timeline-content">
+                <span class="timeline-time">17:15 · Refreshment Service</span>
+                <h3 class="timeline-title">Canapés & Twilight Toasts</h3>
+                <p class="timeline-desc">As the sky adopts pink and orange tones, the hostess sets up an onboard table with fine linen. Premium chilled white wine, local craft beers, or mineral waters are un-corked and accompanied by a selection of delicate Cambodian-inspired finger hors d'oeuvres.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item reveal">
+            <div class="timeline-num">4</div>
+            <div class="timeline-content">
+                <span class="timeline-time">17:40 · Temple Bastion Stop</span>
+                <h3 class="timeline-title">Prasat Chrung Sunken View</h3>
+                <p class="timeline-desc">The boat drifts right to the corner ridge of the old fortifications below Prasat Chrung. Guests enjoy a clear perspective of this small sandstone monument perched above the corner walls. It is an unmatched vantage point to toast the absolute end of daylight over the western horizons.</p>
+            </div>
+        </div>
+
+        <div class="timeline-item reveal">
+            <div class="timeline-num">5</div>
+            <div class="timeline-content">
+                <span class="timeline-time">18:30 · Disembarkation</span>
+                <h3 class="timeline-title">Return Jetty & Transfer Home</h3>
+                <p class="timeline-desc">The vessel arrives gently at the final landing point under the early stars. Guests step ashore directly into their waiting private car for a comfortable air-conditioned transfer back to their resort or directly to their fine-dining dinner venue in Siem Reap town.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── INCLUSIONS ─────────────────────────────────────────────────────── -->
+<section class="inclusions-section">
+    <span class="section-eyebrow reveal" style="text-align:center; display:block;">What's Covered</span>
+    <h2 class="section-title reveal" style="text-align:center; color:var(--ivory); max-width:600px; margin:0 auto 0;">Inclusions &amp; Exclusions</h2>
+
+    <div class="inclusions-grid">
+        <div class="inc-col">
+            <h4>Included</h4>
+            <ul class="inc-list">
+                <li class="yes">Private traditional Khmer rowing boat charter</li>
+                <li class="yes">Experienced local oar boatman</li>
+                <li class="yes">Premium onboard drink selection (wine, local beer, sodas)</li>
+                <li class="yes">Freshly curated platter of fine savory canapés</li>
+                <li class="yes">Chilled damp aromatic towels on arrival</li>
+                <li class="yes">Private round-trip resort vehicle transfers</li>
+                <li class="yes">Full safety life jackets elegantly tucked inside seating</li>
+                <li class="yes">White-label branding adjustments for B2B accounts</li>
+            </ul>
+        </div>
+        <div class="inc-col">
+            <h4>Not Included</h4>
+            <ul class="inc-list">
+                <li class="no">Angkor Archaeological Admission Pass (Mandatory for park entry)</li>
+                <li class="no">Personal gratuities for the vessel boat team</li>
+                <li class="no">Hard liquor additions (Available upon direct upgrades)</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ── CUSTOMISATION ───────────────────────────────────────────────────── -->
+<section class="custom-section">
+    <span class="section-eyebrow reveal" style="text-align:center; display:block;">Made for Partners</span>
+    <h2 class="section-title reveal" style="text-align:center; max-width:700px; margin:0 auto 0;">Customise for Your Clients</h2>
+
+    <div class="custom-grid">
+        <div class="custom-card reveal">
+            <span class="custom-card-num">01</span>
+            <span class="custom-card-tag">Incentives</span>
+            <h4>Royal Flotilla Edition</h4>
+            <p>For corporate group outings, align up to 6 luxury gondolas in a synchronized water procession. Ideal for creating lasting, high-impact branding content for corporate clients.</p>
+        </div>
+        <div class="custom-card reveal">
+            <span class="custom-card-num">02</span>
+            <span class="custom-card-tag">Romance</span>
+            <h4>Honeymoon Champagne Luxury</h4>
+            <p>Swap the house selection for premium French Champagne alongside a fresh strawberry presentation and a customized live musician playing traditional Khmer flute from an accompanying vessel.</p>
+        </div>
+        <div class="custom-card reveal">
+            <span class="custom-card-num">03</span>
+            <span class="custom-card-tag">Families</span>
+            <h4>Mythological Twilight Outing</h4>
+            <p>Tailored storytelling elements for children detailing the old protective spirits of the gates, accompanied by family-friendly fruit mocktails and customized light pastries.</p>
+        </div>
+        <div class="custom-card reveal">
+            <span class="custom-card-num">04</span>
+            <span class="custom-card-tag">B2B Agencies</span>
+            <h4>Full Agency White-Label</h4>
+            <p>Welcome cards, beverage tags, and crew informational outlines are executed purely under your operational branding, keeping our presence completely invisible to your premium guests.</p>
+        </div>
+        <div class="custom-card reveal">
+            <span class="custom-card-num">05</span>
+            <span class="custom-card-tag">Extensions</span>
+            <h4>Bayon Day Combination</h4>
+            <p>Link this late afternoon water glide with a private guided walking tour through the stone faces of Bayon temple immediately prior to arriving at the gate embarkation jetty.</p>
+        </div>
+        <div class="custom-card reveal">
+            <span class="custom-card-num">06</span>
+            <span class="custom-card-tag">Fine Tuning</span>
+            <h4>Dietary Adjustments</h4>
+            <p>Menus are fully customizable for specialized client preferences. We natively handle vegan, gluten-free, nut-free, and custom organic request sheets given 24 hours notice.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── PRACTICAL INFO ─────────────────────────────────────────────────── -->
+<section class="practical-section">
+    <span class="section-eyebrow reveal" style="text-align:center; display:block;">Good to Know</span>
+    <h2 class="section-title reveal" style="text-align:center; color:var(--ivory); max-width:600px; margin:0 auto 0;">Practical Information</h2>
+    <div class="practical-grid">
+        <div class="practical-item reveal">
+            <h5>Park Regulations</h5>
+            <p>Every guest must hold a valid Angkor Archaeological Park admission pass to cross the checkpoints into the South Gate zone, even if not entering temple gates.</p>
+        </div>
+        <div class="practical-item reveal">
+            <h5>Weather Alternatives</h5>
+            <p>In case of surprise heavy afternoon downpours, cruises can be held for 30 minutes or safely rescheduled to the following afternoon subject to boat availability.</p>
+        </div>
+        <div class="practical-item reveal">
+            <h5>What to Wear</h5>
+            <p>Comfortable smart-casual resort wear. Footwear should be easy to slip off for boarding. A light wrap or scarf is recommended for twilight breezes.</p>
+        </div>
+        <div class="practical-item reveal">
+            <h5>Booking Windows</h5>
+            <p>Operations demand a 24-hour minimum safety notification. Cancellations made inside 24 hours draw full cancellation costs due to catering lock-ins.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── RELATED EXPERIENCES ────────────────────────────────────────────── -->
+<section class="related-section">
+    <span class="section-eyebrow reveal" style="text-align:center; display:block;">You May Also Like</span>
+    <h2 class="section-title reveal" style="text-align:center; max-width:700px; margin:0 auto 0;">More Siem Reap Experiences</h2>
+
+    <div class="related-grid">
+        <a href="Siem-reap.html" class="related-card reveal">
+            <img src="Happy-Ranch-Hourse.jpg" alt="Horse Riding">
+            <div class="related-card-overlay"></div>
+            <div class="related-card-content">
+                <span class="related-card-tag">Adventure · Half Day</span>
+                <div class="related-card-title">Sunrise Horse Ride to the Temples</div>
+            </div>
+        </a>
+        <a href="Siem-reap.html" class="related-card reveal">
+            <img src="khmer-cooking-classes-siem-reap.jpg" alt="Cooking Masterclass">
+            <div class="related-card-overlay"></div>
+            <div class="related-card-content">
+                <span class="related-card-tag">Culinary · Half Day</span>
+                <div class="related-card-title">Khmer Cooking Masterclass</div>
+            </div>
+        </a>
+        <a href="#" class="related-card reveal">
+            <img src="https://images.unsplash.com/photo-1548013146-72479768bada?q=80&w=800" alt="Angkor Sunrise">
+            <div class="related-card-overlay"></div>
+            <div class="related-card-content">
+                <span class="related-card-tag">Cultural · Half Day</span>
+                <div class="related-card-title">Private Angkor Sunrise by Tuk-Tuk</div>
+            </div>
+        </a>
+    </div>
+</section>
+
+<!-- ── BOTTOM CTA ─────────────────────────────────────────────────────── -->
+<div class="bottom-cta">
+    <h2>Ready to offer this to your clients?</h2>
+    <p style="margin-bottom:50px;">Contact our B2B team for net rates, availability, and a full experience dossier you can share directly with your clients.</p>
+    <div class="cta-btns">
+        <a href="mailto:b2b@lindochine.com?subject=Book: Sunset Gondola Angkor Thom" class="btn-primary">Book This Experience</a>
+        <a href="mailto:b2b@lindochine.com?subject=Dossier Request: Sunset Gondola" class="btn-secondary">Request Full Dossier</a>
+    </div>
+</div>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
+<footer>
+    <div class="footer-copy">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+    <div class="footer-links">
+        <a href="Dmc-services.html">DMC Services</a>
+        <a href="privacy-policy.html">Privacy</a>
+        <a href="mailto:b2b@lindochine.com">b2b@lindochine.com</a>
+    </div>
+</footer>
+
+<script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const cursorText = cursor.querySelector('span');
+    document.addEventListener('mousemove', e => {
+        gsap.to(cursor, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: 'power2.out' });
+    });
+    document.querySelectorAll('a, .gallery-item, .custom-card, .related-card').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            gsap.to(cursor, { width: 100, height: 100, background: 'rgba(194,157,107,0.15)', border: 'none' });
+            cursorText.style.opacity = 1;
+        });
+        el.addEventListener('mouseleave', () => {
+            gsap.to(cursor, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+            cursorText.style.opacity = 0;
+        });
+    });
+
+    // Nav scroll
+    window.addEventListener('scroll', () => {
+        document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 80);
+    });
+
+    // Hero image parallax / reveal
+    const heroImg = document.getElementById('heroImg');
+    heroImg.addEventListener('load', () => heroImg.classList.add('loaded'));
+    if (heroImg.complete) heroImg.classList.add('loaded');
+
+    // Hero parallax
+    window.addEventListener('scroll', () => {
+        heroImg.style.transform = `scale(1) translateY(${window.scrollY * 0.3}px)`;
+    });
+
+    // Scroll reveals
+    gsap.utils.toArray('.reveal').forEach(el => {
+        gsap.fromTo(el,
+            { opacity: 0, y: 50 },
+            {
+                opacity: 1, y: 0, duration: 1.1, ease: 'power3.out',
+                scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+            }
+        );
+    });
+
+    // Staggered info bar items
+    gsap.from('.info-item', {
+        opacity: 0, y: 30, duration: 0.8, stagger: 0.1, ease: 'power2.out',
+        scrollTrigger: { trigger: '.info-bar', start: 'top 90%' }
+    });
+
+    // Gallery items
+    gsap.from('.gallery-item', {
+        opacity: 0, scale: 0.97, duration: 1, stagger: 0.15, ease: 'power3.out',
+        scrollTrigger: { trigger: '.gallery-grid', start: 'top 85%' }
+    });
+</script>
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>

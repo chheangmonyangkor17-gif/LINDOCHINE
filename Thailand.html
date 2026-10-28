@@ -1,0 +1,2157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thailand | L'INDOCHINE Sovereign Journeys</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <style>
+       :root {
+    --ivory: #F0EDE5;
+    --ink: #0A0A0A;
+    --gold: #C29D6B;
+    --clay: #1A1917;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        body { 
+            background-color: var(--ivory); 
+            color: var(--ink); 
+            font-family: 'Tenor Sans', sans-serif; 
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        /* Cinematic Overlays */
+        .vignette { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%); pointer-events: none; z-index: 100; opacity: 0.4; }
+        .grain { position: fixed; inset: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.07; pointer-events: none; z-index: 1000; mix-blend-mode: multiply; }
+
+        /* Bespoke Cursor */
+        #cursor-follower {
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px;
+            border: 0.5px solid var(--gold); border-radius: 50%; z-index: 10000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear, width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor-follower span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; }
+
+        /* Navigation */
+        nav { 
+            position: fixed; top: 0; width: 100%; padding: 0 60px; 
+            height: 90px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 999; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        .nav-links { display: flex; list-style: none; gap: 40px; height: 100%; }
+        .nav-links > li { display: flex; align-items: center; }
+        .nav-links > li > a {
+            text-decoration: none; color: var(--ivory); font-size: 10px; letter-spacing: 3px;
+            text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            transition: color 0.4s var(--ease);
+            padding: 20px 0;
+            position: relative;
+            padding-right: 18px;
+        }
+        .nav-links > li > a:hover { color: var(--gold); }
+
+        .dropdown > a::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0; 
+            height: 0; 
+            border-left: 3.5px solid transparent;
+            border-right: 3.5px solid transparent;
+            border-top: 4px solid var(--gold);
+            transition: transform 0.4s var(--ease);
+            opacity: 0.6;
+        }
+
+        .dropdown:hover > a::after {
+            transform: translateY(-50%) rotate(180deg);
+            opacity: 1;
+        }
+
+        .mega-menu {
+            position: absolute; 
+            top: 90px; 
+            left: 0; 
+            width: 100vw; 
+            background: var(--ink); 
+            padding: 40px 60px;
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 15px;
+            opacity: 0; 
+            visibility: hidden; 
+            pointer-events: none;
+            transform: translateY(15px);
+            transition: all 0.5s var(--ease);
+            border-bottom: 1px solid rgba(194, 157, 107, 0.3);
+            z-index: 1000;
+        }
+
+        .mega-menu::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: var(--triangle-left, 50%);
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--ink);
+            pointer-events: none;
+        }
+
+        .dropdown { position: static; } 
+        
+        .dropdown:hover .mega-menu { 
+            opacity: 1; 
+            visibility: visible; 
+            transform: translateY(0); 
+            pointer-events: auto;
+        }
+
+        .mega-item {
+            position: relative; height: 250px; overflow: hidden; text-decoration: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .mega-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 1.2s var(--ease); filter: brightness(0.5);
+        }
+
+        .mega-item span {
+            position: absolute; z-index: 2; color: var(--ivory);
+            font-family: 'Cormorant Garamond'; font-size: 1.2rem; font-style: italic;
+            letter-spacing: 1px; text-align: center; padding: 0 10px;
+            transition: transform 0.4s var(--ease);
+        }
+
+        .mega-item:hover img { transform: scale(1.1); filter: brightness(0.7); }
+        .mega-item::after {
+            content: ''; position: absolute; inset: 0;
+            border: 0px solid var(--gold); transition: 0.4s var(--ease);
+        }
+        .mega-item:hover::after { border: 1px solid var(--gold); inset: 10px; }
+
+        .btn-plan {
+            text-decoration: none; color: var(--gold); font-size: 9px; letter-spacing: 2px;
+            text-transform: uppercase; border: 1px solid var(--gold); padding: 12px 25px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+            transition: all 0.5s var(--ease);
+            display: inline-block;
+        }
+        .btn-plan:hover { background: var(--gold); color: var(--ink); }
+
+    /* --- Updated Hero Section --- */
+.page-header {
+    height: 100vh; /* Set to full viewport height to see more of the image */
+    background: 
+        /* Added a slightly darker overlay to make white/gold text pop */
+        linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%), 
+        url('wat-arun-sunset-night-bangkok-1.webp'); 
+    background-size: cover; /* 'cover' is best for photography, but ensure height is 100vh */
+    background-position: center;
+    background-attachment: fixed; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--ivory);
+    position: relative;
+}
+
+.page-header .hero-subtitle {
+    display: block;
+    letter-spacing: 15px; /* Increased spacing for a more 'sovereign' feel */
+    text-transform: uppercase;
+    font-size: 20px; /* Increased size */
+    color: #FFFFFF; /* Changed to pure white for maximum contrast */
+    font-weight: 700; 
+    margin-bottom: 25px;
+    /* Stronger text shadow to lift it off the background image */
+    text-shadow: 2px 2px 15px rgba(0,0,0,0.8), 0 0 10px rgba(194, 157, 107, 0.5);
+    animation: fadeInDown 1.5s var(--ease);
+}
+
+.page-header h1 {
+    font-family: 'Cormorant Garamond';
+    font-size: 9vw;
+    font-style: italic;
+    font-weight: 300;
+    /* Added shadow to the main heading as well */
+    text-shadow: 0 4px 30px rgba(0,0,0,0.6); 
+}
+/* Update this class in your <style> section */
+.itinerary-section { 
+    background: var(--clay); 
+    padding: 0 60px 180px 60px; /* Increased bottom padding from 120px to 180px */
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 30px; 
+}
+
+        .itin-card {
+            position: relative;
+            height: 70vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            transition: transform 0.8s var(--ease);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .itin-img-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(20%) brightness(0.5);
+            transition: transform 1.5s var(--ease), filter 0.8s var(--ease);
+            z-index: 1;
+        }
+
+        .itin-content {
+            position: relative;
+            z-index: 2;
+            color: var(--ivory);
+            transform: translateY(60px);
+            transition: all 0.7s var(--ease);
+            padding: 20px;
+            background: rgba(255, 255, 255, 0);
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+            border-radius: 4px;
+        }
+
+        .itin-content h4 {
+            font-family: 'Cormorant Garamond';
+            font-size: 1.6rem;
+            font-style: italic;
+            font-weight: 300;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .itin-content p {
+            font-size: 0.75rem;
+            line-height: 1.5;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.6s var(--ease);
+            margin-bottom: 0;
+            color: rgba(240, 237, 229, 0.9);
+        }
+
+        .itin-card:hover .itin-content {
+            transform: translateY(0);
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .itin-card:hover .itin-content p {
+            opacity: 1;
+            max-height: 250px;
+            margin: 12px 0 18px 0;
+        }
+
+        .itin-link {
+            font-size: 8px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            text-decoration: none;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 3px;
+            display: inline-block;
+            opacity: 0;
+            transition: opacity 0.6s var(--ease);
+        }
+
+        .itin-card:hover .itin-link { opacity: 1; }
+    /* --- Accommodation Section Styles --- */
+.accommodation-section {
+    background: var(--ivory);
+    padding: 120px 60px;
+}
+
+.accommodation-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    margin-top: 60px;
+}
+
+.hotel-card {
+    text-decoration: none;
+    color: var(--ink);
+    
+}
+
+.hotel-image-container {
+    height: 300px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 0.5px solid rgba(194, 157, 107, 0.2);
+    position: relative;
+}
+
+.hotel-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease);
+}
+
+.hotel-card:hover .hotel-image-container img {
+    transform: scale(1.05);
+}
+
+.hotel-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.hotel-name {
+    font-family: 'Cormorant Garamond';
+    font-size: 1.4rem;
+    font-style: italic;
+    margin-bottom: 5px;
+}
+
+.hotel-location {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.view-hotel-btn {
+    font-size: 8px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    border-bottom: 1px solid var(--gold);
+    padding-bottom: 2px;
+    transition: all 0.4s var(--ease);
+}
+
+.hotel-card:hover .view-hotel-btn {
+    padding-right: 10px;
+}
+
+@media (max-width: 1024px) {
+    .accommodation-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+footer {
+    padding: 100px 60px 40px;
+    background: var(--ivory);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    color: var(--ink);
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+.footer-col h4 {
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    color: var(--gold);
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col ul li {
+    margin-bottom: 12px;
+}
+
+.footer-col ul li a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 10px;
+    letter-spacing: 1px;
+    opacity: 0.6;
+    transition: all 0.4s var(--ease);
+}
+
+.footer-col ul li a:hover {
+    opacity: 1;
+    color: var(--gold);
+    padding-left: 5px;
+}
+
+.footer-contact p {
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+/* Social Media Icons */
+.footer-social {
+    display: flex;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.social-icon {
+    width: 35px;
+    height: 35px;
+    border: 0.5px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.5s var(--ease);
+}
+
+.social-icon svg {
+    width: 14px;
+    fill: var(--ink);
+    transition: all 0.5s var(--ease);
+}
+
+.social-icon:hover {
+    border-color: var(--gold);
+    background: var(--gold);
+    transform: translateY(-3px);
+}
+
+.social-icon:hover svg {
+    fill: var(--ivory);
+}
+
+/* --- Refined Easy-to-Read Footer --- */
+footer {
+    padding: 100px 60px 40px;
+    background: var(--ivory);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    color: var(--ink);
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+.footer-col h4 {
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 13px; /* Increased from 11px */
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    color: var(--gold);
+    font-weight: 600; /* Added weight for hierarchy */
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col ul li {
+    margin-bottom: 14px; /* More breathing room */
+}
+
+.footer-col ul li a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 14px; /* Increased from 10px */
+    letter-spacing: 0.5px;
+    opacity: 0.8; /* Increased from 0.6 */
+    transition: all 0.4s var(--ease);
+}
+
+.footer-col ul li a:hover {
+    opacity: 1;
+    color: var(--gold);
+    padding-left: 8px;
+}
+
+.footer-contact p {
+    font-size: 14px; /* Increased from 11px */
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+/* Social Media Icons */
+.footer-social {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.social-icon {
+    width: 42px; /* Slightly larger targets */
+    height: 42px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.5s var(--ease);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    padding-top: 40px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copyright {
+    font-size: 11px; /* Increased from 9px */
+    letter-spacing: 1.5px;
+    opacity: 0.6;
+    text-transform: uppercase;
+}
+
+.footer-bottom-links {
+    display: flex;
+    gap: 30px;
+}
+
+.footer-bottom-links a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 11px; /* Increased from 9px */
+    letter-spacing: 1px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+@media (max-width: 1024px) {
+    .footer-main { grid-template-columns: 1fr 1fr; gap: 40px; }
+    footer { padding: 80px 30px 40px; }
+}
+/* --- Responsiveness & Mobile Optimization --- */
+
+@media (max-width: 1024px) {
+    nav { padding: 0 30px; }
+    .nav-links { gap: 20px; }
+    
+    .itinerary-section {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 30px 100px 30px;
+    }
+
+    .accommodation-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .footer-main {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Disable custom cursor on touch devices */
+    #cursor-follower { display: none !important; }
+    * { cursor: auto !important; }
+
+    /* Hero Section Scaling */
+    .page-header h1 {
+        font-size: 15vw; /* Scale up for smaller screens */
+    }
+    .page-header .hero-subtitle {
+        font-size: 14px;
+        letter-spacing: 8px;
+    }
+
+    /* Navigation Adjustment */
+    nav { padding: 0 20px; height: 70px; }
+    .logo { font-size: 1.2rem; }
+    .nav-links { display: none; } /* Usually replaced by a burger menu, but keeping it simple as requested */
+
+    /* Stacking Grids to Single Column */
+    .itinerary-section {
+        grid-template-columns: 1fr;
+        padding: 0 20px 80px 20px;
+    }
+
+    .itin-card {
+        height: 60vh;
+    }
+
+    .accommodation-section {
+        padding: 80px 20px;
+    }
+
+    .accommodation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hotel-image-container {
+        height: 250px;
+    }
+
+    /* Footer Stacking */
+    .footer-main {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .footer-bottom-links {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+}
+
+/* Fix for ultra-small screens */
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 18vw;
+    }
+    
+    .mega-menu {
+        display: none !important; /* Mega menus are non-functional on mobile hover */
+    }
+}
+/* --- Desktop Nav Controls --- */
+@media (min-width: 1025px) {
+    .menu-trigger, .mobile-overlay { display: none; }
+    .desktop-nav { display: flex !important; }
+}
+
+/* --- Mobile Menu & Mega Menu Styles --- */
+@media (max-width: 1024px) {
+    .desktop-nav { display: none !important; }
+    .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+    
+    .burger .line {
+        width: 25px; height: 1px; background: var(--gold);
+        display: block; margin: 6px 0;
+    }
+
+    .mobile-overlay {
+        position: fixed; inset: 0; background: var(--ink);
+        z-index: 5000; transform: translateY(-100%);
+        transition: transform 0.8s var(--ease);
+        overflow-y: auto; padding: 100px 40px;
+    }
+
+    .mobile-overlay.active { transform: translateY(0); }
+
+    .menu-close {
+        position: absolute; top: 30px; right: 30px;
+        color: var(--gold); font-size: 24px; cursor: pointer;
+    }
+
+    .mobile-nav-links { list-style: none; }
+    .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+
+    .mobile-nav-links a, .mobile-drop-trigger {
+        font-family: 'Cormorant Garamond'; font-size: 2rem;
+        color: var(--ivory); text-decoration: none; font-style: italic;
+    }
+
+    .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+
+    /* Mobile Mega Grid */
+    .mobile-mega-content {
+        display: none; grid-template-columns: 1fr 1fr;
+        gap: 15px; margin-top: 20px;
+    }
+
+    .mobile-mega-content.active { display: grid; }
+
+    .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; }
+    .mobile-mega-item span {
+        display: block; color: var(--ivory); font-size: 0.7rem;
+        text-transform: uppercase; margin-top: 5px; letter-spacing: 1px;
+    }
+}
+/* Mobile Menu Styles */
+        @media (max-width: 1024px) {
+            .desktop-nav { display: none !important; }
+            .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+            
+            .burger .line {
+                width: 25px; height: 1px; background: var(--gold);
+                display: block; margin: 6px 0;
+            }
+
+            .mobile-overlay {
+                position: fixed; inset: 0; background: var(--ink);
+                z-index: 5000; transform: translateY(-100%);
+                transition: transform 0.8s var(--ease);
+                overflow-y: auto; padding: 100px 40px;
+            }
+
+            .mobile-overlay.active { transform: translateY(0); }
+
+            .menu-close {
+                position: absolute; top: 30px; right: 30px;
+                color: var(--gold); font-size: 24px; cursor: pointer;
+            }
+
+            .mobile-nav-links { list-style: none; }
+            .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+
+            .mobile-nav-links a, .mobile-drop-trigger {
+                font-family: 'Cormorant Garamond'; font-size: 2rem;
+                color: var(--ivory); text-decoration: none; font-style: italic;
+            }
+
+            .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+
+            /* Mobile Mega Grid */
+            .mobile-mega-content {
+                display: none; grid-template-columns: 1fr 1fr;
+                gap: 15px; margin-top: 20px;
+            }
+
+            .mobile-mega-content.active { display: grid; }
+
+            .mobile-mega-item { text-decoration: none; }
+            .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; opacity: 0.7; }
+            .mobile-mega-item span {
+                display: block; color: var(--ivory); font-size: 0.7rem;
+                text-transform: uppercase; margin-top: 5px; letter-spacing: 1px;
+            }
+            
+            /* Partner Specific Styles in Mobile */
+            .mobile-partner-list { list-style: none; margin-top: 20px; }
+            .mobile-partner-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 8px; }
+            .mobile-partner-list a { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+            .mobile-partner-list .arrow { font-size: 14px; color: var(--gold); font-family: sans-serif; font-style: normal; }
+        }
+
+        @media (min-width: 1025px) {
+            .menu-trigger, .mobile-overlay { display: none; }
+            .desktop-nav { display: flex !important; }
+        }
+.dmc-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 100px;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    @media (max-width: 992px) {
+        #dmc {
+            padding: 80px 5% !important;
+        }
+        .dmc-grid {
+            grid-template-columns: 1fr; /* Stacks the columns */
+            gap: 60px;
+        }
+        .intro-h2 {
+            font-size: 2.2rem !important;
+        }
+        .dmc-features {
+            flex-direction: column; /* Stacks the "Direct Net Rates" and "White Label" */
+            gap: 25px !important;
+        }
+    }
+    /* Responsive logic for the Region Stack */
+    .region-container {
+        position: relative; 
+        max-width: 1000px; 
+        margin: 0 auto; 
+        height: 500px;
+    }
+
+    .region-card-grid {
+        display: grid; 
+        grid-template-columns: 1.2fr 0.8fr; 
+        gap: 60px; 
+        align-items: center; 
+        background: var(--ivory); 
+        border: 0.5px solid rgba(194, 157, 107, 0.3); 
+        padding: 40px; 
+        height: 100%; 
+        position: relative; 
+        z-index: 5; 
+        box-shadow: 20px 20px 60px rgba(0,0,0,0.05);
+    }
+
+    /* Mobile Adjustments (Phones) */
+    @media (max-width: 768px) {
+        .region-section {
+            margin-bottom: 60px !important;
+            padding: 0 20px;
+        }
+        .region-container {
+            height: auto !important; /* Allow height to grow with content */
+        }
+        .region-card-grid {
+            grid-template-columns: 1fr; /* Stack elements */
+            gap: 30px;
+            padding: 30px 20px;
+            height: auto;
+        }
+        #region-title {
+            font-size: 2.2rem !important; /* Smaller text for mobile */
+        }
+        #region-title span {
+            padding-left: 20px !important; /* Reduce indent */
+        }
+        .region-image-wrapper {
+            height: 300px !important; /* Controlled height on mobile */
+            order: -1; /* Puts image above text */
+        }
+        #next-region {
+            right: 10px !important;
+            top: auto !important;
+            bottom: -50px; /* Move arrow below the card */
+            transform: none !important;
+        }
+        /* Hide decorative background borders on mobile for cleaner look */
+        .decor-border {
+            display: none;
+        }
+    }
+    /* --- Hotel Overlay Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    /* 1. Adjust the inner container padding for smaller screens */
+    .overlay-inner {
+        margin: 40px auto !important;
+        padding: 0 20px !important;
+    }
+
+    /* 2. Stack the Gallery Grid vertically */
+    .gallery-grid {
+        grid-template-columns: 1fr !important; /* Single column */
+        grid-template-rows: repeat(3, 250px) !important; /* Fixed height for each image */
+        gap: 10px !important;
+        margin-bottom: 30px !important;
+    }
+
+    /* 3. Ensure the first image (which had span 2) resets to normal */
+    .gallery-grid > div:first-child {
+        grid-row: span 1 !important;
+    }
+
+    /* 4. Scale down typography for mobile */
+    #modal-name {
+        font-size: 28px !important;
+        margin-bottom: 15px !important;
+    }
+
+    #modal-desc {
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* 5. Adjust the Close button position for thumbs */
+    #close-overlay {
+        top: 20px !important;
+        right: 20px !important;
+        padding: 10px 15px !important;
+    }
+}
+/* --- Hotel Overlay Mobile Optimization --- */
+@media (max-width: 768px) {
+    /* 1. Ensure the overlay inner container doesn't have too much top margin */
+    .overlay-inner {
+        margin: 20px auto !important;
+        padding: 0 15px !important;
+    }
+
+    /* 2. Reduce the size of the photos so the text fits on the screen */
+    .gallery-grid {
+        grid-template-columns: 1fr !important;
+        /* Lower the heights: First photo 200px, others 120px */
+        grid-template-rows: 200px 120px 120px !important; 
+        gap: 8px !important;
+        margin-bottom: 20px !important;
+    }
+
+    /* 3. Force the first photo to stop spanning multiple rows */
+    .gallery-grid > div:first-child {
+        grid-row: span 1 !important;
+    }
+
+    /* 4. Reduce spacing around the hotel name to pull it up further */
+    .overlay-text {
+        padding-top: 0 !important;
+    }
+
+    #modal-name {
+        font-size: 24px !important; /* Smaller text for mobile */
+        margin-bottom: 8px !important;
+        line-height: 1.2 !important;
+    }
+
+    #modal-location {
+        font-size: 9px !important;
+        margin-bottom: 5px !important;
+    }
+
+    /* 5. Make the description and table follow closely */
+    #modal-desc {
+        font-size: 15px !important;
+        margin-bottom: 20px !important;
+    }
+}
+@media (max-width: 768px) {
+    /* Stack the card elements vertically on small screens */
+    .region-card-grid {
+        grid-template-columns: 1fr !important;
+        padding: 30px !important;
+        gap: 30px !important;
+    }
+    
+    #region-title {
+        font-size: 2.5rem !important;
+    }
+    
+    .region-image-wrapper {
+        height: 300px !important;
+    }
+    
+    /* Adjust decorative borders for mobile so they don't overflow the screen */
+    .decor-border {
+        inset: 10px -10px -10px 10px !important;
+    }
+    
+    /* Reposition arrow for mobile */
+    #next-region {
+        right: 10px !important;
+        top: auto !important;
+        bottom: -40px !important;
+        transform: none !important;
+    }
+}
+ /* Ultra-Luxury Editorial Showcase */
+    .showcase-container { 
+        max-width: 1050px; 
+        margin: 0 auto; 
+        padding: 60px 24px; 
+    }
+    
+    .showcase-layout-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Refined Invisible Horizontal Tab Bar */
+    .showcase-tabs-wrapper {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(194, 157, 107, 0.15);
+        scrollbar-width: none;
+    }
+    .showcase-tabs-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+
+    .showcase-nav-list-inline { 
+        display: inline-flex;
+        gap: 40px;
+        list-style: none; 
+        padding: 0;
+        margin: 0;
+    }
+
+    .showcase-nav-item-inline {
+        font-family: 'Cormorant Garamond', serif; 
+        font-size: 1.65rem; 
+        font-style: italic; 
+        color: var(--ink);
+        opacity: 0.25; 
+        cursor: pointer; 
+        transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), color 0.5s ease; 
+        position: relative;
+        padding-bottom: 8px;
+    }
+    .showcase-nav-item-inline:hover, 
+    .showcase-nav-item-inline.active { 
+        opacity: 1; 
+        color: var(--gold); 
+    }
+    .showcase-nav-item-inline.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background-color: var(--gold);
+    }
+
+    /* 21:9 Cinematic Aspect Ratio Image Frame */
+    .showcase-media-frame { 
+        position: relative; 
+        width: 100%;
+        aspect-ratio: 21 / 9; /* Ultra-wide high-end cinematic aspect ratio */
+        overflow: hidden; 
+        border: 0.5px solid rgba(194, 157, 107, 0.2); 
+        box-shadow: 0 20px 50px rgba(0,0,0,0.04); 
+    }
+    
+    @media (max-width: 768px) {
+        .showcase-media-frame {
+            aspect-ratio: 16 / 10; /* Slightly taller aspect ratio for mobile view screens */
+        }
+    }
+    
+    .showcase-img-pane {
+        position: absolute; 
+        inset: 0; 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover;
+        opacity: 0; 
+        transform: scale(1.05); 
+        transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    .showcase-img-pane.active { 
+        opacity: 1; 
+        transform: scale(1); 
+        z-index: 1; 
+    }
+
+    /* Magazine-Style Overlapping Details Container */
+    .showcase-details-pane { 
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        max-width: 680px;
+        margin: -20px auto 0 auto; /* Negative margin pulls the text upward over the frame edge slightly */
+        background: var(--bg, #fff); /* Matches base background for clean structural blocking */
+        padding: 30px 20px 10px 20px;
+        z-index: 2;
+        position: relative;
+    }
+    
+    #showcase-desc-container { 
+        width: 100%;
+        min-height: 110px; 
+    }
+    
+    .showcase-desc { 
+        font-family: 'Tenor Sans', sans-serif; 
+        font-size: 13.5px; 
+        line-height: 1.7; 
+        letter-spacing: 0.3px;
+        opacity: 0; 
+        display: none; 
+        transform: translateY(10px);
+        transition: opacity 0.5s ease, transform 0.5s ease; 
+        color: var(--ink); 
+    }
+    .showcase-desc strong { 
+        font-family: 'Cormorant Garamond', serif; 
+        font-size: 1.9rem; 
+        font-style: italic; 
+        display: block; 
+        color: var(--gold); 
+        margin-bottom: 12px; 
+        font-weight: 400; 
+        letter-spacing: 1.5px;
+    }
+    .showcase-desc.active { 
+        display: block; 
+        opacity: 0.8; 
+        transform: translateY(0);
+    }
+    
+    .showcase-action-btn {
+        margin-top: 15px;
+        background: transparent; 
+        color: var(--ink);
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-decoration: none;
+        border-bottom: 1px solid var(--gold);
+        padding-bottom: 6px;
+        transition: opacity 0.3s ease, letter-spacing 0.3s ease;
+    }
+    .showcase-action-btn:hover {
+        opacity: 0.7;
+        letter-spacing: 4px;
+    }
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+     <div class="grain"></div>
+    <div class="vignette"></div>
+    <div id="cursor-follower"><span>Explore</span></div>
+
+   <nav>
+        <a href="index.html" class="logo">L'INDOCHINE</a>
+        
+        <ul class="nav-links desktop-nav">
+            <li class="dropdown"> 
+                <a href="#">Destinations</a>
+                <div class="mega-menu"> 
+                    <a href="cambodia.html" class="mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                    <a href="Vietnam.html" class="mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                    <a href="Thailand.html" class="mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                    <a href="Laos.html" class="mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                    <a href="Multi-country.html" class="mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                </div>
+            </li>
+            <li class="dropdown"> 
+                <a href="#">Themes</a>
+                <div class="mega-menu" style="grid-template-columns: repeat(6, 1fr);">
+                    <a href="Culture-Heritage.html" class="mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                    <a href="Romantic-Journeys.html" class="mega-item"><img src="penin boat 1.jpg"><span>Romantic Journeys</span></a>
+                    <a href="Wellness-Rejuvenation.html" class="mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                    <a href="Family-Journeys.html" class="mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                    <a href="Nature-Adventure.html" class="mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                    <a href="Culinary-Journeys.html" class="mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Partners</a>
+                <div class="mega-menu" style="grid-template-columns: 1.3fr 1fr; padding: 0; overflow: hidden; min-width: 600px;">
+                    <div style="padding: 50px; background: var(--ink);">
+                        <h4 style="color: var(--gold); font-size: 13px; margin-bottom: 35px; letter-spacing: 4px; text-transform: uppercase; font-family: 'Tenor Sans';">B2B & DMC Services</h4>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="Dmc-services.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>DMC Operational Excellence</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="b2b-rates.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>Confidential B2B Tariffs</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="white-label.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>White-Label Ground Handling</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="mice-groups.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>MICE & Incentive Groups</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <p style="margin-top: 30px; font-size: 10px; color: var(--gold); opacity: 0.7; letter-spacing: 2px; text-transform: uppercase;">Your strategic partner in the SouthEast Asia.</p>
+                    </div>
+                    <div style="position: relative; background: var(--clay); overflow: hidden;">
+                        <img src="angkor_wat_sunrise2712_67ddcbab8b.jpg" alt="Siem Reap Hub" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+                        <div style="position: absolute; bottom: 35px; left: 35px;">
+                            <span style="display: block; color: var(--ivory); font-family: 'Cormorant Garamond'; font-style: italic; font-size: 22px;">Regional Operations</span>
+                            <span style="display: block; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px;">Siem Reap, Cambodia</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><a href="Accommodation.html">Accommodation</a></li>
+            <li><a href="About-Us.html">About Us</a></li>
+        </ul>
+
+        <div class="menu-trigger" id="menu-open">
+            <div class="burger"><span class="line"></span><span class="line"></span></div>
+        </div>
+
+        <div class="mobile-overlay" id="mobile-overlay">
+            <div class="menu-close" id="menu-close">✕</div>
+            <div class="mobile-scroll-container">
+                <ul class="mobile-nav-links">
+                    
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Destinations <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="cambodia.html" class="mobile-mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                            <a href="Vietnam.html" class="mobile-mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                            <a href="Thailand.html" class="mobile-mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                            <a href="Laos.html" class="mobile-mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                            <a href="Multi-country.html" class="mobile-mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                        </div>
+                    </li>
+
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Themes <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="Culture-Heritage.html" class="mobile-mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                            <a href="Romantic-Journeys.html" class="mobile-mega-item"><img src="penin boat 1.jpg"><span>Romantic Getaways</span></a>
+                            <a href="Wellness-Rejuvenation.html" class="mobile-mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                            <a href="Family-Journeys.html" class="mobile-mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                             <a href="Nature-Adventure.html" class="mobile-mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                            <a href="Culinary-Journeys.html" class="mobile-mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                        </div>
+                    </li>
+
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Partners <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <div style="grid-column: span 2; width: 100%;">
+                                <ul class="mobile-partner-list">
+                                    <li><a href="Dmc-services.html"><span>DMC Excellence</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="b2b-rates.html"><span>B2B Tariffs</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="white-label.html"><span>White-Label</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="mice-groups.html"><span>MICE Groups</span> <span class="arrow">→</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li><a href="Accommodation.html">Accommodation</a></li>
+                    <li><a href="About-Us.html">About Us</a></li>
+                     <li><a href="Plan-Your-Trip.html">Plan Your Trip</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="nav-right desktop-nav"><a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a></div>
+    </nav>
+
+
+   <header class="page-header">
+    <div style="z-index: 2;">
+        <span class="hero-subtitle">The Land of Smiles</span>
+        <h1>Thailand</h1>
+        <div style="width: 100px; height: 1px; background: var(--gold); margin: 30px auto; opacity: 0.6;"></div>
+    </div>
+</header>
+
+    <main style="padding: 100px 10%; background-color: var(--ivory);">
+        
+        <section style="max-width: 800px; margin: 0 auto 100px auto; text-align: center;">
+            <p style="font-family: 'Cormorant Garamond'; font-size: 2.2rem; line-height: 1.6; font-style: italic; color: var(--ink); margin-bottom: 40px;">
+                "A kingdom of glittering spires and sapphire waters, where the fragrance of jasmine lingers in the air and the spirit of 'Sanuk' guides every moment."
+            </p>
+            <p style="font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); font-weight: 600;">
+                In Thailand, tradition meets a modern soul in perfect harmony.
+            </p>
+        </section>
+
+        <section style="margin-bottom: 120px;">
+            <h3 style="font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 40px; text-align: center; color: var(--gold);">Travel Essentials</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background-color: rgba(194, 157, 107, 0.2); border: 1px solid rgba(194, 157, 107, 0.2);">
+                <div style="background: var(--ivory); padding: 30px; text-align: center;">
+                    <span style="display: block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; margin-bottom: 10px;">Capital</span>
+                    <span style="font-family: 'Cormorant Garamond'; font-size: 1.4rem;">Bangkok</span>
+                </div>
+                <div style="background: var(--ivory); padding: 30px; text-align: center;">
+                    <span style="display: block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; margin-bottom: 10px;">Language</span>
+                    <span style="font-family: 'Cormorant Garamond'; font-size: 1.4rem;">Thai</span>
+                </div>
+                <div style="background: var(--ivory); padding: 30px; text-align: center;">
+                    <span style="display: block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; margin-bottom: 10px;">Religion</span>
+                    <span style="font-family: 'Cormorant Garamond'; font-size: 1.4rem;">Buddhism</span>
+                </div>
+                <div style="background: var(--ivory); padding: 30px; text-align: center;">
+                    <span style="display: block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; margin-bottom: 10px;">Currency</span>
+                    <span style="font-family: 'Cormorant Garamond'; font-size: 1.4rem;">Thai Baht (THB)</span>
+                </div>
+            </div>
+        </section>
+
+        <section style="margin-bottom: 120px;">
+            <h3 style="font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 40px; text-align: center; color: var(--gold);">When to Journey</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                <div style="border-left: 1px solid rgba(194, 157, 107, 0.4); padding-left: 30px;">
+                    <h4 style="font-family: 'Cormorant Garamond'; font-size: 1.5rem; margin-bottom: 15px;">The Cool Season <span style="font-size: 12px; font-style: italic; opacity: 0.6;">(Nov – Feb)</span></h4>
+                    <p style="font-size: 14px; line-height: 1.6; opacity: 0.8;">The most pleasant time for city exploration and island hopping. Expect sunny days and comfortable evenings.</p>
+                </div>
+                <div style="border-left: 1px solid rgba(194, 157, 107, 0.4); padding-left: 30px;">
+                    <h4 style="font-family: 'Cormorant Garamond'; font-size: 1.5rem; margin-bottom: 15px;">The Green Season <span style="font-size: 12px; font-style: italic; opacity: 0.6;">(June – Oct)</span></h4>
+                    <p style="font-size: 14px; line-height: 1.6; opacity: 0.8;">The landscape transforms into a lush paradise. Showers are brief, leaving the sights fresh and less crowded.</p>
+                </div>
+            </div>
+        </section>
+
+     <section class="showcase-container">
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h3 style="font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); font-family: 'Tenor Sans', sans-serif;">Regions</h3>
+    </div>
+    
+    <div class="showcase-layout-stack">
+        <!-- Minimal Nav Ribbon -->
+        <div class="showcase-tabs-wrapper">
+            <ul class="showcase-nav-list-inline" id="showcase-nav">
+                <!-- Built dynamically via script -->
+            </ul>
+        </div>
+        
+        <!-- Wide-Angle Visual Canvas -->
+        <div class="showcase-media-frame" id="showcase-images">
+            <!-- Built dynamically via script -->
+        </div>
+        
+        <!-- Overlapping Editorial Copy Panel -->
+        <div class="showcase-details-pane">
+            <div id="showcase-desc-container">
+                <!-- Built dynamically via script -->
+            </div>
+            <a href="#" id="showcase-link" class="showcase-action-btn">Discover Realm</a>
+        </div>
+    </div>
+</section>
+    </main>
+    <div class="section-label" style="background: var(--clay); color: var(--gold); padding: 120px 0 60px 0; text-align: center; font-size: 12px; letter-spacing: 4px; text-transform: uppercase;">
+    Curated Itineraries
+</div>
+
+<section class="itinerary-section">
+    <div class="itin-card">
+        <img src="Ayyuthaya.jpg" class="itin-img-bg">
+        <div class="itin-content">
+            <span>9 Days / Thailand</span>
+            <h4>A Bespoke Journey into Thailand's Heritage </h4>
+            <p>Embark on an extraordinary voyage through Thailand's rich history, vibrant traditions, and spiritual heart. This curated journey offers unparalleled access to sacred sites, authentic encounters with master artisans, and a deep immersion into the Kingdom's soul, all experienced with the utmost luxury and personalized attention.</p>
+            <a href="Thailand-culture-heritage.html" class="itin-link">Explore Itinerary</a>
+        </div>
+    </div>
+
+    <div class="itin-card">
+        <img src="candllit dinner.jpg" class="itin-img-bg">
+        <div class="itin-content">
+            <span>7 Days / Thailand</span>
+            <h4> Thailand – An Idyllic Journey for Two </h4>
+            <p>This bespoke journey for two weaves together the vibrant allure of Bangkok with the serene, breathtaking beauty of Koh Samui, designed for couples seeking unparalleled intimacy, exquisite luxury, and cherished shared moments, with stays at The Siam Hotel and Four Seasons Resort Koh Samui.</p>
+            <a href="Thailand-romantic-getaway.html" class="itin-link">Explore Itinerary</a>
+        </div>
+    </div>
+
+    <div class="itin-card">
+        <img src="Koh-Samui-yoga-studio.jpg" class="itin-img-bg">
+        <div class="itin-content">
+            <span>7 Days / Thailand</span>
+            <h4>Thailand – A Sanctuary for the Senses</h4>
+            <p>Embark on a bespoke journey dedicated to restoring harmony of mind, body, and spirit amidst Thailand's most serene and exclusive wellness havens. This experience combines ancient healing traditions with modern therapeutic approaches, all in unparalleled luxury.</p>
+            <a href="Thailand-wellness-rejuvenation.html" class="itin-link">Explore Itinerary</a>
+        </div>
+    </div>
+
+    <div class="itin-card">
+        <img src="Chiang-Mai-Elephant-Nature-Park-with-Kids-3-1024x683.jpg" class="itin-img-bg">
+        <div class="itin-content">
+            <span>7 Days / Thailand</span>
+            <h4>Thailand – A Legacy of Laughter & Discovery</h4>
+            <p>This bespoke journey for the entire family weaves together Bangkok's vibrant cultural tapestry, Chiang Mai's enchanting nature and ethical wildlife encounters, and Phuket's pristine beaches and exhilarating water adventures. Every detail is curated for luxurious comfort, authentic immersion, and shared moments of joy and discovery for all generations.</p>
+            <a href="Thailand-family-journey.html" class="itin-link">Explore Itinerary</a>
+        </div>
+    </div>
+
+    <div class="itin-card">
+        <img src="snokling phuket.jpg" class="itin-img-bg">
+        <div class="itin-content">
+            <span>7 Days / Thailand</span>
+            <h4>Thailand – Untamed Beauty, Unrivaled Access</h4>
+            <p>TThis bespoke, 6-night expedition is defined by Ethical Wildlife Immersion and Unparalleled Luxury Exclusivity. It offers a private ethical elephant experience and Golden Triangle cruise in the North, perfectly paired with exclusive private yacht charters and bespoke snorkeling/diving in the Southern seas.
+
+</p>
+            <a href="Thailand-untamed Beauty.html" class="itin-link">Explore Itinerary</a>
+        </div>
+    </div>
+
+    <div class="itin-card">
+        <img src="Herbal-Discovery-01-1074.jpg" class="itin-img-bg">
+        <div class="itin-content">
+            <span>7 Days / Thailand</span>
+            <h4>Thailand – A Gastronomic Masterpiece </h4>
+            <p>Indulge in an unparalleled epicurean odyssey through Thailand, where every dish tells a story of rich heritage and vibrant flavors. This bespoke journey offers exclusive access to Michelin-starred dining, private masterclasses, bustling local markets, and hidden culinary gems, all curated for the most discerning gourmand, with stays at The Peninsula Bangkok and Four Seasons Resort Chiang Mai.</p>
+            <a href="Thailand-culinary-journey.html" class="itin-link">Explore Itinerary</a>
+        </div>
+    </div>
+</section>
+
+    <div class="section-label" style="background: var(--ivory); color: var(--gold); padding: 120px 0 0 0; text-align: center; font-size: 12px; letter-spacing: 4px; text-transform: uppercase;">
+    The Accommodation Collection
+</div>
+
+<section class="accommodation-guide-section" id="accommodation-guide">
+    </section>
+
+<section class="accommodation-section">
+    <div style="text-align: center; max-width: 800px; margin: 0 auto 60px auto;">
+        <p style="font-family: 'Cormorant Garamond'; font-size: 1.8rem; line-height: 1.4; font-style: italic; color: var(--ink);">
+            "Experience the art of hospitality with our carefully chosen portfolio of sanctuaries."
+        </p>
+    </div>
+        <div class="accommodation-grid">
+    <a href="mandarin-oriental-bangkok.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="359671-mandarin-oriental-bangkok-bangkok.webp" alt="Mandarin Oriental, Bangkok"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Mandarin Oriental, Bangkok</div>
+                <div class="hotel-location">Bangkok, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="peninsula.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="The-Peninsula.jpg" alt="The Peninsula Bangkok"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">The Peninsula Bangkok</div>
+                <div class="hotel-location">Bangkok, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="capella-bangkok.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="Capella-Bangkok-3.webp" alt="Capella Bangkok"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Capella Bangkok</div>
+                <div class="hotel-location">Bangkok, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="marriot-executive-apartment-bangkok.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="567117154.jpg" alt="Marriott Executive Apartment Bangkok"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Marriott Executive Apartment Bangkok</div>
+                <div class="hotel-location">Bangkok, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="four-seasons-chiang-mai-resort.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="CHI_1510_original.jpg" alt="Four Seasons Chiang Mai Resort"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Four Seasons Chiang Mai Resort</div>
+                <div class="hotel-location">Chiang Mai, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="dhara-dhevi-hotel-chiang-mai.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="Chiang_Mai-36-20160126-X3.webp" alt="Dhara Dhevi Hotel Chiang Mai"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Dhara Dhevi Hotel Chiang Mai</div>
+                <div class="hotel-location">Chiang Mai, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="anantara-chiang-mai-resort.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="teaser-960x519.jpg" alt="Anantara Chiang Mai Resort"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Anantara Chiang Mai Resort</div>
+                <div class="hotel-location">Chiang Mai, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="raya-heritage-hotel-chiang-mai.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="02-Courtyard-1920x862.jpg" alt="Raya Heritage Hotel Chiang Mai"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Raya Heritage Hotel Chiang Mai</div>
+                <div class="hotel-location">Chiang Mai, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="137-pillars-house-chiang-mai.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="b180423017-banner-size.jpg" alt="137 Pillars House Chiang Mai"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">137 Pillars House Chiang Mai</div>
+                <div class="hotel-location">Chiang Mai, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="anantara-golden-triangle-resort.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="jungle-bubbles.jpg" alt="Anantara Golden Triangle Elephant Camp & Resort"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Anantara Golden Triangle Elephant Camp & Resort</div>
+                <div class="hotel-location">Chiang Rai, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="four-seasons-resort-koh-samui.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="KOH_1074_original.jpg" alt="Four Seasons Resort Koh Samui"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Four Seasons Resort Koh Samui</div>
+                <div class="hotel-location">Koh Samui, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="kamalaya-koh-samui.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="lap-pool-kamalaya-thailand.jpg" alt="Kamalaya Koh Samui"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Kamalaya Koh Samui</div>
+                <div class="hotel-location">Koh Samui, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="amanpuri.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="amanpuri_thailand.jpg" alt="Amanpuri"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Amanpuri</div>
+                <div class="hotel-location">Phuket, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="phuket-marriot-resort-spa.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="phuket-marriott-resort-spa-merlin-beach-general-120c8de2.jpg" alt="Phuket Marriott Resort & Spa"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">Phuket Marriott Resort & Spa</div>
+                <div class="hotel-location">Phuket, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+
+    <a href="the-siam-hotel.html" class="hotel-card">
+        <div class="hotel-image-container"><img src="b160420001-banner-size.jpg" alt="The Siam Hotel"></div>
+        <div class="hotel-info">
+            <div>
+                <div class="hotel-name">The Siam Hotel</div>
+                <div class="hotel-location">Bangkok, Thailand</div>
+            </div>
+            <span class="view-hotel-btn">View Hotel</span>
+        </div>
+    </a>
+</div>
+</section>
+
+<div id="hotel-overlay" data-lenis-prevent style="position: fixed; inset: 0; background: var(--ink); z-index: 2000; display: none; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; opacity: 0;">
+    <div id="close-overlay" style="position: fixed; top: 40px; right: 60px; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; z-index: 2001; background: rgba(0,0,0,0.5); padding: 12px 20px; backdrop-filter: blur(10px); border: 0.5px solid rgba(194, 157, 107, 0.3);">
+        Close [X]
+    </div>
+    
+    <div class="overlay-inner" style="max-width: 1100px; margin: 60px auto; padding: 0 40px;">
+        <div class="gallery-grid" style="display: grid; grid-template-columns: 1.2fr 1fr; grid-template-rows: 200px 200px; gap: 15px; margin-bottom: 50px;">
+            <div style="grid-row: span 2; border: 0.5px solid rgba(194, 157, 107, 0.3); overflow: hidden; background: #111;">
+                <img id="modal-img-1" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+            </div>
+            <div style="border: 0.5px solid rgba(194, 157, 107, 0.3); overflow: hidden; background: #111;">
+                <img id="modal-img-2" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+            </div>
+            <div style="border: 0.5px solid rgba(216, 188, 150, 0.3); overflow: hidden; background: #111;">
+                <img id="modal-img-3" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.9;">
+            </div>
+        </div>
+
+        <div class="overlay-text" style="max-width: 700px; margin: 0 auto; text-align: center;">
+    <span id="modal-location" style="display: block; font-family: 'Tenor Sans'; color: var(--gold); letter-spacing: 3px; font-size: 11px; margin-bottom: 10px; text-transform: uppercase;"></span>
+    <h2 id="modal-name" style="font-family: 'Cormorant Garamond'; color: var(--ivory); font-size: clamp(32px, 5vw, 48px); font-weight: 300; margin-bottom: 20px;"></h2>
+    <div style="width: 40px; height: 1px; background: var(--gold); margin: 0 auto 30px auto; opacity: 0.5;"></div>
+
+    <div id="modal-highlights-container" style="margin-bottom: 30px;"></div>
+    <div id="modal-amenities-container" style="margin-bottom: 30px;"></div>
+
+    <p id="modal-desc" style="font-family: 'Cormorant Garamond'; color: var(--ivory); font-size: 18px; line-height: 1.6; opacity: 0.8; margin-bottom: 40px; font-style: italic;"></p>
+    
+    <div id="modal-table-container"></div>
+</div>
+ </div>
+   </section>
+
+    </div>
+</section>
+    </div>
+</section>
+                </div>
+            </div>
+        </div>
+    </section>
+      <footer>
+    <div class="footer-main">
+        <div class="footer-col">
+            <h4>Destinations</h4>
+            <ul>
+                <li><a href="cambodia.html">Cambodia</a></li>
+                <li><a href="Laos.html">Laos</a></li>
+                <li><a href="Vietnam.html">Vietnam</a></li>
+                <li><a href="Thailand.html">Thailand</a></li>
+                <li><a href="Multi-country.html">Multi-Country</a></li>
+            </ul>
+        </div>
+        
+        <div class="footer-col">
+            <h4>Experiences</h4>
+            <ul>
+                <li><a href="Culture-Heritage.html">Culture & Heritage</a></li>
+                <li><a href="Romantic-Journeys.html">Romantic Getaways</a></li>
+                <li><a href="Nature-Adventure.html">Nature & Adventure</a></li>
+                <li><a href="Wellness-Rejuvenation.html">Wellness & Rejuvenation</a></li>
+                <li><a href="Family-Journeys.html">Family Journeys</a></li>
+                <li><a href="Culinary-Journeys.html">Culinary Journeys</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col footer-contact">
+            <h4>Connect with Us</h4>
+            <p>+855 95 267 257</p>
+            <p>contact@l'indochine.com</p>
+            
+            <div class="footer-social">
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-2.21c0-.837.39-1.29 1.121-1.29h2.879v-4.498c-.443-.059-1.968-.202-3.726-.202-3.689 0-6.274 2.247-6.274 6.46v1.74z"/></svg>
+                </a>
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <div class="footer-cta-box" style="background: rgba(194, 157, 107, 0.05); padding: 30px; border: 1px solid rgba(194, 157, 107, 0.2);">
+                <h4 style="margin-bottom: 20px;">Curate Your Legacy</h4>
+                <a href="Plan-Your-Trip.html" class="btn-plan" style="display: block; text-align: center; margin-bottom: 20px;">Plan Your Trip</a>
+                <div style="display: flex; justify-content: space-between;">
+                    <a href="About-Us.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ABOUT US</a>
+                    <a href="Accommodation.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ACCOMMODATION</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="copyright">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+        <div class="footer-bottom-links">
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="Terms&Conditions.html">Terms & Conditions</a>
+            <a href="#" id="back-to-top">BACK TO TOP &#10142;</a>
+        </div>
+    </div>
+</footer>
+
+     <script>
+        gsap.registerPlugin(ScrollTrigger);
+        // Cursor Logic
+        const follower = document.getElementById('cursor-follower');
+        const fText = follower.querySelector('span');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(follower, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: "power2.out" });
+        });
+        document.querySelectorAll('a, .mega-item').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(follower, { width: 100, height: 100, background: 'rgba(194, 157, 107, 0.15)', border: 'none' });
+                fText.style.opacity = 1;
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(follower, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+                fText.style.opacity = 0;
+            });
+        });
+        // Mega Menu Caret positioning
+        document.querySelectorAll('.dropdown').forEach(drop => {
+            const menu = drop.querySelector('.mega-menu');
+            const link = drop.querySelector('a');
+            drop.addEventListener('mouseenter', () => {
+                const linkRect = link.getBoundingClientRect();
+                const linkCenter = linkRect.left + (linkRect.width / 2);
+                menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+            });
+        });
+        // Back to top
+        document.getElementById('back-to-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+     // Unique Editorial Showcase Dataset - Thailand (Normalized to match Laos schema)
+const regionData = [
+    {
+        name: 'Bangkok',
+        title: 'Royal Metropolis Maha Nakhon',
+        url: 'bangkok.html',
+        desc: 'Bangkok is a sensory masterpiece where gilded temples like Wat Arun stand in the shadow of glass skyscrapers. Navigate the winding Chao Phraya River to discover a city defined by world-class gastronomy and the regal splendor of the Grand Palace.',
+        img: 'pexels-o-darny-17746130-scaled.webp'
+    },
+    {
+        name: 'Chiang Mai',
+        title: 'Lanna Heritage',
+        url: 'chiang-mai.html',
+        desc: 'In the misty mountains of the North, Chiang Mai serves as the keeper of Lanna culture. Explore ancient teak temples, participate in sacred tea ceremonies, and retreat to sanctuary-like resorts nestled among emerald rice paddies.',
+        img: '0020-วัดพระสิงห์วรมหาวิหาร.jpg'
+    },
+    {
+        name: 'Phuket',
+        title: 'Andaman Serenity',
+        url: 'phuket.html',
+        desc: 'Phuket offers a paradise of limestone karsts and turquoise waters. Beyond the vibrant shorelines, discover the Sino-Portuguese charm of Old Town and secluded luxury villas where the horizon meets the Andaman Sea.',
+        img: 'phuket-thailand-karst-formation-phuket0327-92bd3ce9266148dba74cba5e36c711e2.jpg'
+    },
+    {
+        name: 'Koh Samui',
+        title: 'Celestial Islands',
+        url: 'koh-samui.html',
+        desc: 'Koh Samui is the gateway to the Gulf of Thailands most prestigious escapes. From the coconut groves of Koh Samui to the crystal-clear diving depths of Koh Tao, experience an island life defined by effortless grace.',
+        img: 'Ang-Thong-National-Marine-Park-Koh-Samui-Thailand-The-Luxury-Signature.jpg'
+    },
+    {
+        name: 'Krabi',
+        title: 'Primal Karsts',
+        url: 'krabi.html',
+        desc: 'Krabi is home to the dramatic cliffs of Railay and the ancient mangrove forests of Ao Thalane. It is a destination for those seeking a deeper connection with nature, where luxury is found in the stillness of the limestone peaks.',
+        img: 'Krabi_Province_header.jpg'
+    },
+    {
+        name: 'Ayutthaya',
+        title: 'Siam Echo',
+        url: 'ayutthaya.html',
+        desc: 'Ayutthaya, the former capital of the Kingdom of Siam, is a vast archaeological park of brick ruins and headless Buddhas. It offers a poignant look into the past, best explored via private river cruise at sunset.',
+        img: 'Ayyuthaya.jpg'
+    },
+    {
+        name: 'Chiang Rai',
+        title: 'Mystic Frontier',
+        url: 'chiang-rai.html',
+        desc: 'Chiang Rai is a realm of artistic brilliance and ancient kingdoms. From the ethereal White Temple to the historic Golden Triangle, discover a landscape of tea plantations and bamboo forests where Thailand meets its neighbors.',
+        img: 'IMG_7183-min.webp'
+    }
+];
+
+const navList = document.getElementById('showcase-nav');
+const imgContainer = document.getElementById('showcase-images');
+const descContainer = document.getElementById('showcase-desc-container');
+const showcaseLink = document.getElementById('showcase-link');
+
+regionData.forEach((region, index) => {
+    // Nav Tab Configuration
+    const li = document.createElement('li');
+    li.className = `showcase-nav-item-inline ${index === 0 ? 'active' : ''}`;
+    li.innerHTML = region.name;
+    li.addEventListener('mouseenter', () => switchShowcaseElement(index));
+    li.addEventListener('click', () => switchShowcaseElement(index)); 
+    navList.appendChild(li);
+
+    // Image Configuration
+    const img = document.createElement('img');
+    img.src = region.img;
+    img.className = `showcase-img-pane ${index === 0 ? 'active' : ''}`;
+    imgContainer.appendChild(img);
+
+    // Narrative Copy Configuration
+    const p = document.createElement('p');
+    p.className = `showcase-desc ${index === 0 ? 'active' : ''}`;
+    p.innerHTML = `<strong>${region.title}</strong>${region.desc}`;
+    descContainer.appendChild(p);
+});
+
+if (showcaseLink) {
+    showcaseLink.href = regionData[0].url;
+}
+
+function switchShowcaseElement(index) {
+    // Drop active classes instantly across the board
+    document.querySelectorAll('.showcase-nav-item-inline').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.showcase-img-pane').forEach(el => el.classList.remove('active'));
+    
+    const allDescs = document.querySelectorAll('.showcase-desc');
+    allDescs.forEach(el => {
+        el.classList.remove('active');
+        el.style.display = 'none';
+    });
+
+    // Fire fresh interactive states
+    navList.children[index].classList.add('active');
+    imgContainer.children[index].classList.add('active');
+    
+    // Smooth frame delay for elegant text entry transitions
+    allDescs[index].style.display = 'block';
+    setTimeout(() => {
+        allDescs[index].classList.add('active');
+    }, 50);
+
+    if (showcaseLink) {
+        showcaseLink.href = regionData[index].url;
+    }
+}
+const hotelDetails = {
+    "Mandarin Oriental, Bangkok": {
+        desc: "A legendary riverside retreat that has defined Thai hospitality since 1876. This 'Grande Dame' combines historic charm with modern sophistication, offering world-class dining and a serene spa reached by private teak boat.",
+        images: ["1800x600.avif", "bangkok-lounge-authors-lounge-1-scaled.jpg", "mandarin-oriental-bangkok-swimming-pool-cabanas-dec19-pr.webp"],
+        highlights: ["Historic Authors' Wing", "Two-Michelin-starred Le Normandie", "Private teak shuttle boat"],
+        amenities: ["World-renowned Oriental Spa", "Riverside Swimming Pool", "Thai Cooking School"],
+        rooms: [
+            { type: "Deluxe River View Room", size: "43 sqm", features: "Floor-to-ceiling windows with unobstructed views of the Chao Phraya River.", photo: "room resz.jpg" },
+            { type: "Authors' Suite", size: "92 sqm", features: "Unique, individually designed suites in the original Authors' Wing, themed after famous literary guests.", photo: "bangkok-room-deluxe-room.jpg" },
+            { type: "Garden Suite", size: "80 sqm", features: "Split-level design with a private balcony overlooking the river and tropical gardens.", photo: "mandarin-oriental-bangkok-hotel-20.jpg" }
+        ]
+    },
+    "The Peninsula Bangkok": {
+        desc: "Distinguished by its wave-shaped design, every room offers a panoramic view of the Chao Phraya River. It blends timeless Peninsula elegance with authentic Thai charm, featuring a dramatic three-tiered swimming pool.",
+        images: ["13251578043856-2.jpeg", "The-Peninsula-Bangkok_The-Pool-11.jpg", "1-peninsula-bkk_003.jpg"],
+        highlights: ["Guaranteed river views from all rooms", "Three-tiered peninsula pool", "Peninsula Academy cultural tours"],
+        amenities: ["The Peninsula Spa", "Riverside Tennis Courts", "Par 3 Golf Lounge"],
+        rooms: [
+            { type: "Deluxe Room", size: "45 sqm", features: "Traditional Thai silk wall coverings and a marble bathroom with a built-in television.", photo: "Deluxe Room.jpg" },
+            { type: "Grand Deluxe Suite", size: "74 sqm", features: "Features a separate living area and a walk-in dressing room with views of the Bangkok skyline.", photo: "Grand Deluxe Room (1).jpg" },
+            { type: "The Peninsula Suite", size: "364 sqm", features: "The ultimate luxury residence with its own private gym and formal dining room.", photo: "Peninsula Suite 1.jpg" }
+        ]
+    },
+    "Capella Bangkok": {
+        desc: "Voted the World's Best Hotel, this sophisticated urban resort is an intimate sanctuary on the river's edge. It features residential-style villas with private plunge pools and MICHELIN-starred dining by Mauro Colagreco.",
+        images: ["Capella-Bangkok-3.webp", "Capella-Bangkok-Verandah-03.jpg", "Intuitive_Wellness_Massage.jpg"],
+        highlights: ["Riverside villas with plunge pools", "Dining by Mauro Colagreco", "Personalized Capella Culturist"],
+        amenities: ["Auriga Wellness Sanctuary", "The Living Room Lounge", "Riverside Greenhouse"],
+        rooms: [
+            { type: "Riverfront Premier", size: "61 sqm", features: "Includes a massive private balcony with a custom daybed positioned directly over the water.", photo: "Capella-Bangkok-Riverfront-Premier.jpg" },
+            { type: "Verandah Suite", size: "209 sqm", features: "Features an expansive outdoor terrace with a private plunge pool and an intimate lounge area.", photo: "Capella-Bangkok-Verandah-02.jpg" },
+            { type: "Presidential Villa", size: "595 sqm", features: "A private riverfront sanctuary with its own swimming pool and separate gated entrance.", photo: "Capella-Bangkok-Presidential-Suite-03.jpg" }
+        ]
+    },
+    "The Siam Hotel": {
+        desc: "An art-filled urban luxury resort designed by Bill Bensley. Located on the river in the historic Dusit district, it features stunning monochromatic Art Deco interiors and an exquisite collection of Thai antiques.",
+        images: ["The+Siam+Lobby.webp", "16021861-pool-the-siam-bangkok.webp", "TheSiam_SiamSuite1.jpg"],
+        highlights: ["Bill Bensley Art Deco design", "Private Muay Thai gym", "Extensive antique collection"],
+        amenities: ["Opium Spa", "Riverside Infinity Pool", "Private Screening Room"],
+        rooms: [
+            { type: "Siam Suite", size: "80 sqm", features: "High-ceilinged Art Deco suite featuring turn-of-the-century furniture and unique antiques.", photo: "TheSiam_SiamSuite1 (1).jpg" },
+            { type: "Pool Villa Courtyard", size: "130 sqm", features: "Offers total privacy with a personal swimming pool tucked inside a private internal garden.", photo: "68357c32c6a96.webp" },
+            { type: "Connie’s Cottage", size: "160 sqm", features: "A century-old traditional teak house transported from Ayutthaya, transformed into a luxury residence.", photo: "the-siam.-connies-cottage-bedroom-2.webp" }
+        ]
+    },
+    "Marriott Executive Apartment Bangkok": {
+        desc: "A sophisticated haven in the heart of the upscale Thonglor district. These luxury serviced apartments combine home comforts with five-star amenities and the iconic Octave Rooftop Lounge.",
+        images: ["er-bkkts-exterior-dusk-35629.avif", "marriott-executive-apartments.jpg", "suite-kitchen.jpg"],
+        highlights: ["Octave Rooftop 360 views", "Upscale Thonglor location", "Full kitchen facilities"],
+        amenities: ["Fitness Centre", "Outdoor Swimming Pool", "Executive Lounge"],
+        rooms: [
+            { type: "One Bedroom Apartment", size: "65 sqm", features: "Fully residential suite with a master bedroom, full kitchen, and a separate living/dining room.", photo: "bkksp-bunk-bed-7916-hor-feat.avif" },
+            { type: "Two Bedroom Suite", size: "95 sqm", features: "Spacious family layout with two master bathrooms and a large work-from-home area.", photo: "MEA101.1.jpg" }
+        ]
+    },
+    "Four Seasons Chiang Mai Resort": {
+        desc: "Nestled among emerald rice paddies in the Mae Rim Valley, this resort is a sanctuary of well-being. Experience the soul of Northern Thailand with Lanna-style pavilions and water buffalo encounters.",
+        images: ["image-asset.webp", "CHI_141_aspect16x9.jpg", "CHI_827_aspect16x9.jpg"],
+        highlights: ["Working rice paddy views", "Water buffalo encounters", "Signature Lanna architecture"],
+        amenities: ["Wara Cheewa Spa", "Infinity Pool", "Thai Cooking School"],
+        rooms: [
+            { type: "Upper Garden Pavilion", size: "70 sqm", features: "Lanna-style pavilion with vaulted ceilings and a private outdoor 'Sala' terrace.", photo: "CHI_822_aspect16x9.jpg" },
+            { type: "Rice Terrace Pool Villa", size: "403 sqm", features: "A private sanctuary with a 12-meter infinity pool overlooking active rice fields.", photo: "CHI_140_original.jpg" }
+        ]
+    },
+    "Anantara Golden Triangle Elephant Camp & Resort": {
+        desc: "Perched on a ridge overlooking three countries. Famous for its award-winning elephant camp and 'Jungle Bubbles' where you can sleep under the stars alongside rescued giants.",
+        images: ["bubbles1_1920x550.webp", "anantara_resort_golden_triangle_sala_mae_nam_balcony_3000x1000 (1).jpg", "3.jpg"],
+        highlights: ["Jungle Bubbles stay", "Three-country vantage point", "Rescued Elephant Camp"],
+        amenities: ["Infinity Pool", "Opulent Spa", "Dining by Design"],
+        rooms: [
+            { type: "Three Country View Suite", size: "77 sqm", features: "Features an oversized balcony with views of the border between Thailand, Laos, and Myanmar.", photo: "d8xTF7zcW8gxsB5WcuU8WL.jpeg" },
+            { type: "Jungle Bubble", size: "22 sqm", features: "A transparent, climate-controlled dome for overnight stays in the heart of the elephant habitat.", photo: "anantara_experience_campaign_thailand_jungle_bubble_1920x1037-2.jpg" }
+        ]
+    },
+    "Dhara Dhevi Hotel Chiang Mai": {
+        desc: "A breathtaking tribute to the ancient Lanna Kingdom. Its palatial architecture, ornate temples, and world-class Dheva Spa offer an immersive journey into Northern Thai heritage.",
+        images: ["Chiang_Mai-36-20160126-X3.webp", "40_Kids_Rice_Planting.jpg", "dhara-dhevi-chiang-mai-deluxe-villa-1200x720.jpg"],
+        highlights: ["Heritage Lanna architecture", "Ornate Dheva Spa", "Craft village on-site"],
+        amenities: ["Two Swimming Pools", "Teak House Dining", "Cooking School"],
+        rooms: [
+            { type: "Deluxe Villa", size: "150 sqm", features: "A two-story villa built from aged teak wood in the style of a traditional Northern Thai rice barn.", photo: "Dhara_Dhevi_Chiang_Mai_77_Grand_Deluxe_2-Bedroom_Colonial_Suite (1).jpg" },
+            { type: "Grand Deluxe Villa with Pool", size: "220 sqm", features: "Hand-crafted Lanna carvings with a private outdoor pool and lotus pond views.", photo: "dhara-dhevi-chiang-mai-deluxe-villa-1200x720 (1).jpg" }
+        ]
+    },
+    "Anantara Chiang Mai Resort": {
+        desc: "A minimalist masterpiece designed by Kerry Hill on the banks of the Mae Ping River. Built around the former British Consulate, it offers a peaceful retreat with sharp design.",
+        images: ["Pool2-AnantaraChiangMai-Thailand-CRHotel.webp", "accommodation_photos__Chedi-Chiang-Mai_Dining_The.webp", "achm_kasarariverfront_3.jpg"],
+        highlights: ["Former British Consulate", "Secret-agent-themed dining", "Riverside infinity pool"],
+        amenities: ["Anantara Spa", "Muay Thai ring", "The Service 1921 Bar"],
+        rooms: [
+            { type: "Deluxe Garden View Room", size: "50 sqm", features: "Minimalist design by Kerry Hill featuring a private balcony and a deep terrazzo soaking tub.", photo: "04-Deluxe-Garden-View-Room.jpg" },
+            { type: "Kasara Riverfront Suite", size: "105 sqm", features: "Massive living space with floor-to-ceiling glass walls and exclusive lounge access.", photo: "achm_kasarariverfront_5.webp" }
+        ]
+    },
+    "137 Pillars House Chiang Mai": {
+        desc: "A stunning boutique heritage hotel centered around a restored 19th-century teak house. Once the Borneo Company headquarters, it offers timeless colonial elegance.",
+        images: ["original.jpg", "3d0de70b.webp", "137-Pillars-House-Chiang-Mai-Suite.webp"],
+        highlights: ["1880s Teak Homestead", "Signature vertical garden pool", "Colonial heritage tour"],
+        amenities: ["Nitra Spa", "Jack Bain's Bar", "Personalized Butler"],
+        rooms: [
+            { type: "Rajah Brooke Suite", size: "70 sqm", features: "Features a vintage veranda with a daybed and a signature Victorian clawfoot bathtub.", photo: "Rajah-Brooke-Suite-137-Pillars-House-Food-For-Thought.jpg" },
+            { type: "Louis Leonowens Pool Villa", size: "135 sqm", features: "Grand heritage suite with a private 7-meter swimming pool and a sun-drenched terrace.", photo: "010410-east-borneo-suites-bed-copy.jpg" }
+        ]
+    },
+    "Raya Heritage Hotel Chiang Mai": {
+        desc: "Chiang Mai's first 'artisanal resort,' situated on the tranquil banks of the Ping River. This serene sanctuary features a clean, contemporary take on Lanna culture.",
+        images: ["02-Courtyard-1920x862.jpg", "dining-khukhao-01-hero.jpg", "kramm.jpg"],
+        highlights: ["Artisanal Lanna design", "Ping River serenity", "Eco-conscious materials"],
+        amenities: ["Khu Khao Dining", "Ai Waan Spa", "Riverside Pool"],
+        rooms: [
+            { type: "Rin Terrace Suite", size: "75 sqm", features: "Upper-floor suite with hand-woven indigo textiles and a terrace overlooking the Ping River.", photo: "1.jpg" },
+            { type: "Kraam Pool Suite", size: "100 sqm", features: "Ground-floor suite with a private plunge pool and a garden path leading to the riverfront.", photo: "2.jpg" }
+        ]
+    },
+    "Amanpuri": {
+        desc: "The flagship property of Aman, on Phuket's west coast. Occupying a private coconut grove overlooking the Andaman Sea, offering total seclusion and zen-like luxury.",
+        images: ["210204_AmanHero_Landscape_Amanpuri.jpg", "Garden Pavilion, Amanpuri, Thailand_2.jpg", "439175-amanpuri-phuket.webp"],
+        highlights: ["Original Aman property", "Private black-tiled pool", "Secluded beach access"],
+        amenities: ["Holistic Wellness Centre", "Cruising Yachts", "Eco-Discovery Club"],
+        rooms: [
+            { type: "Garden Pavilion", size: "115 sqm", features: "A detached pavilion with a private outdoor lounging area and traditional Thai 'Ayutthaya' architecture.", photo: "amanpuri_pavilion_bedroom-landscape.jpg" },
+            { type: "Ocean Pool Pavilion", size: "220 sqm", features: "Hillside location with an expansive private pool overlooking the turquoise Andaman Sea.", photo: "641c0fde352674777e475aac_Four-Bedroom Ocean Villa, Amanpuri, Thailand_1.jpeg" }
+        ]
+    },
+    "Phuket Marriott Resort & Spa": {
+        desc: "Secluded on the private Merlin Beach, this resort features a unique house reef for snorkeling and a dedicated Butterfly Sanctuary.",
+        images: ["mc-hktmb-exterior---aerial-v29522-56401_Feature-Hor.jpg", "5G-rsz.jpg", "888eb9fd.avif"],
+        highlights: ["Merlin Butterfly Sanctuary", "Private house reef", "Family-friendly luxury"],
+        amenities: ["Three Lagoon Pools", "Snorkeling Reef", "Marine Conservation Center"],
+        rooms: [
+            { type: "Ocean View Room", size: "41 sqm", features: "Modern beachfront room with a private balcony overlooking Merlin Beach and the coral reef.", photo: "mc-hktmb-premier-beach-accs-24646-38930_Wide-Hor.jpg" },
+            { type: "Pool Access Room", size: "41 sqm", features: "Features a private terrace that leads directly into the resort's lagoon swimming pool.", photo: "Premier-Room-Pool-Access-avista-hideaway-phuket-005-1.jpg" }
+        ]
+    },
+    "Four Seasons Resort Koh Samui": {
+        desc: "A hilltop paradise designed by Bill Bensley, where every villa features a private infinity pool overlooking the Gulf of Thailand.",
+        images: ["ce938e84.avif", "fa968de9.avif", "w3840.jpg"],
+        highlights: ["Private Bill Bensley design", "Hilltop ocean views", "Private beach access"],
+        amenities: ["Beach Spa", "Rum Bar", "Muay Thai Ring"],
+        rooms: [
+            { type: "One-Bedroom Pool Villa", size: "103 sqm", features: "Hilltop Bill Bensley villa with a private infinity pool and panoramic views of the Gulf.", photo: "One-bedroom-pool-villa.jpg" },
+            { type: "Beachfront Pool Villa", size: "102 sqm", features: "Steps from the sand, featuring a private pool and an outdoor rain shower.", photo: "KOH_1457_original.jpg" }
+        ]
+    },
+    "Kamalaya Koh Samui": {
+        desc: "A world-renowned wellness sanctuary built around a century-old meditation cave. It offers a holistic approach to health and emotional healing.",
+        images: ["sea-view-villa-thailand.jpg", "Kamalaya-Koh-Samui-Wellness-Sanctuary_2019_Villa-Sea-View-looking-out (1).webp", "Wellness-Treatment-Room-Kamalaya-1440x810.jpg"],
+        highlights: ["Ancient meditation cave", "Holistic wellness programs", "Built into granite boulders"],
+        amenities: ["Wellness Sanctuary", "Steam Cavern", "Detox Pharmacy"],
+        rooms: [
+            { type: "Sea View Villa", size: "65 sqm", features: "Built naturally around island granite boulders with open-air views of the ocean.", photo: "Kamalaya-Koh-Samui-Wellness-Sanctuary_2019_Villa-Sea-View-looking-out (1).webp" },
+            { type: "Rock Top Pool Villa", size: "215 sqm", features: "Located at the highest point of the resort with a private pool and complete seclusion.", photo: "hill-top-room-03.jpg" }
+        ]
+    }
+};
+
+
+
+const overlay = document.getElementById('hotel-overlay');
+const closeBtn = document.getElementById('close-overlay');
+overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) closeBtn.click();
+});
+
+document.querySelectorAll('.hotel-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+        e.preventDefault();
+        const name = card.querySelector('.hotel-name').innerText;
+        const location = card.querySelector('.hotel-location').innerText;
+        const data = hotelDetails[name];
+            const inquiryLink = overlay.querySelector('.overlay-text .btn-plan');
+            if (inquiryLink) inquiryLink.href = 'Plan-Your-Trip.html?accommodation=' + encodeURIComponent(name);
+        if (!data) return;
+
+        // Content Update
+        document.getElementById('modal-name').innerText = name;
+        document.getElementById('modal-location').innerText = location;
+        document.getElementById('modal-desc').innerText = data.desc;
+        document.getElementById('modal-img-1').src = data.images[0];
+        document.getElementById('modal-img-2').src = data.images[1];
+        document.getElementById('modal-img-3').src = data.images[2];
+
+        // Highlights Update
+        let hHTML = `<h5 style="color:var(--gold); font-size:11px; letter-spacing:2px; text-transform:uppercase; margin-bottom:15px;">Highlights</h5><ul style="list-style:none; padding:0; display:inline-block; text-align:left;">`;
+        data.highlights.forEach(h => { hHTML += `<li style="color:var(--ivory); font-size:14px; margin-bottom:8px; border-left:1px solid var(--gold); padding-left:15px; opacity:0.8;">${h}</li>`; });
+        hHTML += `</ul>`;
+        document.getElementById('modal-highlights-container').innerHTML = hHTML;
+
+        // Amenities Update
+        let aHTML = `<div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">`;
+        data.amenities.forEach(a => { aHTML += `<span style="border:1px solid rgba(194,157,107,0.3); padding:5px 12px; font-size:11px; color:var(--ivory); text-transform:uppercase; opacity:0.7;">${a}</span>`; });
+        aHTML += `</div>`;
+        document.getElementById('modal-amenities-container').innerHTML = aHTML;
+
+       // Replace the table generation section in your script with this:
+
+let tableHTML = `
+    <div style="margin-top: 60px; border-top: 1px solid rgba(194,157,107,0.3); padding-top: 40px;">
+        <h3 style="font-family: 'Tenor Sans'; color: var(--gold); text-transform: uppercase; letter-spacing: 4px; font-size: 14px; text-align: center; margin-bottom: 50px;">Accommodation Gallery</h3>
+`;
+
+data.rooms.forEach(room => {
+    tableHTML += `
+        <div class="room-row" style="display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 60px; align-items: flex-start; text-align: left;">
+            
+            <div style="flex: 1 1 450px; min-width: 300px; height: 280px; overflow: hidden; border: 1px solid rgba(194,157,107,0.4); background: #000;">
+                <img src="${room.photo}" 
+                     style="width: 100%; height: 100%; object-fit: cover; transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);"
+                     onmouseover="this.style.transform='scale(1.08)'"
+                     onmouseout="this.style.transform='scale(1)'">
+            </div>
+
+            <div style="flex: 1 1 300px; padding-top: 10px;">
+                <h4 style="font-family: 'Tenor Sans'; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; font-size: 18px; margin-bottom: 15px;">
+                    ${room.type}
+                </h4>
+                
+                <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 2px; border-left: 2px solid var(--gold);">
+                    <div style="margin-bottom: 10px;">
+                        <span style="color: var(--gold); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Room Size</span>
+                        <span style="font-family: 'Cormorant Garamond'; font-size: 22px; color: var(--ivory);">${room.size}</span>
+                    </div>
+                    
+                    <div style="width: 100%; height: 1px; background: rgba(194,157,107,0.2); margin: 15px 0;"></div>
+                    
+                    <div>
+                        <span style="color: var(--gold); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px;">Key Features</span>
+                        <p style="font-family: 'Cormorant Garamond'; font-size: 17px; line-height: 1.5; color: var(--ivory); opacity: 0.8; font-style: italic;">
+                            ${room.features}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+});
+tableHTML += `</div>`;
+document.getElementById('modal-table-container').innerHTML = tableHTML;
+        // Open Animation
+        overlay.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        gsap.to(overlay, { opacity: 1, duration: 0.6 });
+        gsap.from(".overlay-text > *", { y: 20, opacity: 0, stagger: 0.05, duration: 0.8 });
+    });
+});
+
+closeBtn.addEventListener('click', () => {
+    gsap.to(overlay, { opacity: 0, duration: 0.4, onComplete: () => {
+        overlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }});
+    
+});
+    // Back to Top Smooth Scroll
+    document.getElementById('back-to-top').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    // 1. Mobile Menu Toggles
+const mOpen = document.getElementById('menu-open');
+const mClose = document.getElementById('menu-close');
+const mOverlay = document.getElementById('mobile-overlay');
+
+if(mOpen) mOpen.addEventListener('click', () => mOverlay.classList.add('active'));
+if(mClose) mClose.addEventListener('click', () => mOverlay.classList.remove('active'));
+
+// 2. Mobile Mega Menu Accordion Logic
+document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+    trigger.addEventListener('click', function() {
+        const content = this.nextElementSibling;
+        const icon = this.querySelector('span');
+        content.classList.toggle('active');
+        icon.innerText = content.classList.contains('active') ? "−" : "+";
+    });
+});
+
+// 3. Original Desktop Hover Positioning
+document.querySelectorAll('.desktop-nav .dropdown').forEach(drop => {
+    const menu = drop.querySelector('.mega-menu');
+    const link = drop.querySelector('a');
+    drop.addEventListener('mouseenter', () => {
+        if (menu && link) {
+            const linkRect = link.getBoundingClientRect();
+            const linkCenter = linkRect.left + (linkRect.width / 2);
+            menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+        }
+    });
+});
+    </script>
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>

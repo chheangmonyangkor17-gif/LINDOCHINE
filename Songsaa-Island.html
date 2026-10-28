@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Song Saa Private Island | L'INDOCHINE Sovereign Journeys</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ivory: #F0EDE5;
+            --ink: #0A0A0A;
+            --gold: #C29D6B;
+            --clay: #1A1917;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        body {
+            background-color: var(--ivory);
+            color: var(--ink);
+            font-family: 'Tenor Sans', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        .vignette { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%); pointer-events: none; z-index: 100; opacity: 0.4; }
+        .grain { position: fixed; inset: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.07; pointer-events: none; z-index: 1000; mix-blend-mode: multiply; }
+
+        #cursor-follower {
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px;
+            border: 0.5px solid var(--gold); border-radius: 50%; z-index: 10000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear, width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor-follower span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; }
+
+        /* ===== NAVIGATION ===== */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 0 60px;
+            height: 90px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 999; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .nav-links { display: flex; list-style: none; gap: 40px; height: 100%; }
+        .nav-links > li { display: flex; align-items: center; }
+        .nav-links > li > a {
+            text-decoration: none; color: var(--ivory); font-size: 10px; letter-spacing: 3px;
+            text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            transition: color 0.4s var(--ease);
+            padding: 20px 0; position: relative; padding-right: 18px;
+        }
+        .nav-links > li > a:hover { color: var(--gold); }
+        .dropdown > a::after {
+            content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            width: 0; height: 0; border-left: 3.5px solid transparent;
+            border-right: 3.5px solid transparent; border-top: 4px solid var(--gold);
+            transition: transform 0.4s var(--ease); opacity: 0.6;
+        }
+        .dropdown:hover > a::after { transform: translateY(-50%) rotate(180deg); opacity: 1; }
+        .mega-menu {
+            position: absolute; top: 90px; left: 0; width: 100vw;
+            background: var(--ink); padding: 40px 60px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transform: translateY(15px); transition: all 0.5s var(--ease);
+            border-bottom: 1px solid rgba(194, 157, 107, 0.3); z-index: 1000;
+        }
+        .mega-menu::before {
+            content: ''; position: absolute; top: -10px;
+            left: var(--triangle-left, 50%); transform: translateX(-50%);
+            width: 0; height: 0; border-left: 10px solid transparent;
+            border-right: 10px solid transparent; border-bottom: 10px solid var(--ink);
+            pointer-events: none;
+        }
+        .dropdown { position: static; }
+        .dropdown:hover .mega-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+        .mega-item {
+            position: relative; height: 250px; overflow: hidden; text-decoration: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mega-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); filter: brightness(0.5); }
+        .mega-item span {
+            position: absolute; z-index: 2; color: var(--ivory);
+            font-family: 'Cormorant Garamond'; font-size: 1.2rem; font-style: italic;
+            letter-spacing: 1px; text-align: center; padding: 0 10px;
+        }
+        .mega-item:hover img { transform: scale(1.1); filter: brightness(0.7); }
+        .mega-item::after { content: ''; position: absolute; inset: 0; border: 0px solid var(--gold); transition: 0.4s var(--ease); }
+        .mega-item:hover::after { border: 1px solid var(--gold); inset: 10px; }
+        .btn-plan {
+            text-decoration: none; color: var(--gold); font-size: 9px; letter-spacing: 2px;
+            text-transform: uppercase; border: 1px solid var(--gold); padding: 12px 25px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+            transition: all 0.5s var(--ease); display: inline-block;
+        }
+        .btn-plan:hover { background: var(--gold); color: var(--ink); }
+
+        /* ===== HERO ===== */
+        .hotel-hero {
+            height: 100vh; position: relative; overflow: hidden;
+        }
+
+        /* Slides */
+        .hero-slides { position: absolute; inset: 0; }
+        .hero-slide {
+            position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            opacity: 0; transition: opacity 1.6s cubic-bezier(0.4,0,0.2,1);
+            transform: scale(1.04); transition: opacity 1.6s cubic-bezier(0.4,0,0.2,1), transform 8s cubic-bezier(0.16,1,0.3,1);
+        }
+        .hero-slide.active { opacity: 1; transform: scale(1); }
+        .hero-slide::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(0,0,0,0.72) 0%,
+                rgba(0,0,0,0.2) 55%,
+                rgba(0,0,0,0.55) 100%
+            );
+        }
+
+        /* Vertical caption strip on right */
+        .hero-side-strip {
+            position: absolute; right: 0; top: 0; bottom: 0;
+            width: 80px; z-index: 10;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 0;
+            border-left: 1px solid rgba(194,157,107,0.2);
+            background: rgba(10,10,10,0.55);
+            backdrop-filter: blur(12px);
+        }
+        .hero-side-strip .side-label {
+            writing-mode: vertical-rl; transform: rotate(180deg);
+            font-size: 8px; letter-spacing: 5px; text-transform: uppercase;
+            color: var(--gold); opacity: 0.8; margin-bottom: 30px;
+        }
+        .slide-dots {
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .slide-dot {
+            width: 1px; height: 30px; background: rgba(194,157,107,0.3);
+            transition: height 0.5s var(--ease), background 0.5s;
+            cursor: pointer;
+        }
+        .slide-dot.active { height: 55px; background: var(--gold); }
+        .hero-side-strip .side-count {
+            margin-top: 30px; writing-mode: vertical-rl; transform: rotate(180deg);
+            font-family: 'Cormorant Garamond'; font-size: 13px; font-style: italic;
+            color: var(--ivory); opacity: 0.4; letter-spacing: 1px;
+        }
+
+        /* Bottom bar with slide captions */
+        .hero-bottom-bar {
+            position: absolute; bottom: 0; left: 0; right: 80px;
+            padding: 0 10% 50px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            z-index: 10;
+        }
+
+        /* Left: main content */
+        .hero-content { color: var(--ivory); }
+        .hero-eyebrow {
+            display: block; font-size: 9px; letter-spacing: 8px;
+            text-transform: uppercase; color: var(--gold); margin-bottom: 22px;
+            opacity: 0; animation: heroFadeUp 1s 0.4s var(--ease) forwards;
+        }
+        .hero-title {
+            font-family: 'Cormorant Garamond'; font-size: clamp(3.5rem, 5.5vw, 6.5rem);
+            font-style: italic; font-weight: 300; line-height: 0.95;
+            text-shadow: 0 8px 40px rgba(0,0,0,0.35); margin-bottom: 28px;
+            opacity: 0; animation: heroFadeUp 1.2s 0.6s var(--ease) forwards;
+            position: relative;
+        }
+        .hero-title::after {
+            content: ''; position: absolute; bottom: -15px; left: 0;
+            width: 80px; height: 1px; background: var(--gold); opacity: 0.6;
+        }
+        .hero-subtitle {
+            font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+            opacity: 0; margin-top: 28px; margin-bottom: 40px;
+            animation: heroFadeUp 1.2s 0.8s var(--ease) forwards;
+            color: rgba(240,237,229,0.65);
+        }
+        .hero-cta {
+            display: inline-flex; gap: 25px; align-items: center;
+            opacity: 0; animation: heroFadeUp 1.2s 1s var(--ease) forwards;
+        }
+        @keyframes heroFadeUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Right: sliding caption */
+        .hero-caption-block {
+            text-align: right; max-width: 280px;
+            opacity: 0; animation: heroFadeUp 1.2s 1.1s var(--ease) forwards;
+        }
+        .hero-caption-number {
+            font-family: 'Cormorant Garamond'; font-size: 4.5rem;
+            font-style: italic; font-weight: 300; line-height: 1;
+            color: rgba(194,157,107,0.15); display: block; margin-bottom: -20px;
+        }
+        .hero-caption-text {
+            font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+            color: rgba(240,237,229,0.55); display: block;
+        }
+        .hero-caption-name {
+            font-family: 'Cormorant Garamond'; font-size: 1.3rem;
+            font-style: italic; color: var(--ivory); display: block; margin-top: 6px;
+        }
+
+        /* Scroll hint */
+        .hero-scroll-hint {
+            position: absolute; bottom: 50px; left: calc(10% + 0px);
+            display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+            z-index: 10; transform: translateX(360px);
+        }
+        .hero-scroll-hint span { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); opacity: 0.6; }
+        .scroll-line { width: 1px; height: 55px; background: var(--gold); opacity: 0.4; animation: scrollPulse 2.5s ease-in-out infinite; }
+        @keyframes scrollPulse { 0%,100%{opacity:0.15; height:40px;} 50%{opacity:0.7; height:60px;} }
+
+        /* Slide images — Updated for Song Saa Private Island placeholder refs */
+        .slide-1 { background-image: url('song-saa-aerial-gallery-hero.jpg'); }
+        .slide-2 { background-image: url('Jae_Lee_Twobed_overwater_villa_3_Song_Saa_Gold_list_November23_PR_Global.webp'); }
+        .slide-3 { background-image: url('sspi-dining-vista-at-dawn-1.webp'); }
+        .slide-4 { background-image: url('song-saa-cambodia-outdoor-spa.jpg'); }
+        .slide-5 { background-image: url('300511.jpg'); }
+
+        @media (max-width: 768px) {
+            .hero-side-strip { display: none; }
+            .hero-title { font-size: 12vw; }
+            .hero-caption-block { display: none; }
+            .hero-bottom-bar { right: 0; padding: 0 5% 50px; }
+        }
+
+        /* ===== QUICK FACTS BAR ===== */
+        .facts-bar {
+            background: var(--clay); padding: 0 10%;
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            border-bottom: 1px solid rgba(194, 157, 107, 0.2);
+        }
+        .fact-item {
+            padding: 30px 20px; border-right: 1px solid rgba(194, 157, 107, 0.15);
+            text-align: center;
+        }
+        .fact-item:last-child { border-right: none; }
+        .fact-label { display: block; font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); opacity: 0.7; margin-bottom: 8px; }
+        .fact-value { font-family: 'Cormorant Garamond'; font-size: 1.2rem; font-style: italic; color: var(--ivory); }
+
+        /* ===== INTRO SECTION ===== */
+        .intro-section {
+            padding: 130px 10%;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 100px; align-items: center;
+            background: var(--ivory);
+        }
+        .intro-text .section-label {
+            display: block; font-size: 9px; letter-spacing: 4px;
+            text-transform: uppercase; color: var(--gold); margin-bottom: 30px;
+        }
+        .intro-text h2 {
+            font-family: 'Cormorant Garamond'; font-size: clamp(2.2rem, 3.5vw, 3.5rem);
+            font-weight: 300; line-height: 1.2; margin-bottom: 30px;
+        }
+        .intro-text h2 em { font-style: italic; color: var(--gold); }
+        .intro-text p { font-size: 15px; line-height: 1.9; opacity: 0.75; margin-bottom: 20px; }
+        .gold-line { width: 60px; height: 1px; background: var(--gold); margin: 35px 0; opacity: 0.6; }
+        .intro-image-block { position: relative; }
+        .intro-image-block img { width: 100%; height: 550px; object-fit: cover; display: block; }
+        .intro-image-caption {
+            position: absolute; bottom: -30px; left: -30px;
+            background: var(--clay); padding: 25px 30px;
+            border-left: 2px solid var(--gold);
+        }
+        .intro-image-caption span { display: block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
+        .intro-image-caption p { font-family: 'Cormorant Garamond'; font-size: 1.1rem; font-style: italic; color: var(--ivory); }
+
+        /* ===== FULL-WIDTH GALLERY ===== */
+        .gallery-strip {
+            display: grid; grid-template-columns: 1.4fr 1fr 1fr;
+            grid-template-rows: 500px;
+            gap: 4px; margin: 0;
+        }
+        .gallery-strip img { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.9); transition: filter 0.8s var(--ease), transform 1.2s var(--ease); overflow: hidden; }
+        .gallery-strip div { overflow: hidden; }
+        .gallery-strip div:hover img { filter: brightness(1.05); transform: scale(1.04); }
+
+        /* ===== ACCOMMODATION SECTION ===== */
+        .rooms-section {
+            background: var(--clay); padding: 130px 10%;
+        }
+        .section-heading {
+            text-align: center; margin-bottom: 80px;
+        }
+        .section-heading .label {
+            display: block; font-size: 9px; letter-spacing: 5px;
+            text-transform: uppercase; color: var(--gold); margin-bottom: 20px;
+        }
+        .section-heading h2 {
+            font-family: 'Cormorant Garamond'; font-size: clamp(2.5rem, 4vw, 4rem);
+            font-weight: 300; font-style: italic; color: var(--ivory); line-height: 1.1;
+        }
+        .section-heading .divider {
+            width: 60px; height: 1px; background: var(--gold); margin: 30px auto 0; opacity: 0.5;
+        }
+
+        .rooms-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+        .room-card {
+            background: rgba(255,255,255,0.03);
+            border: 0.5px solid rgba(194,157,107,0.2);
+            overflow: hidden;
+            transition: transform 0.6s var(--ease), box-shadow 0.6s var(--ease);
+        }
+        .room-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+        }
+        .room-img-wrap { height: 320px; overflow: hidden; position: relative; }
+        .room-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease); }
+        .room-card:hover .room-img-wrap img { transform: scale(1.06); }
+        .room-img-label {
+            position: absolute; bottom: 20px; left: 20px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+            padding: 8px 16px; border-left: 1px solid var(--gold);
+        }
+        .room-img-label span { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); }
+        .room-details { padding: 35px; }
+        .room-details h3 {
+            font-family: 'Cormorant Garamond'; font-size: 1.8rem;
+            font-style: italic; color: var(--ivory); margin-bottom: 15px;
+        }
+        .room-meta {
+            display: flex; gap: 30px; margin-bottom: 20px;
+        }
+        .room-meta span {
+            font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--gold); opacity: 0.8;
+        }
+        .room-meta span strong { display: block; font-family: 'Cormorant Garamond'; font-size: 1.2rem; color: var(--ivory); font-style: italic; letter-spacing: 0; text-transform: none; margin-top: 4px; font-weight: 300; }
+        .room-desc { font-size: 14px; line-height: 1.8; opacity: 0.65; color: var(--ivory); }
+        .room-features-list { margin-top: 20px; list-style: none; }
+        .room-features-list li {
+            font-size: 12px; color: var(--ivory); opacity: 0.6;
+            padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+            letter-spacing: 0.5px;
+        }
+        .room-features-list li::before { content: '— '; color: var(--gold); }
+
+        /* ===== HIGHLIGHTS ROW ===== */
+        .highlights-section { background: var(--ivory); padding: 130px 10%; }
+        .highlights-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1px; background: rgba(194,157,107,0.2); border: 1px solid rgba(194,157,107,0.2);
+            margin-top: 70px;
+        }
+        .highlight-item {
+            background: var(--ivory); padding: 50px 40px;
+            transition: background 0.4s var(--ease);
+        }
+        .highlight-item:hover { background: rgba(194,157,107,0.04); }
+        .highlight-number { font-family: 'Cormorant Garamond'; font-size: 5rem; color: var(--gold); opacity: 0.12; line-height: 1; margin-bottom: -20px; }
+        .highlight-title { font-family: 'Cormorant Garamond'; font-size: 1.5rem; font-style: italic; margin-bottom: 15px; }
+        .highlight-desc { font-size: 13px; line-height: 1.8; opacity: 0.65; }
+
+        /* ===== EXPERIENCE GALLERY — cinematic strips ===== */
+        .exp-section { background: var(--clay); padding: 130px 0 0; overflow: hidden; }
+        .exp-inner { padding: 0 10% 80px; text-align: center; }
+        .exp-inner p {
+            font-family: 'Cormorant Garamond'; font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+            font-style: italic; color: var(--ivory); max-width: 800px;
+            margin: 0 auto 50px; line-height: 1.7; opacity: 0.85;
+        }
+        .exp-mosaic {
+            display: grid;
+            grid-template-columns: 1fr 1.6fr 1fr;
+            grid-template-rows: 280px 280px;
+            gap: 4px;
+        }
+        .exp-mosaic > div { overflow: hidden; }
+        .exp-mosaic > div:nth-child(2) { grid-row: span 2; }
+        .exp-mosaic img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease), filter 0.8s; filter: brightness(0.75); }
+        .exp-mosaic > div:hover img { transform: scale(1.06); filter: brightness(0.9); }
+
+        /* ===== AMENITIES ===== */
+        .amenities-section { background: var(--ivory); padding: 130px 10%; }
+        .amenities-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-top: 70px;
+        }
+        .amenity-card { text-align: center; padding: 50px 30px; border: 0.5px solid rgba(194,157,107,0.2); position: relative; overflow: hidden; transition: all 0.5s var(--ease); }
+        .amenity-card::after { content: ''; position: absolute; inset: 0; background: var(--gold); transform: scaleY(0); transform-origin: bottom; transition: transform 0.5s var(--ease); z-index: 0; }
+        .amenity-card:hover::after { transform: scaleY(1); }
+        .amenity-card:hover .amenity-icon, .amenity-card:hover h4, .amenity-card:hover p { color: var(--ink); position: relative; z-index: 1; }
+        .amenity-icon { font-size: 2rem; margin-bottom: 20px; display: block; transition: 0.4s; }
+        .amenity-card h4 { font-family: 'Cormorant Garamond'; font-size: 1.3rem; font-style: italic; margin-bottom: 12px; transition: 0.4s; }
+        .amenity-card p { font-size: 12px; opacity: 0.6; line-height: 1.7; transition: 0.4s; }
+
+        /* ===== LOCATION ===== */
+        .location-section {
+            background: var(--clay);
+            display: grid; grid-template-columns: 1fr 1fr;
+            min-height: 500px;
+        }
+        .location-map-placeholder {
+            background: #0f0f0f;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .location-map-placeholder img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; }
+        .location-map-placeholder .map-pin {
+            position: absolute; text-align: center; color: var(--gold);
+            font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+        }
+        .location-map-placeholder .map-pin::before { content: '◆'; display: block; font-size: 18px; margin-bottom: 8px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+        .location-info { padding: 80px 60px; }
+        .location-info .label { display: block; font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 30px; }
+        .location-info h2 { font-family: 'Cormorant Garamond'; font-size: 2.8rem; font-style: italic; color: var(--ivory); margin-bottom: 30px; line-height: 1.1; }
+        .location-info p { font-size: 14px; line-height: 1.9; color: var(--ivory); opacity: 0.7; margin-bottom: 30px; }
+        .location-distance { margin-top: 40px; }
+        .dist-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(194,157,107,0.1); }
+        .dist-name { font-size: 12px; letter-spacing: 1px; color: var(--ivory); opacity: 0.7; }
+        .dist-val { font-family: 'Cormorant Garamond'; font-size: 1.1rem; font-style: italic; color: var(--gold); }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            padding: 160px 10%; background: var(--ivory);
+            display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center;
+        }
+        .cta-section h2 {
+            font-family: 'Cormorant Garamond'; font-size: clamp(2.5rem, 4.5vw, 5rem);
+            font-style: italic; font-weight: 300; line-height: 1.1; color: var(--ink);
+        }
+        .cta-section h2 em { font-style: normal; border-bottom: 1px solid var(--gold); padding-bottom: 4px; }
+        .cta-right p { font-size: 15px; line-height: 1.9; opacity: 0.7; margin-bottom: 40px; }
+        .cta-buttons { display: flex; gap: 20px; flex-wrap: wrap; }
+        .btn-primary {
+            text-decoration: none; color: var(--ivory); font-size: 9px; letter-spacing: 3px;
+            text-transform: uppercase; background: var(--ink); padding: 18px 35px;
+            transition: all 0.5s var(--ease);
+        }
+        .btn-primary:hover { background: var(--gold); color: var(--ink); }
+        .btn-secondary {
+            text-decoration: none; color: var(--ink); font-size: 9px; letter-spacing: 3px;
+            text-transform: uppercase; border: 1px solid rgba(0,0,0,0.2); padding: 18px 35px;
+            transition: all 0.5s var(--ease);
+        }
+        .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 100px 60px 40px;
+            background: var(--ivory);
+            border-top: 1px solid rgba(0,0,0,0.08);
+            color: var(--ink);
+        }
+        .footer-main {
+            display: grid; grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr;
+            gap: 60px; margin-bottom: 80px;
+        }
+        .footer-col {
+            padding-right: 10px;
+        }
+        .footer-col h4 {
+            font-family: 'Tenor Sans', sans-serif; font-size: 13px; letter-spacing: 2px;
+            text-transform: uppercase; margin-bottom: 30px; color: var(--gold); font-weight: 600;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 14px; }
+        .footer-col ul li a {
+            text-decoration: none; color: var(--ink); font-size: 14px;
+            letter-spacing: 0.5px; opacity: 0.8; transition: all 0.4s var(--ease);
+        }
+        .footer-col ul li a:hover { opacity: 1; color: var(--gold); padding-left: 8px; }
+        .footer-contact p { font-size: 14px; letter-spacing: 0.5px; margin-bottom: 15px; opacity: 0.9; }
+        .footer-social { display: flex; gap: 15px; margin-top: 25px; }
+        .social-icon {
+            width: 42px; height: 42px; border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: all 0.5s var(--ease);
+        }
+        .social-icon svg { width: 14px; fill: var(--ink); transition: all 0.5s var(--ease); }
+        .social-icon:hover { border-color: var(--gold); background: var(--gold); transform: translateY(-3px); }
+        .social-icon:hover svg { fill: var(--ivory); }
+        .footer-bottom {
+            padding-top: 40px; border-top: 1px solid rgba(0,0,0,0.08);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .copyright { font-size: 11px; letter-spacing: 1.5px; opacity: 0.6; text-transform: uppercase; }
+        .footer-bottom-links { display: flex; gap: 30px; }
+        .footer-bottom-links a {
+            text-decoration: none; color: var(--ink); font-size: 11px;
+            letter-spacing: 1px; opacity: 0.7; text-transform: uppercase; transition: 0.3s;
+        }
+        .footer-bottom-links a:hover { color: var(--gold); opacity: 1; }
+
+        /* ===== MOBILE NAV ===== */
+        @media (max-width: 1024px) {
+            .desktop-nav { display: none !important; }
+            .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+            .burger .line { width: 25px; height: 1px; background: var(--gold); display: block; margin: 6px 0; }
+            .mobile-overlay {
+                position: fixed; inset: 0; background: var(--ink);
+                z-index: 5000; transform: translateY(-100%); transition: transform 0.8s var(--ease);
+                overflow-y: auto; padding: 100px 40px;
+            }
+            .mobile-overlay.active { transform: translateY(0); }
+            .menu-close { position: absolute; top: 30px; right: 30px; color: var(--gold); font-size: 24px; cursor: pointer; }
+            .mobile-nav-links { list-style: none; }
+            .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194,157,107,0.1); padding-bottom: 10px; }
+            .mobile-nav-links a, .mobile-drop-trigger { font-family: 'Cormorant Garamond'; font-size: 2rem; color: var(--ivory); text-decoration: none; font-style: italic; }
+            .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+            .mobile-mega-content { display: none; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+            .mobile-mega-content.active { display: grid; }
+            .mobile-mega-item { text-decoration: none; }
+            .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; opacity: 0.7; }
+            .mobile-mega-item span { display: block; color: var(--ivory); font-size: 0.7rem; text-transform: uppercase; margin-top: 5px; letter-spacing: 1px; }
+            .mobile-partner-list { list-style: none; margin-top: 20px; }
+            .mobile-partner-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(194,157,107,0.15); padding-bottom: 8px; }
+            .mobile-partner-list a { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+            .mobile-partner-list .arrow { font-size: 14px; color: var(--gold); font-family: sans-serif; font-style: normal; }
+            nav { padding: 0 30px; }
+            .intro-section { grid-template-columns: 1fr; gap: 60px; padding: 80px 5%; }
+            .rooms-grid { grid-template-columns: 1fr; }
+            .highlights-grid { grid-template-columns: 1fr 1fr; }
+            .amenities-grid { grid-template-columns: repeat(2, 1fr); }
+            .location-section { grid-template-columns: 1fr; }
+            .cta-section { grid-template-columns: 1fr; gap: 40px; padding: 100px 5%; }
+            .footer-main { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+            footer { padding: 80px 30px 40px; }
+            .facts-bar { grid-template-columns: repeat(3, 1fr); }
+            .gallery-strip { grid-template-columns: 1fr 1fr; grid-template-rows: 250px 250px; }
+            .gallery-strip div:first-child { grid-column: span 2; }
+        }
+        @media (max-width: 768px) {
+            #cursor-follower { display: none !important; }
+            * { cursor: auto !important; }
+            .hero-title { font-size: 11vw; }
+            .facts-bar { grid-template-columns: 1fr 1fr; }
+            .highlights-grid { grid-template-columns: 1fr; }
+            .amenities-grid { grid-template-columns: 1fr 1fr; }
+            .footer-main { grid-template-columns: 1fr 1fr; gap: 30px; }
+            .exp-mosaic { grid-template-columns: 1fr; grid-template-rows: repeat(5, 220px); }
+            .exp-mosaic > div:nth-child(2) { grid-row: auto; }
+        }
+        @media (min-width: 1025px) {
+            .menu-trigger, .mobile-overlay { display: none; }
+            .desktop-nav { display: flex !important; }
+        }
+
+        /* ===== SCROLL ANIMATIONS ===== */
+        .reveal { opacity: 0; transform: translateY(40px); }
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="vignette"></div>
+<div id="cursor-follower"><span>Explore</span></div>
+
+<!-- ===== NAV ===== -->
+<nav>
+    <a href="index.html" class="logo">L'INDOCHINE</a>
+
+    <ul class="nav-links desktop-nav">
+        <li class="dropdown">
+            <a href="#">Destinations</a>
+            <div class="mega-menu">
+                <a href="cambodia.html" class="mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                <a href="Vietnam.html" class="mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                <a href="Thailand.html" class="mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                <a href="Laos.html" class="mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                <a href="Multi-country.html" class="mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+            </div>
+        </li>
+        <li class="dropdown">
+            <a href="#">Themes</a>
+            <div class="mega-menu" style="grid-template-columns: repeat(6, 1fr);">
+                <a href="Culture-Heritage.html" class="mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                <a href="Romantic-Journeys.html" class="mega-item"><img src="penin boat 1.jpg"><span>Romantic Journeys</span></a>
+                <a href="Wellness-Rejuvenation.html" class="mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                <a href="Family-Journeys.html" class="mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                <a href="Nature-Adventure.html" class="mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                <a href="Culinary-Journeys.html" class="mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+            </div>
+        </li>
+        <li class="dropdown">
+            <a href="#">Partners</a>
+            <div class="mega-menu" style="grid-template-columns: 1.3fr 1fr; padding: 0; overflow: hidden; min-width: 600px;">
+                <div style="padding: 50px; background: var(--ink);">
+                    <h4 style="color: var(--gold); font-size: 13px; margin-bottom: 35px; letter-spacing: 4px; text-transform: uppercase; font-family: 'Tenor Sans';">B2B & DMC Services</h4>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194,157,107,0.15); padding-bottom: 12px;"><a href="Dmc-services.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>DMC Operational Excellence</span><span style="font-size: 12px; color: var(--gold);">→</span></a></li>
+                        <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194,157,107,0.15); padding-bottom: 12px;"><a href="b2b-rates.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>Confidential B2B Tariffs</span><span style="font-size: 12px; color: var(--gold);">→</span></a></li>
+                        <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194,157,107,0.15); padding-bottom: 12px;"><a href="white-label.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>White-Label Ground Handling</span><span style="font-size: 12px; color: var(--gold);">→</span></a></li>
+                        <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194,157,107,0.15); padding-bottom: 12px;"><a href="mice-groups.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>MICE & Incentive Groups</span><span style="font-size: 12px; color: var(--gold);">→</span></a></li>
+                    </ul>
+                </div>
+                <div style="position: relative; background: var(--clay); overflow: hidden;">
+                    <img src="angkor_wat_sunrise2712_67ddcbab8b.jpg" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+                    <div style="position: absolute; bottom: 35px; left: 35px;">
+                        <span style="display: block; color: var(--ivory); font-family: 'Cormorant Garamond'; font-style: italic; font-size: 22px;">Regional Operations</span>
+                        <span style="display: block; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px;">Siem Reap, Cambodia</span>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li><a href="Accommodation.html">Accommodation</a></li>
+        <li><a href="About-Us.html">About Us</a></li>
+    </ul>
+
+    <div class="menu-trigger" id="menu-open">
+        <div class="burger"><span class="line"></span><span class="line"></span></div>
+    </div>
+
+    <div class="mobile-overlay" id="mobile-overlay">
+        <div class="menu-close" id="menu-close">✕</div>
+        <ul class="mobile-nav-links">
+            <li class="mobile-dropdown">
+                <div class="mobile-drop-trigger">Destinations <span>+</span></div>
+                <div class="mobile-nav-links">
+                    <a href="cambodia.html" class="mobile-mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                    <a href="Vietnam.html" class="mobile-mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                    <a href="Thailand.html" class="mobile-mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                    <a href="Laos.html" class="mobile-mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                    <a href="Multi-country.html" class="mobile-mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                </div>
+            </li>
+            <li class="mobile-dropdown">
+                <div class="mobile-drop-trigger">Themes <span>+</span></div>
+                <div class="mobile-nav-links">
+                    <a href="Culture-Heritage.html" class="mobile-mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                    <a href="Romantic-Journeys.html" class="mobile-mega-item"><img src="penin boat 1.jpg"><span>Romantic Getaways</span></a>
+                    <a href="Wellness-Rejuvenation.html" class="mobile-mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness</span></a>
+                    <a href="Family-Journeys.html" class="mobile-mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family</span></a>
+                    <a href="Nature-Adventure.html" class="mobile-mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature</span></a>
+                    <a href="Culinary-Journeys.html" class="mobile-mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary</span></a>
+                </div>
+            </li>
+            <li class="mobile-dropdown">
+                <div class="mobile-drop-trigger">Partners <span>+</span></div>
+                <div class="mobile-nav-links">
+                    <div style="grid-column: span 2;">
+                        <ul class="mobile-partner-list">
+                            <li><a href="Dmc-services.html"><span>DMC Excellence</span><span class="arrow">→</span></a></li>
+                            <li><a href="b2b-rates.html"><span>B2B Tariffs</span><span class="arrow">→</span></a></li>
+                            <li><a href="white-label.html"><span>White-Label</span><span class="arrow">→</span></a></li>
+                            <li><a href="mice-groups.html"><span>MICE Groups</span><span class="arrow">→</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            <li><a href="Accommodation.html">Accommodation</a></li>
+            <li><a href="About-Us.html">About Us</a></li>
+            <li><a href="Plan-Your-Trip.html">Plan Your Trip</a></li>
+        </ul>
+    </div>
+
+    <div class="nav-right desktop-nav"><a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a></div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<header class="hotel-hero">
+
+    <!-- Slideshow -->
+    <div class="hero-slides">
+        <div class="hero-slide slide-1 active"></div>
+        <div class="hero-slide slide-2"></div>
+        <div class="hero-slide slide-3"></div>
+        <div class="hero-slide slide-4"></div>
+        <div class="hero-slide slide-5"></div>
+    </div>
+
+    <!-- Right side strip -->
+    <div class="hero-side-strip">
+        <span class="side-label" style="letter-spacing: 2px;">Song Saa Private Island</span>
+        <div class="slide-dots">
+            <div class="slide-dot active" data-index="0"></div>
+            <div class="slide-dot" data-index="1"></div>
+            <div class="slide-dot" data-index="2"></div>
+            <div class="slide-dot" data-index="3"></div>
+            <div class="slide-dot" data-index="4"></div>
+        </div>
+        <span class="side-count" id="slide-count">01 / 05</span>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="hero-bottom-bar">
+
+        <!-- Main title content -->
+        <div class="hero-content">
+            <span class="hero-eyebrow">Koh Rong Archipelago, Cambodia &nbsp;·&nbsp; Intimate Twin-Island Marine Sanctuary</span>
+            <h1 class="hero-title">Song Saa<br>Private Island</h1>
+            <p class="hero-subtitle">Sustainable Coastal Masterpiece &nbsp;·&nbsp; Overwater & Jungle Ocean Villas &nbsp;·&nbsp; Ethical Marine Conservation Paradigm</p>
+            <div class="hero-cta">
+                <a href="Plan-Your-Trip.html" class="btn-plan">Reserve Your Stay</a>
+                <a href="#rooms" style="color:var(--gold); font-size:9px; letter-spacing:3px; text-decoration:none; text-transform:uppercase; border-bottom:1px solid rgba(194,157,107,0.4); padding-bottom:3px;">Explore Villas & Reefs ↓</a>
+            </div>
+        </div>
+
+        <!-- Slide caption (right) -->
+        <div class="hero-caption-block">
+            <span class="hero-caption-number" id="cap-num">01</span>
+            <span class="hero-caption-text" id="cap-label">The Overwater Sanctuaries</span>
+            <span class="hero-caption-name">Ocean Vistas and Private Plunge Pools</span>
+        </div>
+
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="hero-scroll-hint">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+    </div>
+
+</header>
+
+<!-- ===== QUICK FACTS ===== -->
+<div class="facts-bar">
+    <div class="fact-item">
+        <span class="fact-label">Location</span>
+        <span class="fact-value">Koh Rong Archipelago Azure Waters</span>
+    </div>
+    <div class="fact-item">
+        <span class="fact-label">Category</span>
+        <span class="fact-value">Hyper-Luxury Ultra-Private Island</span>
+    </div>
+    <div class="fact-item">
+        <span class="fact-label">Design Ethos</span>
+        <span class="fact-value">Refined Reclaimed-Timber Eco-Luxury</span>
+    </div>
+    <div class="fact-item">
+        <span class="fact-label">Environment</span>
+        <span class="fact-value">Coral Reefs & White Sand Shorelines</span>
+    </div>
+    <div class="fact-item">
+        <span class="fact-label">Resort Theme</span>
+        <span class="fact-value">All-Inclusive Conscious Wellness & Luxury</span>
+    </div>
+</div>
+
+<!-- ===== INTRO ===== -->
+<section class="intro-section">
+    <div class="intro-text reveal">
+        <span class="section-label">A Frontier of Coastal Luxury</span>
+        <h2>Where Pristine Coral Meets<br><em>Sovereign Tropical Design</em></h2>
+        <div class="gold-line"></div>
+        <p>Nestled across two intimate, untouched islands in Cambodia's sapphire Koh Rong Archipelago, Song Saa Private Island effortlessly redefines the peak of sustainable island luxury. Conceived with deep respect for the environment, this award-winning destination stands as a sanctuary where premium hospitality actively protects thriving marine life, sprawling coral reefs, and native rainforest paths.</p>
+        <p>Your journey is smooth and enchanting: transition smoothly from Sihanoukville via a scenic premium speedboat voyage, stepping directly onto sugar-soft white sands and shimmering boardwalks. The estate encompasses a collection of ultra-private customized villas—including dramatic overwater sanctuaries and hidden jungle hideaways—each boasting a private pool and sweeping ocean horizons.</p>
+        <p>Dine on sustainably caught seafood and organic seasonal produce at the overwater Vista Restaurant, sample custom elixirs at the ocean-breeze Drift Bar, or unwind in the beautiful main infinity pool seamlessly blending with the gulf. Beyond standard hospitality, your presence directly supports the Song Saa Foundation's marine preservation squads, fusing indulgent relaxation with meaningful ecological purpose.</p>
+        <a href="Plan-Your-Trip.html" class="btn-plan" style="margin-top: 20px;">Enquire About Availability</a>
+    </div>
+    <div class="intro-image-block reveal">
+        <img src="07174957-greg-mo-songsaa-drone-015_cover_1600x899.jpg" alt="Song Saa Private Island Overwater Pavilion">
+        <div class="intro-image-caption">
+            <span>The Vista Deck</span>
+            <p>An opulent open-air pavilion built directly over a protected marine reef</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== GALLERY STRIP ===== -->
+<div class="gallery-strip">
+    <div><img src="koh-rong-island.webp" alt="Epicurean Experiences at the Shoreline"></div>
+    <div><img src="EliseHassey_SongSaa25_1672-1440x810.jpg" alt="Sipping Elixirs at Drift Bar"></div>
+    <div><img src="song-saa-private-island-cambodia-Greg-Mo-SongSaa-070-1440x810.jpg" alt="The Ocean View Wellness Sanctuary"></div>
+</div>
+
+<!-- ===== ROOMS ===== -->
+<section class="rooms-section" id="rooms">
+    <div class="section-heading reveal">
+        <span class="label">Accommodation</span>
+        <h2>Bespoke Overwater & Ocean Villas</h2>
+        <div class="divider"></div>
+    </div>
+
+    <div class="rooms-grid">
+        <!-- Overwater Pool Villa -->
+        <div class="room-card reveal">
+            <div class="room-img-wrap">
+                <img src="Song-Saa-Private-Island-two-bedroom-overwater-villa-bedroom-interior.jpg" alt="Overwater Pool Villa">
+                <div class="room-img-label"><span>Over-Ocean Living Art</span></div>
+            </div>
+            <div class="room-details">
+                <h3>Overwater Pool Villa</h3>
+                <div class="room-meta">
+                    <span>Villa Size<strong>135 sqm</strong></span>
+                    <span>Setting">Perched Over Marine Reefs</strong></span>
+                    <span>View<strong>Endless Azure Horizons</strong></span>
+                </div>
+                <p class="room-desc">Suspended elegantly over the marine sanctuary, these striking overwater villas offer unparalleled views of the tropical ocean corridor. Blending meticulous reclaimed timber accents, private glass floor viewing portals, and custom local stonework, they balance historical romance with absolute modern comfort.</p>
+                <ul class="room-features-list">
+                    <li>Sprawling private sun deck featuring a private overwater plunge pool</li>
+                    <li>Signature outdoor standalone bathtub overlooking the ocean reefs</li>
+                    <li>Bespoke interiors crafted entirely with upcycled and local materials</li>
+                    <li>Fully stocked premium bar customized to your tastes</li>
+                    <li>Discreet, highly attentive 24-hour Guest Experience Guest Butler service</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Jungle Ocean View Villa -->
+        <div class="room-card reveal">
+            <div class="room-img-wrap">
+                <img src="song-saa-jungle-villa-interior-landscape.jpg" alt="Jungle Ocean View Villa">
+                <div class="room-img-label"><span>High-Canopy Forest Seclusion</span></div>
+            </div>
+            <div class="room-details">
+                <h3>Jungle Ocean View Villa</h3>
+                <div class="room-meta">
+                    <span>Villa Size<strong>135 sqm</strong></span>
+                    <span>Setting<strong>Elevated Jungle Canopy</strong></span>
+                    <span>View<strong>Unbroken Ocean Views</strong></span>
+                </div>
+                <p class="room-desc">Tucked away along the island's lush jungle crests, these villas immerse you completely in green foliage while framing dramatic views of the gulf. Designed for deep relaxation, they host specialized reading spots and art corners where you can listen to the gentle symphony of nature.</p>
+                <ul class="room-features-list">
+                    <li>High-elevation platforms that place you level with nesting island birds</li>
+                    <li>Opulent indoor-outdoor bathroom layouts with premium botanical soaps</li>
+                    <li>Bespoke fabrics paying tribute to classic refined coastal styles</li>
+                    <li>In-villa custom gourmet dining prepared by your personal butler</li>
+                    <li>Binoculars and curated regional guidebooks for private bird watching</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- The Infinity Pool -->
+        <div class="room-card reveal">
+            <div class="room-img-wrap">
+                <img src="ocean-view-villas.jpeg" alt="Song Saa Infinity Pool">
+                <div class="room-img-label"><span>The Oceanfront Sanctuary</span></div>
+            </div>
+            <div class="room-details">
+                <h3>The Oceanfront Pool</h3>
+                <div class="room-meta">
+                    <span>Design<strong>Stunning Large-Scale Infinity Edge</strong></span>
+                    <span>Setting<strong>Glistening White Sand Shoreline</strong></span>
+                    <span>Access<strong>All Resort Guests</strong></span>
+                </div>
+                <p class="room-desc">Inspired by the vast expanses of the surrounding sea, this striking main infinity pool sits elegantly along the private beach, letting you swim seamlessly towards the horizon line where the sky meets the ocean.</p>
+                <ul class="room-features-list">
+                    <li>Open from dawn until late under soft ambient tropical lighting</li>
+                    <li>Poolside service offering chilled botanical elixirs and artisan bites</li>
+                    <li>Surrounded by deep luxury sun-loungers tucked into the palm trees</li>
+                    <li>Complimentary organic mists, sun protection, and cold aromatic towels</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Dining & Mixology -->
+        <div class="room-card reveal">
+            <div class="room-img-wrap">
+                <img src="vista_restaurant_2.jpg" alt="The Vista Lounge Dining">
+                <div class="room-img-label"><span>Hyper-Local Coastal Gastronomy</span></div>
+            </div>
+            <div class="room-details">
+                <h3>Vista Restaurant & Drift Bar</h3>
+                <div class="room-meta">
+                    <span>Cuisine<strong>Seafood & Locally Sourced Organic Khmer</strong></span>
+                    <span>Setting<strong>Open Air Overwater & Beach Pavilions</strong></span>
+                    <span>Drift Bar<strong>Chic Beachside Cocktail Hideaway</strong></span>
+                </div>
+                <p class="room-desc">The culinary landscape is completely unique. Chefs craft daily changing menus featuring wild herbs and fresh ingredients sourced locally. Afterward, toast your adventures at the beachfront Drift Bar with custom craft cocktails infused with fresh island botanicals.</p>
+                <ul class="room-features-list">
+                    <li>Dramatic beachside private dining setups lit by torches and stars</li>
+                    <li>Cocktails highlighting house-infused local spirits and fresh coconut elixirs</li>
+                    <li>Interactive cooking classes focused on ancient coastal culinary wisdom</li>
+                    <li>Premium all-inclusive dining, including cellared wines and rare spirits</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== KEY HIGHLIGHTS ===== -->
+<section class="highlights-section">
+    <div class="section-heading reveal" style="text-align: left;">
+        <span class="label" style="color: var(--gold);">The High-End Philosophy</span>
+        <h2 style="font-family: 'Cormorant Garamond'; font-size: clamp(2.5rem, 4vw, 4rem); font-style: italic; font-weight: 300; color: var(--ink);">Six Fundamentals of<br>The Song Saa Experience</h2>
+        <div style="width: 60px; height: 1px; background: var(--gold); margin-top: 30px; opacity: 0.5;"></div>
+    </div>
+
+    <div class="highlights-grid">
+        <div class="highlight-item reveal">
+            <div class="highlight-number">01</div>
+            <h3 class="highlight-title">The Marine Sanctuary</h3>
+            <p class="highlight-desc">Step off your villa deck into Cambodia's very first dedicated marine reserve, flourishing with colorful reef fish, coral gardens, and sea turtles.</p>
+        </div>
+        <div class="highlight-item reveal">
+            <div class="highlight-number">02</div>
+            <h3 class="highlight-title">Radical Protection</h3>
+            <p class="highlight-desc">Luxury with true muscle. The resort funds and operates the active Song Saa Foundation, pioneering reef generation, local community support, and education.</p>
+        </div>
+        <div class="highlight-item reveal">
+            <div class="highlight-number">03</div>
+            <h3 class="highlight-title">Island Butlers</h3>
+            <p class="highlight-desc">Highly trained companions who guide you on custom snorkeling expeditions, lead island treks, and setup bespoke sunset beach dinners.</p>
+        </div>
+        <div class="highlight-item reveal">
+            <div class="highlight-number">04</div>
+            <h3 class="highlight-title">Spa & Wellness Sanctuaries</h3>
+            <p class="highlight-desc">Indulge in restorative treatments rooted in traditional Khmer methodologies, featuring chemical-free, hand-blended local ingredients and outdoor spa salas.</p>
+        </div>
+        <div class="highlight-item reveal">
+            <div class="highlight-number">05</div>
+            <h3 class="highlight-title">Bespoke Ocean Cruises</h3>
+            <p class="highlight-desc">Explore the pristine archipelago waterways on our custom luxury speedboats, complete with catered sunset canapes and island-hopping stops.</p>
+        </div>
+        <div class="highlight-item reveal">
+            <div class="highlight-number">06</div>
+            <h3 class="highlight-title">Elite Custom Itineraries</h3>
+            <p class="highlight-desc">L'INDOCHINE coordinates elite custom marine journeys right from the island docks—pairing you with expert marine biologists and conservationists.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== EXPERIENCE GALLERY ===== -->
+<section class="exp-section">
+    <div class="exp-inner reveal">
+        <span style="display: block; font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px;">The Wilderness Standard</span>
+        <p>"A flawless blend of boundary-breaking eco-conservation and world-class luxury. Song Saa Private Island stands alone as a masterclass in true marine-centric, luxury island exploration."</p>
+        <div style="width: 40px; height: 1px; background: var(--gold); margin: 0 auto; opacity: 0.5;"></div>
+    </div>
+    <div class="exp-mosaic">
+        <div><img src="marine-life-cambodia-hero.c043651c.jpg" alt="Coral Reef Snorkeling Trail"></div>
+        <div><img src="song-saa-private-island-cambodia-SS_DRONE_-2-1440x810.jpg" alt="Island Connecting Architectural Wooden Footbridge"></div>
+        <div><img src="justin-mott-outdoor-spa-lounge-waiting-reception-area-high-res-song-saa-private-island-2015.jpg" alt="Luxury Villa Outdoor Balcony Lounge"></div>
+        <div><img src="Sihanoukville_kayaking_2_1280_Serva Travel_k9BsjbFECCZbOhed.jpg" alt="Mangrove Kayaking Track"></div>
+        <div><img src="cover-5.jpg" alt="Island Wellness Yoga Pavilion"></div>
+    </div>
+</section>
+
+<!-- ===== AMENITIES ===== -->
+<section class="amenities-section">
+    <div class="section-heading reveal" style="text-align:center;">
+        <span class="label">Facilities & Services</span>
+        <h2 style="font-family: 'Cormorant Garamond'; font-size: clamp(2.5rem, 4vw, 4rem); font-style: italic; font-weight: 300; color: var(--ink);">At Your Disposal</h2>
+        <div class="divider" style="background: rgba(0,0,0,0.15);"></div>
+    </div>
+    <div class="amenities-grid">
+        <div class="amenity-card reveal">
+            <span class="amenity-icon">◈</span>
+            <h4>The Wellness Sanctuary</h4>
+            <p>Tranquil indoor and outdoor treatment salas offering regenerative local herbal compresses and therapies.</p>
+        </div>
+        <div class="amenity-card reveal">
+            <span class="amenity-icon">◎</span>
+            <h4>The Oceanfront Pool</h4>
+            <p>Our iconic infinity pool sitting parallel to white sandy beaches with seamless sea views.</p>
+        </div>
+        <div class="amenity-card reveal">
+            <span class="amenity-icon"> ⊡</span>
+            <h4>Eco-Center & Foundation</h4>
+            <p>Join active conservation experts on reef restoration workshops, coral plating, and local island visits.</p>
+        </div>
+        <div class="amenity-card reveal">
+            <span class="amenity-icon">◇</span>
+            <h4>Luxury Speedboat Fleet</h4>
+            <p>Custom luxury marine craft designed for island excursions, sunset cruises, and private beach transfers.</p>
+        </div>
+        <div class="amenity-card reveal">
+            <span class="amenity-icon">◈</span>
+            <h4>Drift Bar</h4>
+            <p>Our striking beachfront bar, perfect for locally inspired rum creations and sunset celebrations.</p>
+        </div>
+        <div class="amenity-card reveal">
+            <span class="amenity-icon">◎</span>
+            <h4>Vista Restaurant</h4>
+            <p>The overwater culinary social core, featuring premium fresh ingredients and dramatic 360-degree views.</p>
+        </div>
+        <div class="amenity-card reveal">
+            <span class="amenity-icon">⊡</span>
+            <h4>The Water-Sports Hub</h4>
+            <p>Explore the marine reserve via complimentary ocean kayaking, paddle-boarding, and snorkeling gear.</p>
+        </div>
+        <div class="amenity-card reveal">
+            <span class="amenity-icon">◇</span>
+            <h4>Guest Experience Butler Care</h4>
+            <p>Expert local curators ready to coordinate tailored bioluminescent night swimming, beach runs, and yoga sessions.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== LOCATION ===== -->
+<section class="location-section">
+    <div class="location-map-placeholder">
+        <img src="songsaa-archipelago-map.jpg" alt="Koh Rong Archipelago Map">
+        <div class="map-pin">Song Saa Private Island · Koh Rong Archipelago</div>
+    </div>
+    <div class="location-info">
+        <span class="label">Location & Getting There</span>
+        <h2>A Protected Marine Enclave, Meticulously Connected</h2>
+        <p>Song Saa Private Island sits across two private gems within the pristine Koh Rong Archipelago, roughly 45 minutes by speedboat from the Sihanoukville coast. Safely secluded, the island offers complete coastal immersion alongside smooth, high-end private transfers.</p>
+        <div class="location-distance">
+            <div class="dist-item">
+                <span class="dist-name">Sihanoukville International Airport (KOS)</span>
+                <span class="dist-val">30-45 minutes private luxury car transfer to the port</span>
+            </div>
+            <div class="dist-item">
+                <span class="dist-name">Sihanoukville Main Luxury Pier</span>
+                <span class="dist-val">45 minutes by comfortable private luxury speedboat transfer</span>
+            </div>
+            <div class="dist-item">
+                <span class="dist-name">Phnom Penh International Airport (PNH)</span>
+                <span class="dist-val">Approx 2.5 hours via the new expressway to the coast</span>
+            </div>
+            <div class="dist-item">
+                <span class="dist-name">Song Saa Marine Reserve Perimeter</span>
+                <span class="dist-val">Surrounds the resort island grounds completely</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta-section">
+    <div class="reveal">
+        <span style="display:block; font-size:9px; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:25px;">Reserve Your Dates</span>
+        <h2>Enter The <em>Oceanfront</em><br>Sanctuary</h2>
+    </div>
+    <div class="cta-right reveal">
+        <p>L'INDOCHINE holds deep alignment with Song Saa, offering our clients priority villa upgrades, elite tailored experiences, and seamless pre-arrival tracking. Allow our travel office to craft an itinerary that harmonizes legendary luxury with the spellbinding history of Cambodia.</p>
+        <div class="cta-buttons">
+            <a href="Plan-Your-Trip.html" class="btn-primary">Plan Your Journey</a>
+            <a href="cambodia.html" class="btn-secondary">Explore Cambodia</a>
+        </div>
+        <p style="margin-top: 30px; font-size: 11px; opacity: 0.5; letter-spacing: 1px;">Tailored marine and land journeys managed meticulously by our regional team specialists.</p>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <div class="footer-main">
+        <div class="footer-col">
+            <h4>Destinations</h4>
+            <ul>
+                <li><a href="cambodia.html">Cambodia</a></li>
+                <li><a href="Laos.html">Laos</a></li>
+                <li><a href="Vietnam.html">Vietnam</a></li>
+                <li><a href="Thailand.html">Thailand</a></li>
+                <li><a href="Multi-country.html">Multi-Country</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Experiences</h4>
+            <ul>
+                <li><a href="Culture-Heritage.html">Culture & Heritage</a></li>
+                <li><a href="Romantic-Journeys.html">Romantic Getaways</a></li>
+                <li><a href="Nature-Adventure.html">Nature & Adventure</a></li>
+                <li><a href="Wellness-Rejuvenation.html">Wellness & Rejuvenation</a></li>
+                <li><a href="Family-Journeys.html">Family Journeys</a></li>
+                <li><a href="Culinary-Journeys.html">Culinary Journeys</a></li>
+            </ul>
+        </div>
+        <div class="footer-col footer-contact">
+            <h4>Connect with Us</h4>
+            <p>+855 95 267 257 </p>
+            <p>contact@l'indochine.com</p>
+            <div class="footer-social">
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0 3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-2.21c0-.837.39-1.29 1.121-1.29h2.879v-4.498c-.443-.059-1.968-.202-3.726-.202-3.689 0-6.274 2.247-6.274 6.46v1.74z"/></svg>
+                </a>
+                <a href="#" class="social-icon">
+                    <svg viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                </a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <div style="background: rgba(194,157,107,0.05); padding: 30px; border: 1px solid rgba(194,157,107,0.2);">
+                <h4 style="margin-bottom: 20px;">Curate Your Legacy</h4>
+                <a href="Plan-Your-Trip.html" class="btn-plan" style="display: block; text-align: center; margin-bottom: 20px;">Plan Your Trip</a>
+                <div style="display: flex; justify-content: space-between;">
+                    <a href="About-Us.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ABOUT US</a>
+                    <a href="Accommodation.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ACCOMMODATION</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="copyright">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+        <div class="footer-bottom-links">
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="Terms&Conditions.html">Terms & Conditions</a>
+            <a href="#" id="back-to-top">BACK TO TOP &#10142;</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Cursor Follower Logic
+    const follower = document.getElementById('cursor-follower');
+    const fText = follower.querySelector('span');
+    document.addEventListener('mousemove', (e) => {
+        gsap.to(follower, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: "power2.out" });
+    });
+    document.querySelectorAll('a, .mega-item, .room-card, .amenity-card').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            gsap.to(follower, { width: 100, height: 100, background: 'rgba(194,157,107,0.15)', border: 'none' });
+            fText.style.opacity = 1;
+        });
+        el.addEventListener('mouseleave', () => {
+            gsap.to(follower, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+            fText.style.opacity = 0;
+        });
+    });
+
+    // Scroll Reveals Loop
+    gsap.utils.toArray('.reveal').forEach(el => {
+        gsap.fromTo(el, { opacity: 0, y: 50 }, {
+            opacity: 1, y: 0, duration: 1.2, ease: "power3.out",
+            scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" }
+        });
+    });
+
+    // Hero entrance
+    gsap.from('.hero-content > *', {
+        y: 30, opacity: 0, stagger: 0.15, duration: 1.4, delay: 0.3, ease: "power3.out"
+    });
+
+    // Facts bar entrance
+    gsap.from('.fact-item', {
+        y: 20, opacity: 0, stagger: 0.1, duration: 0.8, delay: 0.6, ease: "power2.out",
+        scrollTrigger: { trigger: '.facts-bar', start: 'top 90%' }
+    });
+
+    // Mobile nav
+    const mOpen = document.getElementById('menu-open');
+    const mClose = document.getElementById('menu-close');
+    const mOverlay = document.getElementById('mobile-overlay');
+    if (mOpen) mOpen.addEventListener('click', () => mOverlay.classList.add('active'));
+    if (mClose) mClose.addEventListener('click', () => mOverlay.classList.remove('active'));
+
+    document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+        trigger.addEventListener('click', function() {
+            const content = this.nextElementSibling;
+            const icon = this.querySelector('span');
+            content.classList.toggle('active');
+            icon.innerText = content.classList.contains('active') ? "−" : "+";
+        });
+    });
+
+    // Mega menu triangle positioning
+    document.querySelectorAll('.desktop-nav .dropdown').forEach(drop => {
+        const menu = drop.querySelector('.mega-menu');
+        const link = drop.querySelector('a');
+        drop.addEventListener('mouseenter', () => {
+            if (menu && link) {
+                const linkRect = link.getBoundingClientRect();
+                const linkCenter = linkRect.left + (linkRect.width / 2);
+                menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+            }
+        });
+    });
+
+    // Back to top
+    document.getElementById('back-to-top').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Nav scroll behaviour — darken on scroll
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 100) {
+            nav.style.background = 'rgba(10,10,10,0.97)';
+        } else {
+            nav.style.background = 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%)';
+        }
+    });
+
+    // ===== HERO SLIDESHOW =====
+    const slideCaptions = [
+        { num: '01', label: 'The Overwater Sanctuaries', name: 'Ocean Vistas and Private Plunge Pools' },
+        { num: '02', label: 'Jungle Crest Villas', name: 'Bespoke Recycled Timber Luxury' },
+        { num: '03', label: 'Overwater Fine Dining', name: 'Sustainably Sourced Gastronomic Masterpieces' },
+        { num: '04', label: 'Luxury Island Cruises', name: 'Archipelago Marine Reserve Exploration' },
+        { num: '05', label: 'The Beachfront Infinity Pool', name: 'Seamless Coastal Swimming Sanctum' },
+    ];
+    
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots = document.querySelectorAll('.slide-dot');
+    
+    // Selecting the text container elements
+    const capNum = document.getElementById('cap-num');
+    const capLabel = document.getElementById('cap-label');
+    const capName = document.querySelector('.hero-caption-name'); 
+    const slideCount = document.getElementById('slide-count');
+    
+    let currentSlide = 0;
+    let slideTimer;
+
+    function goToSlide(index) {
+        slides[currentSlide].classList.remove('active');
+        dots[currentSlide].classList.remove('active');
+        currentSlide = index;
+        slides[currentSlide].classList.add('active');
+        dots[currentSlide].classList.add('active');
+        
+        const c = slideCaptions[currentSlide];
+        
+        gsap.to([capNum, capLabel, capName], { 
+            opacity: 0, 
+            y: -15, 
+            duration: 0.3, 
+            stagger: 0.05, 
+            ease: "power2.in",
+            onComplete: () => {
+                capNum.textContent = c.num;
+                capLabel.textContent = c.label;
+                capName.textContent = c.name;
+                slideCount.textContent = c.num + ' / 05';
+                
+                gsap.fromTo([capNum, capLabel, capName], 
+                    { opacity: 0, y: 15 },
+                    { opacity: 1, y: 0, duration: 0.6, stagger: 0.08, ease: "power3.out" }
+                );
+            }
+        });
+    }
+
+    function nextSlide() {
+        goToSlide((currentSlide + 1) % slides.length);
+    }
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            clearInterval(slideTimer);
+            goToSlide(parseInt(dot.dataset.index));
+            slideTimer = setInterval(nextSlide, 6000); 
+        });
+    });
+
+    slideTimer = setInterval(nextSlide, 6000);
+</script>
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>

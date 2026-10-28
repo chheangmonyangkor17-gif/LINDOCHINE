@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms & Conditions | L'INDOCHINE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ivory: #F0EDE5;
+            --ink: #0A0A0A;
+            --gold: #C29D6B;
+            --clay: #1A1917;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        body {
+            background-color: var(--ivory);
+            color: var(--ink);
+            font-family: 'Tenor Sans', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        /* Cinematic Overlays */
+        .vignette { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%); pointer-events: none; z-index: 100; opacity: 0.4; }
+        .grain { position: fixed; inset: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.07; pointer-events: none; z-index: 1000; mix-blend-mode: multiply; }
+
+        /* Bespoke Cursor */
+        #cursor-follower {
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px;
+            border: 0.5px solid var(--gold); border-radius: 50%; z-index: 10000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear, width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor-follower span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; }
+
+        /* Navigation */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 0 60px;
+            height: 90px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 999; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        .nav-links { display: flex; list-style: none; gap: 40px; height: 100%; }
+        .nav-links > li { display: flex; align-items: center; }
+        .nav-links > li > a {
+            text-decoration: none; color: var(--ivory); font-size: 10px; letter-spacing: 3px;
+            text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            transition: color 0.4s var(--ease);
+            padding: 20px 0;
+            position: relative;
+            padding-right: 18px;
+        }
+        .nav-links > li > a:hover { color: var(--gold); }
+
+        .dropdown > a::after {
+            content: '';
+            position: absolute; right: 0; top: 50%;
+            transform: translateY(-50%);
+            width: 0; height: 0;
+            border-left: 3.5px solid transparent;
+            border-right: 3.5px solid transparent;
+            border-top: 4px solid var(--gold);
+            transition: transform 0.4s var(--ease);
+            opacity: 0.6;
+        }
+        .dropdown:hover > a::after { transform: translateY(-50%) rotate(180deg); opacity: 1; }
+
+        .mega-menu {
+            position: absolute; top: 90px; left: 0; width: 100vw;
+            background: var(--ink); padding: 40px 60px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transform: translateY(15px);
+            transition: all 0.5s var(--ease);
+            border-bottom: 1px solid rgba(194, 157, 107, 0.3);
+            z-index: 1000;
+        }
+        .mega-menu::before {
+            content: ''; position: absolute; top: -10px;
+            left: var(--triangle-left, 50%); transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--ink);
+            pointer-events: none;
+        }
+        .dropdown { position: static; }
+        .dropdown:hover .mega-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+
+        .mega-item {
+            position: relative; height: 250px; overflow: hidden; text-decoration: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mega-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); filter: brightness(0.5); }
+        .mega-item span {
+            position: absolute; z-index: 2; color: var(--ivory);
+            font-family: 'Cormorant Garamond'; font-size: 1.2rem; font-style: italic;
+            letter-spacing: 1px; text-align: center; padding: 0 10px;
+            transition: transform 0.4s var(--ease);
+        }
+        .mega-item:hover img { transform: scale(1.1); filter: brightness(0.7); }
+        .mega-item::after { content: ''; position: absolute; inset: 0; border: 0px solid var(--gold); transition: 0.4s var(--ease); }
+        .mega-item:hover::after { border: 1px solid var(--gold); inset: 10px; }
+
+        .btn-plan {
+            text-decoration: none; color: var(--gold); font-size: 9px; letter-spacing: 2px;
+            text-transform: uppercase; border: 1px solid var(--gold); padding: 12px 25px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+            transition: all 0.5s var(--ease); display: inline-block;
+        }
+        .btn-plan:hover { background: var(--gold); color: var(--ink); }
+
+        /* Mobile Nav */
+        @media (min-width: 1025px) {
+            .menu-trigger, .mobile-overlay { display: none; }
+            .desktop-nav { display: flex !important; }
+        }
+        @media (max-width: 1024px) {
+            .desktop-nav { display: none !important; }
+            .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+            .burger .line { width: 25px; height: 1px; background: var(--gold); display: block; margin: 6px 0; }
+            .mobile-overlay {
+                position: fixed; inset: 0; background: var(--ink);
+                z-index: 5000; transform: translateY(-100%);
+                transition: transform 0.8s var(--ease);
+                overflow-y: auto; padding: 100px 40px;
+            }
+            .mobile-overlay.active { transform: translateY(0); }
+            .menu-close { position: absolute; top: 30px; right: 30px; color: var(--gold); font-size: 24px; cursor: pointer; }
+            .mobile-nav-links { list-style: none; }
+            .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+            .mobile-nav-links a, .mobile-drop-trigger {
+                font-family: 'Cormorant Garamond'; font-size: 2rem;
+                color: var(--ivory); text-decoration: none; font-style: italic;
+            }
+            .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+            .mobile-mega-content { display: none; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+            .mobile-mega-content.active { display: grid; }
+            .mobile-mega-item { text-decoration: none; }
+            .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; opacity: 0.7; }
+            .mobile-mega-item span { display: block; color: var(--ivory); font-size: 0.7rem; text-transform: uppercase; margin-top: 5px; letter-spacing: 1px; }
+            .mobile-partner-list { list-style: none; margin-top: 20px; }
+            .mobile-partner-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 8px; }
+            .mobile-partner-list a { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; color: var(--ivory); text-decoration: none; font-family: 'Cormorant Garamond'; font-style: italic; }
+            .mobile-partner-list .arrow { font-size: 14px; color: var(--gold); font-family: sans-serif; font-style: normal; }
+            nav { padding: 0 30px; }
+        }
+
+        /* ── PAGE HERO ── */
+        .page-hero {
+            height: 55vh;
+            min-height: 380px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            background: var(--ink);
+            overflow: hidden;
+            position: relative;
+            padding: 0 10% 70px;
+        }
+        .page-hero-img {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover; opacity: 0.28;
+        }
+        .page-hero-content { position: relative; z-index: 10; color: var(--ivory); }
+        .page-hero-eyebrow {
+            font-size: 10px; letter-spacing: 6px; text-transform: uppercase;
+            color: var(--gold); display: block; margin-bottom: 18px;
+        }
+        .page-hero-title {
+            font-family: 'Cormorant Garamond'; font-size: 5rem; font-weight: 300;
+            font-style: italic; line-height: 1; color: var(--ivory);
+        }
+        .page-hero-rule {
+            width: 60px; height: 1px; background: var(--gold);
+            margin-top: 30px;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .tc-wrapper {
+            max-width: 880px;
+            margin: 0 auto;
+            padding: 100px 40px 120px;
+        }
+
+        .tc-intro {
+            font-family: 'Cormorant Garamond';
+            font-size: 1.35rem;
+            font-style: italic;
+            font-weight: 300;
+            line-height: 1.8;
+            color: var(--ink);
+            opacity: 0.85;
+            margin-bottom: 60px;
+            padding-bottom: 60px;
+            border-bottom: 1px solid rgba(194, 157, 107, 0.3);
+        }
+
+        .tc-updated {
+            font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--gold); margin-bottom: 10px; display: block;
+        }
+
+        .tc-section {
+            margin-bottom: 60px;
+        }
+
+        .tc-section-number {
+            font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+            color: var(--gold); display: block; margin-bottom: 12px;
+        }
+
+        .tc-section h2 {
+            font-family: 'Cormorant Garamond';
+            font-size: 2rem; font-style: italic; font-weight: 300;
+            margin-bottom: 22px; color: var(--ink); line-height: 1.2;
+        }
+
+        .tc-section p {
+            font-size: 0.95rem; line-height: 1.9; color: #3a3a3a;
+            margin-bottom: 16px;
+        }
+
+        .tc-section ul {
+            list-style: none;
+            margin: 16px 0 20px 0;
+        }
+
+        .tc-section ul li {
+            font-size: 0.92rem;
+            line-height: 1.8;
+            color: #3a3a3a;
+            padding-left: 22px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .tc-section ul li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 11px;
+            width: 6px; height: 1px;
+            background: var(--gold);
+        }
+
+        .tc-divider {
+            border: none;
+            border-top: 1px solid rgba(194, 157, 107, 0.2);
+            margin: 60px 0;
+        }
+
+        .tc-highlight-box {
+            background: rgba(194, 157, 107, 0.06);
+            border-left: 2px solid var(--gold);
+            padding: 30px 35px;
+            margin: 30px 0;
+        }
+
+        .tc-highlight-box p {
+            font-family: 'Cormorant Garamond';
+            font-size: 1.1rem;
+            font-style: italic;
+            line-height: 1.8;
+            color: var(--ink);
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .tc-contact-block {
+            background: var(--clay);
+            padding: 50px 60px;
+            margin-top: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .tc-contact-block h3 {
+            font-family: 'Cormorant Garamond';
+            font-size: 1.8rem; font-style: italic; font-weight: 300;
+            color: var(--ivory); margin-bottom: 10px;
+        }
+
+        .tc-contact-block p {
+            font-size: 0.85rem; color: var(--ivory); opacity: 0.6; line-height: 1.7; margin: 0;
+        }
+
+        .tc-contact-block a.btn-plan {
+            white-space: nowrap; flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .page-hero-title { font-size: 3rem; }
+            .tc-wrapper { padding: 60px 25px 80px; }
+            .tc-contact-block { flex-direction: column; padding: 40px 30px; text-align: center; }
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            padding: 120px 60px 40px;
+            background: var(--ivory);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+        }
+        .footer-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.5fr 2fr;
+            gap: 40px;
+            margin-bottom: 100px;
+        }
+        .footer-col h4 {
+            font-family: 'Tenor Sans', sans-serif;
+            font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+            margin-bottom: 35px; color: var(--gold);
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 15px; }
+        .footer-col a {
+            text-decoration: none; color: var(--ink);
+            font-size: 11px; opacity: 0.7; transition: opacity 0.3s;
+        }
+        .footer-col a:hover { opacity: 1; }
+        .footer-contact p { font-size: 12px; margin-bottom: 10px; opacity: 0.8; }
+        .footer-social { display: flex; gap: 20px; margin-top: 25px; }
+        .social-icon {
+            width: 36px; height: 36px; border: 1px solid rgba(194, 157, 107, 0.3);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            transition: all 0.4s; fill: var(--ink); opacity: 0.6;
+        }
+        .social-icon svg { width: 14px; height: 14px; fill: var(--ink); }
+        .social-icon:hover { opacity: 1; border-color: var(--gold); }
+        .footer-cta-box {
+            background: rgba(194, 157, 107, 0.05);
+            padding: 30px;
+            border: 1px solid rgba(194, 157, 107, 0.2);
+        }
+        .footer-bottom {
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 40px; border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        .footer-bottom-links { display: flex; gap: 30px; align-items: center; }
+        .footer-bottom-links a {
+            text-decoration: none; color: var(--ink); font-size: 9px;
+            letter-spacing: 2px; text-transform: uppercase; opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        .footer-bottom-links a:hover { opacity: 1; }
+        .copyright { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.4; }
+        @media (max-width: 1024px) {
+            .footer-main { grid-template-columns: 1fr 1fr; gap: 60px 20px; }
+            footer { padding: 80px 30px 40px; }
+        }
+        @media (max-width: 600px) {
+            .footer-main { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 20px; text-align: center; }
+            .footer-bottom-links { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div id="cursor-follower"><span>Read</span></div>
+
+    <!-- ══ NAVIGATION ══ -->
+    <nav>
+        <a href="index.html" class="logo">L'INDOCHINE</a>
+
+        <ul class="nav-links desktop-nav">
+            <li class="dropdown">
+                <a href="#">Destinations</a>
+                <div class="mega-menu">
+                    <a href="cambodia.html" class="mega-item"><img src="istockphoto-589941504-612x612.jpg" alt="Cambodia"><span>Cambodia</span></a>
+                    <a href="Vietnam.html" class="mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg" alt="Vietnam"><span>Vietnam</span></a>
+                    <a href="Thailand.html" class="mega-item"><img src="Wat Arun temple illuminated at night.jpeg" alt="Thailand"><span>Thailand</span></a>
+                    <a href="Laos.html" class="mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg" alt="Laos"><span>Laos</span></a>
+                    <a href="Multi-country.html" class="mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp" alt="Multi-Country"><span>Multi-Country</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Themes</a>
+                <div class="mega-menu" style="grid-template-columns: repeat(6, 1fr);">
+                    <a href="Culture-Heritage.html" class="mega-item"><img src="istockphoto-500361595-612x612.jpg" alt="Culture"><span>Culture & Heritage</span></a>
+                    <a href="Romantic-Journeys.html" class="mega-item"><img src="penin boat 1.jpg" alt="Romantic"><span>Romantic Journeys</span></a>
+                    <a href="Wellness-Rejuvenation.html" class="mega-item"><img src="bodymind-cleanse-2.png" alt="Wellness"><span>Wellness & Rejuvenation</span></a>
+                    <a href="Family-Journeys.html" class="mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg" alt="Family"><span>Family Journeys</span></a>
+                    <a href="Nature-Adventure.html" class="mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg" alt="Nature"><span>Nature & Adventure</span></a>
+                    <a href="Culinary-Journeys.html" class="mega-item"><img src="amansara_cambodia_-_dining.jpg" alt="Culinary"><span>Culinary Journeys</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Partners</a>
+                <div class="mega-menu" style="grid-template-columns: 1.3fr 1fr; padding: 0; overflow: hidden;">
+                    <div style="padding: 50px; background: var(--ink);">
+                        <h4 style="color: var(--gold); font-size: 13px; margin-bottom: 35px; letter-spacing: 4px; text-transform: uppercase; font-family: 'Tenor Sans';">B2B & DMC Services</h4>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;"><a href="Dmc-services.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>DMC Operational Excellence</span><span style="font-size: 12px; color: var(--gold);">→</span></a></li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;"><a href="b2b-rates.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>Confidential B2B Tariffs</span><span style="font-size: 12px; color: var(--gold);">→</span></a></li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;"><a href="white-label.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>White-Label Ground Handling</span><span style="font-size: 12px; color: var(--gold);">→</span></a></li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;"><a href="mice-groups.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>MICE & Incentive Groups</span><span style="font-size: 12px; color: var(--gold);">→</span></a></li>
+                        </ul>
+                        <p style="margin-top: 30px; font-size: 10px; color: var(--gold); opacity: 0.7; letter-spacing: 2px; text-transform: uppercase;">Your strategic partner in Southeast Asia.</p>
+                    </div>
+                    <div style="position: relative; background: var(--clay); overflow: hidden;">
+                        <img src="angkor_wat_sunrise2712_67ddcbab8b.jpg" alt="Siem Reap Hub" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+                        <div style="position: absolute; bottom: 35px; left: 35px;">
+                            <span style="display: block; color: var(--ivory); font-family: 'Cormorant Garamond'; font-style: italic; font-size: 22px;">Regional Operations</span>
+                            <span style="display: block; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px;">Siem Reap, Cambodia</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><a href="Accommodation.html">Accommodation</a></li>
+            <li><a href="About-Us.html">About Us</a></li>
+        </ul>
+
+        <div class="menu-trigger" id="menu-open">
+            <div class="burger"><span class="line"></span><span class="line"></span></div>
+        </div>
+
+        <div class="mobile-overlay" id="mobile-overlay">
+            <div class="menu-close" id="menu-close">✕</div>
+            <ul class="mobile-nav-links">
+                <li class="mobile-dropdown">
+                    <div class="mobile-drop-trigger">Destinations <span>+</span></div>
+                    <div class="mobile-mega-content">
+                        <a href="cambodia.html" class="mobile-mega-item"><img src="istockphoto-589941504-612x612.jpg" alt="Cambodia"><span>Cambodia</span></a>
+                        <a href="Vietnam.html" class="mobile-mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg" alt="Vietnam"><span>Vietnam</span></a>
+                        <a href="Thailand.html" class="mobile-mega-item"><img src="Wat Arun temple illuminated at night.jpeg" alt="Thailand"><span>Thailand</span></a>
+                        <a href="Laos.html" class="mobile-mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg" alt="Laos"><span>Laos</span></a>
+                        <a href="Multi-country.html" class="mobile-mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp" alt="Multi-Country"><span>Multi-Country</span></a>
+                    </div>
+                </li>
+                <li class="mobile-dropdown">
+                    <div class="mobile-drop-trigger">Themes <span>+</span></div>
+                    <div class="mobile-mega-content">
+                        <a href="Culture-Heritage.html" class="mobile-mega-item"><img src="istockphoto-500361595-612x612.jpg" alt="Culture"><span>Culture & Heritage</span></a>
+                        <a href="Romantic-Journeys.html" class="mobile-mega-item"><img src="penin boat 1.jpg" alt="Romantic"><span>Romantic Getaways</span></a>
+                        <a href="Wellness-Rejuvenation.html" class="mobile-mega-item"><img src="bodymind-cleanse-2.png" alt="Wellness"><span>Wellness</span></a>
+                        <a href="Family-Journeys.html" class="mobile-mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg" alt="Family"><span>Family Journeys</span></a>
+                        <a href="Nature-Adventure.html" class="mobile-mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg" alt="Nature"><span>Nature & Adventure</span></a>
+                        <a href="Culinary-Journeys.html" class="mobile-mega-item"><img src="amansara_cambodia_-_dining.jpg" alt="Culinary"><span>Culinary Journeys</span></a>
+                    </div>
+                </li>
+                <li class="mobile-dropdown">
+                    <div class="mobile-drop-trigger">Partners <span>+</span></div>
+                    <div class="mobile-mega-content">
+                        <div style="grid-column: span 2; width: 100%;">
+                            <ul class="mobile-partner-list">
+                                <li><a href="Dmc-services.html"><span>DMC Excellence</span> <span class="arrow">→</span></a></li>
+                                <li><a href="b2b-rates.html"><span>B2B Tariffs</span> <span class="arrow">→</span></a></li>
+                                <li><a href="white-label.html"><span>White-Label</span> <span class="arrow">→</span></a></li>
+                                <li><a href="mice-groups.html"><span>MICE Groups</span> <span class="arrow">→</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="Accommodation.html">Accommodation</a></li>
+                <li><a href="About-Us.html">About Us</a></li>
+                <li><a href="Plan-Your-Trip.html">Plan Your Trip</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-right desktop-nav"><a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a></div>
+    </nav>
+
+    <!-- ══ PAGE HERO ══ -->
+    <section class="page-hero">
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2000" class="page-hero-img" alt="Indochina landscape">
+        <div class="page-hero-content">
+            <span class="page-hero-eyebrow">Legal & Compliance</span>
+            <h1 class="page-hero-title">Terms &<br>Conditions</h1>
+            <div class="page-hero-rule"></div>
+        </div>
+    </section>
+
+    <!-- ══ TERMS CONTENT ══ -->
+    <main class="tc-wrapper">
+
+        <span class="tc-updated">Last Updated — January 2026</span>
+        <p class="tc-intro">
+            These Terms and Conditions govern your engagement with L'Indochine and constitute a binding agreement between you and our company. By accessing our website, requesting a journey proposal, or confirming a booking, you signify your full acceptance of these terms. We encourage you to read them with the care they deserve.
+        </p>
+
+        <!-- 1 -->
+        <div class="tc-section">
+            <span class="tc-section-number">01 — About Us</span>
+            <h2>Company Information</h2>
+            <p>L'Indochine is a luxury Destination Management Company (DMC) headquartered in Siem Reap, Kingdom of Cambodia. We specialise in designing and operating bespoke private journeys across Cambodia, Vietnam, Thailand, Laos, and multi-country Indochina itineraries for discerning leisure travellers and travel trade professionals.</p>
+            <p>References in these Terms to "L'Indochine," "we," "us," or "our" refer to the company and its authorised representatives. References to "you" or "the client" refer to the individual, business, or travel agent making a booking or enquiry.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 2 -->
+        <div class="tc-section">
+            <span class="tc-section-number">02 — Bookings & Confirmations</span>
+            <h2>How Your Journey is Confirmed</h2>
+            <p>A booking is initiated when you submit a journey enquiry via our website, email, or through an authorised travel partner. L'Indochine will respond with a bespoke proposal detailing the itinerary, inclusions, pricing, and availability.</p>
+            <p>Your booking becomes confirmed only upon:</p>
+            <ul>
+                <li>Written acceptance of the journey proposal by you or your authorised representative.</li>
+                <li>Receipt of the required deposit as specified in your proposal (typically 30–50% of the total journey cost).</li>
+                <li>Issuance of a written Booking Confirmation from L'Indochine.</li>
+            </ul>
+            <p>L'Indochine reserves the right to decline or cancel any booking at its discretion prior to issuing a Booking Confirmation. No contract exists between us until all three conditions above are satisfied.</p>
+            <div class="tc-highlight-box">
+                <p>"Every journey we create is singular — curated to your story. Our confirmation process ensures that every detail is agreed upon before your adventure begins."</p>
+            </div>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 3 -->
+        <div class="tc-section">
+            <span class="tc-section-number">03 — Pricing & Payments</span>
+            <h2>Rates, Currency & Payment Terms</h2>
+            <p>All prices quoted are in US Dollars (USD) unless otherwise specified. Prices are valid for the dates indicated in your proposal and are subject to change prior to confirmation if costs from suppliers fluctuate significantly.</p>
+            <p>Our standard payment schedule is as follows:</p>
+            <ul>
+                <li><strong>Deposit:</strong> 30–50% of total journey value, due upon booking confirmation.</li>
+                <li><strong>Balance:</strong> Remaining amount due no later than 45 days before the journey commencement date.</li>
+                <li><strong>Short-lead bookings</strong> (confirmed within 45 days of departure): Full payment is required at confirmation.</li>
+            </ul>
+            <p>Payments may be made via bank wire transfer, credit card (Visa, Mastercard), or through your travel agent. All bank transfer fees are the responsibility of the client. Credit card payments may be subject to a processing surcharge of up to 3%.</p>
+            <p>L'Indochine reserves the right to pass on any documented increases in government taxes, levies, or fuel surcharges that arise after booking confirmation. We will notify you promptly and in writing should such changes occur.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 4 -->
+        <div class="tc-section">
+            <span class="tc-section-number">04 — Cancellations & Refunds</span>
+            <h2>Cancellation Policy</h2>
+            <p>Should you need to cancel a confirmed booking, cancellation charges will apply based on the number of days prior to the journey commencement date on which we receive your written notice:</p>
+            <ul>
+                <li><strong>90+ days before departure:</strong> Loss of deposit only.</li>
+                <li><strong>60–89 days before departure:</strong> 50% of total journey cost.</li>
+                <li><strong>30–59 days before departure:</strong> 75% of total journey cost.</li>
+                <li><strong>Less than 30 days before departure:</strong> 100% of total journey cost — no refund.</li>
+            </ul>
+            <p>Cancellation requests must be submitted in writing via email to our reservations team. The date of receipt of your written cancellation will determine the applicable charge. Certain components — such as chartered flights, private vessels, or exclusive use bookings — may carry stricter cancellation terms, which will be clearly noted in your proposal.</p>
+            <p>We strongly recommend that all clients obtain comprehensive travel insurance, including coverage for cancellation, curtailment, medical expenses, and repatriation.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 5 -->
+        <div class="tc-section">
+            <span class="tc-section-number">05 — Amendments & Changes</span>
+            <h2>Modifying Your Journey</h2>
+            <p>We understand that circumstances change. Amendment requests made after confirmation will be accommodated wherever possible, subject to supplier availability and any applicable re-booking fees. L'Indochine will notify you of any cost implications before proceeding with changes.</p>
+            <p>Significant amendments (changes to destination, dates, or number of travellers) made within 60 days of departure may be treated as a cancellation and rebooking, subject to the cancellation policy above.</p>
+            <p>L'Indochine reserves the right to make minor adjustments to your itinerary (e.g., reordering of activities, change of accommodation to an equivalent property) where necessary due to operational or safety reasons. We will always inform you promptly and strive to maintain the quality and spirit of your original journey.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 6 -->
+        <div class="tc-section">
+            <span class="tc-section-number">06 — Travel Insurance</span>
+            <h2>Insurance Requirements</h2>
+            <p>Travel insurance is not included in our journey packages. We strongly advise — and for certain journey types require — that all travellers hold a comprehensive travel insurance policy before their departure. Your policy should include, at minimum:</p>
+            <ul>
+                <li>Trip cancellation and curtailment.</li>
+                <li>Emergency medical treatment and hospitalisation.</li>
+                <li>Medical evacuation and repatriation.</li>
+                <li>Loss, theft, or damage of personal belongings.</li>
+                <li>Personal liability coverage.</li>
+            </ul>
+            <p>L'Indochine shall not be liable for any costs, losses, or damages that would have been covered by an appropriate travel insurance policy. Details of your insurance policy must be provided to us prior to journey commencement upon request.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 7 -->
+        <div class="tc-section">
+            <span class="tc-section-number">07 — Passports, Visas & Health</span>
+            <h2>Entry Requirements & Health Advisories</h2>
+            <p>It is your sole responsibility to hold a valid passport and to obtain all necessary visas, travel permits, and health documentation required for entry into each country on your itinerary. L'Indochine will provide general guidance on entry requirements upon request, but this information is advisory only and subject to change.</p>
+            <p>We recommend consulting your national government's official travel advisory portal and your healthcare provider well in advance of travel. Some destinations may require proof of vaccination or a negative health test result for entry.</p>
+            <p>L'Indochine accepts no liability for any client refused entry to a destination, detained, deported, or unable to travel due to failure to comply with passport, visa, health, or documentation requirements.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 8 -->
+        <div class="tc-section">
+            <span class="tc-section-number">08 — Liability & Force Majeure</span>
+            <h2>Our Responsibilities & Limitations</h2>
+            <p>L'Indochine acts as a tour operator and principal for services we directly control. For services provided by third-party suppliers (airlines, hotels, activity operators, guides), L'Indochine acts as an agent and the supplier's own terms and conditions apply.</p>
+            <p>L'Indochine will not be liable for any injury, illness, loss, damage, delay, additional expense, or inconvenience caused directly or indirectly by events beyond our reasonable control, including but not limited to:</p>
+            <ul>
+                <li>Acts of God, natural disasters, extreme weather events, or pandemic outbreaks.</li>
+                <li>War, civil unrest, terrorism, government actions, or strikes.</li>
+                <li>Technical or mechanical failures of transport operated by third parties.</li>
+                <li>Actions or omissions of third-party suppliers.</li>
+                <li>Your own failure to comply with applicable laws, regulations, or our instructions.</li>
+            </ul>
+            <p>In no event shall L'Indochine's total liability to a client exceed the total amount paid to us for the relevant journey. This limitation does not apply in cases of gross negligence or wilful misconduct on our part.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 9 -->
+        <div class="tc-section">
+            <span class="tc-section-number">09 — Conduct & Responsibilities</span>
+            <h2>Client Conduct</h2>
+            <p>All clients are expected to conduct themselves respectfully towards our staff, local guides, and the communities and environments they visit. L'Indochine reserves the right to terminate a journey without refund if a client's behaviour poses a risk to their own safety, the safety of others, or causes significant disruption.</p>
+            <p>We are committed to responsible and sustainable tourism. We ask all our guests to respect local customs, traditions, and ecological sensitivities during their journey.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 10 -->
+        <div class="tc-section">
+            <span class="tc-section-number">10 — Intellectual Property & Website Use</span>
+            <h2>Use of Our Website & Content</h2>
+            <p>All content on the L'Indochine website — including text, photography, video, itineraries, logos, and design — is the exclusive intellectual property of L'Indochine or its licensed contributors and is protected by applicable copyright and trademark laws.</p>
+            <p>You may browse our website for personal, non-commercial use. You may not reproduce, distribute, republish, or commercially exploit any content from this website without our prior written consent. Scraping, data extraction, or automated access to our website is strictly prohibited.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 11 -->
+        <div class="tc-section">
+            <span class="tc-section-number">11 — Privacy & Data</span>
+            <h2>How We Handle Your Information</h2>
+            <p>The collection, storage, and use of your personal data is governed by our separate <a href="privacy-policy.html" style="color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(194,157,107,0.4);">Privacy Policy</a>, which forms part of our agreement with you. By engaging with L'Indochine, you consent to the processing of your personal data as described therein.</p>
+            <p>We will never sell your personal data to third parties. Data shared with suppliers is limited strictly to what is necessary to deliver your journey services.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 12 -->
+        <div class="tc-section">
+            <span class="tc-section-number">12 — Governing Law & Disputes</span>
+            <h2>Jurisdiction</h2>
+            <p>These Terms and Conditions are governed by and construed in accordance with the laws of the Kingdom of Cambodia. Any disputes arising from or in connection with these Terms that cannot be resolved amicably shall be subject to the exclusive jurisdiction of the courts of Siem Reap, Cambodia.</p>
+            <p>For B2B partners and international travel trade clients, governing law provisions may be modified by mutual written agreement.</p>
+        </div>
+
+        <!-- Contact Block -->
+        <div class="tc-contact-block">
+            <div>
+                <h3>Questions About These Terms?</h3>
+                <p>Our team is available to clarify any aspect of our terms before you confirm your journey.<br>Reach us at contact@lindochine.com or +855 95 267 257.</p>
+            </div>
+            <a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a>
+        </div>
+
+    </main>
+
+    <!-- ══ FOOTER ══ -->
+    <footer>
+        <div class="footer-main">
+            <div class="footer-col">
+                <h4>Destinations</h4>
+                <ul>
+                    <li><a href="cambodia.html">Cambodia</a></li>
+                    <li><a href="Laos.html">Laos</a></li>
+                    <li><a href="Vietnam.html">Vietnam</a></li>
+                    <li><a href="Thailand.html">Thailand</a></li>
+                    <li><a href="Multi-country.html">Multi-Country</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Experiences</h4>
+                <ul>
+                    <li><a href="Culture-Heritage.html">Culture & Heritage</a></li>
+                    <li><a href="Romantic-Journeys.html">Romantic Getaways</a></li>
+                    <li><a href="Nature-Adventure.html">Nature & Adventure</a></li>
+                    <li><a href="Wellness-Rejuvenation.html">Wellness & Rejuvenation</a></li>
+                    <li><a href="Family-Journeys.html">Family Journeys</a></li>
+                    <li><a href="Culinary-Journeys.html">Culinary Journeys</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col footer-contact">
+                <h4>Connect with Us</h4>
+                <p>+855 95 267 257</p>
+                <p>contact@l'indochine.com</p>
+
+                <div class="footer-social">
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-2.21c0-.837.39-1.29 1.121-1.29h2.879v-4.498c-.443-.059-1.968-.202-3.726-.202-3.689 0-6.274 2.247-6.274 6.46v1.74z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-cta-box">
+                    <h4 style="margin-bottom: 20px;">Curate Your Legacy</h4>
+                    <a href="Plan-Your-Trip.html" class="btn-plan" style="display: block; text-align: center; margin-bottom: 20px;">Plan Your Trip</a>
+                    <div style="display: flex; justify-content: space-between;">
+                        <a href="About-Us.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ABOUT US</a>
+                        <a href="Accommodation.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ACCOMMODATION</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="copyright">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+            <div class="footer-bottom-links">
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="Terms&Conditions.html">Terms & Conditions</a>
+                <a href="#" id="back-to-top">BACK TO TOP &#10142;</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Cursor
+        const follower = document.getElementById('cursor-follower');
+        const fText = follower.querySelector('span');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(follower, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: "power2.out" });
+        });
+
+        document.querySelectorAll('a, .mega-item').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(follower, { width: 100, height: 100, background: 'rgba(194, 157, 107, 0.15)', border: 'none' });
+                fText.innerText = "READ";
+                gsap.to(fText, { opacity: 1 });
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(follower, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+                gsap.to(fText, { opacity: 0 });
+            });
+        });
+
+        // Section reveals
+        gsap.utils.toArray('.tc-section').forEach((section) => {
+            gsap.from(section, {
+                opacity: 0, y: 40, duration: 1.2,
+                ease: "power3.out",
+                scrollTrigger: { trigger: section, start: "top 85%" }
+            });
+        });
+
+        gsap.from('.page-hero-content', { opacity: 0, y: 60, duration: 1.5, ease: "power4.out", delay: 0.3 });
+
+        // Back to top
+        document.getElementById('back-to-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Mobile menu
+        const mOpen = document.getElementById('menu-open');
+        const mClose = document.getElementById('menu-close');
+        const mOverlay = document.getElementById('mobile-overlay');
+        if (mOpen) mOpen.addEventListener('click', () => mOverlay.classList.add('active'));
+        if (mClose) mClose.addEventListener('click', () => mOverlay.classList.remove('active'));
+
+        document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function () {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('span');
+                content.classList.toggle('active');
+                icon.innerText = content.classList.contains('active') ? "−" : "+";
+            });
+        });
+
+        // Mega menu caret
+        document.querySelectorAll('.desktop-nav .dropdown').forEach(drop => {
+            const menu = drop.querySelector('.mega-menu');
+            const link = drop.querySelector('a');
+            drop.addEventListener('mouseenter', () => {
+                if (menu && link) {
+                    const linkRect = link.getBoundingClientRect();
+                    const linkCenter = linkRect.left + (linkRect.width / 2);
+                    menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+                }
+            });
+        });
+    </script>
+
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>
