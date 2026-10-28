@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White-Label Ground Handling | L'INDOCHINE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ivory: #F0EDE5;
+            --ink: #0A0A0A;
+            --gold: #C29D6B;
+            --clay: #1A1917;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        body { 
+            background-color: var(--ivory); 
+            color: var(--ink); 
+            font-family: 'Tenor Sans', sans-serif; 
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        /* Cinematic Overlays */
+        .vignette { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%); pointer-events: none; z-index: 100; opacity: 0.4; }
+        .grain { position: fixed; inset: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.07; pointer-events: none; z-index: 1000; mix-blend-mode: multiply; }
+
+        /* Bespoke Cursor */
+        #cursor-follower {
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px;
+            border: 0.5px solid var(--gold); border-radius: 50%; z-index: 10000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear, width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor-follower span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; }
+
+        /* Navigation */
+        nav { 
+            position: fixed; top: 0; width: 100%; padding: 0 60px; 
+            height: 90px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 999; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+
+        .nav-links { display: flex; list-style: none; gap: 40px; height: 100%; }
+        .nav-links > li { display: flex; align-items: center; }
+        .nav-links > li > a {
+            text-decoration: none; color: var(--ivory); font-size: 10px; letter-spacing: 3px;
+            text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            transition: color 0.4s var(--ease);
+            padding: 20px 0;
+            position: relative;
+            padding-right: 18px;
+        }
+        .nav-links > li > a:hover { color: var(--gold); }
+
+        .dropdown > a::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0; height: 0; 
+            border-left: 3.5px solid transparent;
+            border-right: 3.5px solid transparent;
+            border-top: 4px solid var(--gold);
+            transition: transform 0.4s var(--ease);
+            opacity: 0.6;
+        }
+
+        .dropdown:hover > a::after {
+            transform: translateY(-50%) rotate(180deg);
+            opacity: 1;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 20px;
+        }
+
+        .mega-menu {
+            position: absolute; top: 90px; left: 0; width: 100vw; background: var(--ink); 
+            padding: 40px 60px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
+            opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px);
+            transition: all 0.5s var(--ease); border-bottom: 1px solid rgba(194, 157, 107, 0.3); z-index: 1000;
+        }
+
+        .mega-menu::before {
+            content: ''; position: absolute; top: -10px; left: var(--triangle-left, 50%);
+            transform: translateX(-50%); width: 0; height: 0;
+            border-left: 10px solid transparent; border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--ink); pointer-events: none;
+        }
+
+        .dropdown { position: static; }
+        .dropdown:hover .mega-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+
+        .mega-item {
+            position: relative; height: 250px; overflow: hidden; text-decoration: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .mega-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 1.2s var(--ease); filter: brightness(0.5);
+        }
+
+        .mega-item span {
+            position: absolute; z-index: 2; color: var(--ivory);
+            font-family: 'Cormorant Garamond'; font-size: 1.2rem; font-style: italic;
+            letter-spacing: 1px; text-align: center; padding: 0 10px;
+            transition: transform 0.4s var(--ease);
+        }
+
+        .mega-item:hover img { transform: scale(1.1); filter: brightness(0.7); }
+        .mega-item::after {
+            content: ''; position: absolute; inset: 0;
+            border: 0px solid var(--gold); transition: 0.4s var(--ease);
+        }
+        .mega-item:hover::after { border: 1px solid var(--gold); inset: 10px; }
+
+        .btn-plan {
+            text-decoration: none; color: var(--gold); font-size: 9px; letter-spacing: 2px;
+            text-transform: uppercase; border: 1px solid var(--gold); padding: 12px 25px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+            transition: all 0.5s var(--ease); display: inline-block;
+        }
+        .btn-plan:hover { background: var(--gold); color: var(--ink); }
+
+        /* Hero Section */
+        .hero { height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center; background: var(--ink); overflow: hidden; position: relative; }
+        .hero-img { position: absolute; width: 100%; height: 120%; top: -10%; object-fit: cover; opacity: 0.5; }
+        .hero-title { position: relative; z-index: 10; text-align: center; color: var(--ivory); }
+        .hero-title h1 { font-family: 'Cormorant Garamond'; font-size: 12vw; font-weight: 300; font-style: italic; letter-spacing: -0.03em; text-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .hero-title .line-sub { font-size: 10px; letter-spacing: 12px; text-transform: uppercase; margin-top: -10px; opacity: 0.9; }
+
+        /* Intro Section */
+        .intro-section { padding: 120px 10%; background: var(--ivory); text-align: center; }
+        .intro-container { max-width: 900px; margin: 0 auto; }
+        .intro-label { font-size: 10px; letter-spacing: 5px; color: var(--gold); text-transform: uppercase; display: block; margin-bottom: 30px; font-weight: bold; }
+        .intro-h2 { font-family: 'Cormorant Garamond'; font-size: 3.5rem; font-style: italic; font-weight: 300; margin-bottom: 40px; line-height: 1.2; }
+        .intro-p { font-size: 1.1rem; line-height: 1.8; color: var(--ink); opacity: 0.8; margin-bottom: 25px; text-align: justify; text-align-last: center; }
+
+        /* Section Label */
+        .section-label { padding: 100px 10% 20px; font-size: 10px; letter-spacing: 8px; color: var(--gold); text-transform: uppercase; font-weight: bold; }
+
+        /* Services Grid */
+        .services-section {
+            background: var(--ivory);
+            padding: 0 10% 150px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 50px;
+        }
+
+        .service-card {
+            position: relative;
+            background: white;
+            border: 1px solid rgba(194, 157, 107, 0.2);
+            padding: 50px;
+            transition: all 0.6s var(--ease);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(194, 157, 107, 0.15);
+            border-color: var(--gold);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 25px;
+            color: var(--gold);
+        }
+
+        .service-title {
+            font-family: 'Cormorant Garamond';
+            font-size: 2rem;
+            font-style: italic;
+            font-weight: 300;
+            margin-bottom: 25px;
+            line-height: 1.2;
+        }
+
+        .service-desc {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .service-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .service-features li {
+            padding: 10px 0;
+            font-size: 0.95rem;
+            color: #666;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+        }
+
+        .service-features li::before {
+            content: '→';
+            color: var(--gold);
+            margin-right: 12px;
+            font-weight: bold;
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            background: var(--ink);
+            color: var(--ivory);
+            padding: 120px 10%;
+        }
+
+        .benefits-title {
+            font-family: 'Cormorant Garamond';
+            font-size: 3.5rem;
+            font-style: italic;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .benefit-item {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .benefit-number {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .benefit-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+
+        /* Implementation Section */
+        .implementation-section {
+            background: var(--ivory);
+            padding: 120px 10%;
+        }
+
+        .impl-title {
+            font-family: 'Cormorant Garamond';
+            font-size: 3.5rem;
+            font-style: italic;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .impl-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .impl-step {
+            background: white;
+            border: 1px solid rgba(194, 157, 107, 0.2);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .step-title {
+            font-family: 'Cormorant Garamond';
+            font-size: 1.3rem;
+            font-style: italic;
+            font-weight: 300;
+            margin-bottom: 12px;
+        }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* CTA & Footer */
+        .final-cta { height: 80vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; background: var(--ink); color: var(--ivory); }
+        .cta-text { font-family: 'Cormorant Garamond'; font-size: 3.5rem; max-width: 900px; margin-bottom: 50px; font-style: italic; font-weight: 300; }
+        .btn-main { padding: 25px 60px; border: 1px solid var(--gold); color: var(--gold); text-decoration: none; font-size: 9px; letter-spacing: 6px; text-transform: uppercase; transition: 0.5s; display: inline-block; }
+        .btn-main:hover { background: var(--gold); color: var(--ink); }
+
+        /* Footer */
+        footer {
+            padding: 120px 60px 40px;
+            background: var(--ivory);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .footer-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.5fr 2fr;
+            gap: 40px;
+            margin-bottom: 100px;
+        }
+
+        .footer-col h4 {
+            font-family: 'Tenor Sans', sans-serif;
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 35px;
+            color: var(--gold);
+        }
+
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 15px; }
+
+        .footer-col a {
+            text-decoration: none;
+            color: var(--ink);
+            font-size: 11px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .footer-col a:hover { opacity: 1; }
+
+        .footer-contact p {
+            font-size: 12px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .social-icon {
+            width: 35px;
+            height: 35px;
+            border: 0.5px solid rgba(0,0,0,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.5s var(--ease);
+        }
+
+        .social-icon svg {
+            width: 14px;
+            fill: var(--ink);
+            transition: all 0.5s var(--ease);
+        }
+
+        .social-icon:hover {
+            border-color: var(--gold);
+            background: var(--gold);
+            transform: translateY(-3px);
+        }
+
+        .social-icon:hover svg { fill: var(--ivory); }
+
+        .footer-cta-box {
+            border-left: 1px solid var(--gold);
+            padding: 0 0 0 40px;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        #back-to-top {
+            cursor: pointer !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #back-to-top:hover .arrow-up { transform: translateY(-5px); }
+
+        @media (max-width: 1024px) {
+            .services-section { grid-template-columns: 1fr; }
+            .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+            .impl-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-main { grid-template-columns: 1fr 1fr; gap: 60px 20px; }
+        }
+
+        @media (max-width: 600px) {
+            .services-section { grid-template-columns: 1fr; }
+            .benefits-grid { grid-template-columns: 1fr; }
+            .impl-grid { grid-template-columns: 1fr; }
+            .footer-main { grid-template-columns: 1fr; }
+            .hero-title h1 { font-size: 8vw; }
+            nav { padding: 0 20px; }
+        }
+          /* Fix for ultra-small screens */
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 18vw;
+    }
+    
+    .mega-menu {
+        display: none !important; /* Mega menus are non-functional on mobile hover */
+    }
+}
+/* --- Desktop Nav Controls --- */
+@media (min-width: 1025px) {
+    .menu-trigger, .mobile-overlay { display: none; }
+    .desktop-nav { display: flex !important; }
+}
+
+/* --- Mobile Menu & Mega Menu Styles --- */
+@media (max-width: 1024px) {
+    .desktop-nav { display: none !important; }
+    .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+    
+    .burger .line {
+        width: 25px; height: 1px; background: var(--gold);
+        display: block; margin: 6px 0;
+    }
+
+    .mobile-overlay {
+        position: fixed; inset: 0; background: var(--ink);
+        z-index: 5000; transform: translateY(-100%);
+        transition: transform 0.8s var(--ease);
+        overflow-y: auto; padding: 100px 40px;
+    }
+
+    .mobile-overlay.active { transform: translateY(0); }
+
+    .menu-close {
+        position: absolute; top: 30px; right: 30px;
+        color: var(--gold); font-size: 24px; cursor: pointer;
+    }
+
+    .mobile-nav-links { list-style: none; }
+    .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+
+    .mobile-nav-links a, .mobile-drop-trigger {
+        font-family: 'Cormorant Garamond'; font-size: 2rem;
+        color: var(--ivory); text-decoration: none; font-style: italic;
+    }
+
+    .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+
+    /* Mobile Mega Grid */
+    .mobile-mega-content {
+        display: none; grid-template-columns: 1fr 1fr;
+        gap: 15px; margin-top: 20px;
+    }
+
+    .mobile-mega-content.active { display: grid; }
+
+    .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; }
+    .mobile-mega-item span {
+        display: block; color: var(--ivory); font-size: 0.7rem;
+        text-transform: uppercase; margin-top: 5px; letter-spacing: 1px;
+    }
+}
+/* Mobile Menu Styles */
+        @media (max-width: 1024px) {
+            .desktop-nav { display: none !important; }
+            .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+            
+            .burger .line {
+                width: 25px; height: 1px; background: var(--gold);
+                display: block; margin: 6px 0;
+            }
+
+            .mobile-overlay {
+                position: fixed; inset: 0; background: var(--ink);
+                z-index: 5000; transform: translateY(-100%);
+                transition: transform 0.8s var(--ease);
+                overflow-y: auto; padding: 100px 40px;
+            }
+
+            .mobile-overlay.active { transform: translateY(0); }
+
+            .menu-close {
+                position: absolute; top: 30px; right: 30px;
+                color: var(--gold); font-size: 24px; cursor: pointer;
+            }
+
+            .mobile-nav-links { list-style: none; }
+            .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+
+            .mobile-nav-links a, .mobile-drop-trigger {
+                font-family: 'Cormorant Garamond'; font-size: 2rem;
+                color: var(--ivory); text-decoration: none; font-style: italic;
+            }
+
+            .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+
+            /* Mobile Mega Grid */
+            .mobile-mega-content {
+                display: none; grid-template-columns: 1fr 1fr;
+                gap: 15px; margin-top: 20px;
+            }
+
+            .mobile-mega-content.active { display: grid; }
+
+            .mobile-mega-item { text-decoration: none; }
+            .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; opacity: 0.7; }
+            .mobile-mega-item span {
+                display: block; color: var(--ivory); font-size: 0.7rem;
+                text-transform: uppercase; margin-top: 5px; letter-spacing: 1px;
+            }
+            
+            /* Partner Specific Styles in Mobile */
+            .mobile-partner-list { list-style: none; margin-top: 20px; }
+            .mobile-partner-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 8px; }
+            .mobile-partner-list a { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+            .mobile-partner-list .arrow { font-size: 14px; color: var(--gold); font-family: sans-serif; font-style: normal; }
+        }
+
+        @media (min-width: 1025px) {
+            .menu-trigger, .mobile-overlay { display: none; }
+            .desktop-nav { display: flex !important; }
+        }
+.dmc-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 100px;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    @media (max-width: 992px) {
+        #dmc {
+            padding: 80px 5% !important;
+        }
+        .dmc-grid {
+            grid-template-columns: 1fr; /* Stacks the columns */
+            gap: 60px;
+        }
+        .intro-h2 {
+            font-size: 2.2rem !important;
+        }
+        .dmc-features {
+            flex-direction: column; /* Stacks the "Direct Net Rates" and "White Label" */
+            gap: 25px !important;
+        }
+    }
+      /* --- Hotel Overlay Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    /* 1. Adjust the inner container padding for smaller screens */
+    .overlay-inner {
+        margin: 40px auto !important;
+        padding: 0 20px !important;
+    }
+
+    /* 2. Stack the Gallery Grid vertically */
+    .gallery-grid {
+        grid-template-columns: 1fr !important; /* Single column */
+        grid-template-rows: repeat(3, 250px) !important; /* Fixed height for each image */
+        gap: 10px !important;
+        margin-bottom: 30px !important;
+    }
+
+    /* 3. Ensure the first image (which had span 2) resets to normal */
+    .gallery-grid > div:first-child {
+        grid-row: span 1 !important;
+    }
+
+    /* 4. Scale down typography for mobile */
+    #modal-name {
+        font-size: 28px !important;
+        margin-bottom: 15px !important;
+    }
+
+    #modal-desc {
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+    }
+
+    /* 5. Adjust the Close button position for thumbs */
+    #close-overlay {
+        top: 20px !important;
+        right: 20px !important;
+        padding: 10px 15px !important;
+    }
+}
+/* --- Hotel Overlay Mobile Optimization --- */
+@media (max-width: 768px) {
+    /* 1. Ensure the overlay inner container doesn't have too much top margin */
+    .overlay-inner {
+        margin: 20px auto !important;
+        padding: 0 15px !important;
+    }
+
+    /* 2. Reduce the size of the photos so the text fits on the screen */
+    .gallery-grid {
+        grid-template-columns: 1fr !important;
+        /* Lower the heights: First photo 200px, others 120px */
+        grid-template-rows: 200px 120px 120px !important; 
+        gap: 8px !important;
+        margin-bottom: 20px !important;
+    }
+
+    /* 3. Force the first photo to stop spanning multiple rows */
+    .gallery-grid > div:first-child {
+        grid-row: span 1 !important;
+    }
+
+    /* 4. Reduce spacing around the hotel name to pull it up further */
+    .overlay-text {
+        padding-top: 0 !important;
+    }
+
+    #modal-name {
+        font-size: 24px !important; /* Smaller text for mobile */
+        margin-bottom: 8px !important;
+        line-height: 1.2 !important;
+    }
+
+    #modal-location {
+        font-size: 9px !important;
+        margin-bottom: 5px !important;
+    }
+
+    /* 5. Make the description and table follow closely */
+    #modal-desc {
+        font-size: 15px !important;
+        margin-bottom: 20px !important;
+    }
+}
+@media (max-width: 768px) {
+    /* Option 4: Masonry-Style (Pinterest-like) */
+.day-photos.masonry {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    grid-auto-rows: 10px; /* Small row increments for flexible heights */
+}
+ 
+.day-photos.masonry .photo-box {
+    height: auto;
+}
+ 
+.day-photos.masonry .photo-box:nth-child(odd) {
+    grid-row: span 35; /* Taller images */
+}
+ 
+.day-photos.masonry .photo-box:nth-child(even) {
+    grid-row: span 28; /* Shorter images */
+}
+    /* 3. Text becomes wider (Horizontal stretch) */
+    .day-details {
+        width: 100% !important;
+        margin-top: 15px !important;
+    }
+
+    .day-details p {
+        font-size: 1rem !important;
+        line-height: 1.6 !important;
+        text-align: justify; /* Helps the "horizontal" wide feel */
+        padding: 0 5px !important;
+    }
+
+    /* 4. Meal Box & Facts (Wide & not squeezed) */
+    .meal-highlight-box {
+        width: 100% !important;
+        margin: 20px 0 !important;
+        padding: 15px !important;
+        box-sizing: border-box;
+    }
+
+    .itinerary-quick-facts {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+    }
+}
+/* Journey Fare Mobile Responsiveness */
+@media (max-width: 992px) {
+    /* Reduce outer padding for mobile */
+    .dossier-section {
+        padding: 100px 20px !important;
+    }
+
+    /* Change grid to single column and remove the 80px side spacing */
+    .dossier-section div[style*="display: grid"] {
+        grid-template-columns: 1fr !important;
+        gap: 40px !important;
+    }
+
+    /* Hide the empty decorative sidebar container if necessary */
+    .dossier-section div[style*="writing-mode: vertical-rl"] {
+        display: none;
+    }
+
+    /* Adjust the dark info box */
+    .dossier-section div[style*="background: var(--ink)"] {
+        padding: 80px 40px !important;
+        border-left: none !important;
+        border-top: 1px solid var(--gold);
+    }
+
+    /* Scale down the large "Journey Fare" title */
+    .dossier-section h3 {
+        font-size: 3.5rem !important;
+        left: 20px !important;
+        top: -30px !important;
+    }
+
+    /* Adjust the overlapping price card */
+    .dossier-section div[style*="margin-left: -100px"] {
+        margin-left: 0 !important; /* Remove negative overlap */
+        margin-top: -60px !important; /* Slight overlap from top instead */
+        padding: 40px !important;
+        width: 90%;
+        margin-inline: auto;
+    }
+
+    /* Scale down the large price text */
+    .dossier-section h5 {
+        font-size: 3.5rem !important;
+    }
+
+    /* Adjust button padding for smaller screens */
+    .btn-plan {
+        padding: 20px 40px !important;
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .dossier-section h3 {
+        font-size: 2.8rem !important;
+    }
+    .dossier-section h5 {
+        font-size: 3rem !important;
+    }
+}
+/* Inclusions & Exclusions Mobile Responsiveness */
+@media (max-width: 768px) {
+    /* Reduce outer padding */
+    .logistics-section {
+        padding: 60px 20px !important;
+    }
+
+    /* Change grid from 2 columns to 1 column */
+    .logistics-section div[style*="display: grid"] {
+        grid-template-columns: 1fr !important;
+        gap: 40px !important; /* Slightly reduce gap between boxes */
+    }
+
+    /* Reduce header font size for mobile */
+    .logistics-section h3 {
+        font-size: 2.2rem !important;
+    }
+
+    /* Optional: Make the list items slightly larger for better readability on touch */
+    .logistics-section ul li {
+        font-size: 1.1rem !important;
+        margin-bottom: 15px !important;
+    }
+}
+
+   /* Map Section Mobile Responsiveness */
+@media (max-width: 768px) {
+    /* 1. Reduce outer section padding so map can be wider */
+    .map-section {
+        padding: 40px 10px !important;
+    }
+
+    /* 4. Adjust the main title size */
+    .itinerary-main-title {
+        font-size: 2rem !important;
+        padding: 0 20px;
+        text-align: center;
+    }
+}
+@media (max-width: 480px) {
+    .day-details p {
+        text-align: left !important; /* Prevents awkward gaps between words */
+        font-size: 1.05rem !important; /* Slightly larger for easier reading */
+        line-height: 1.6 !important;
+    }
+    
+    .day-heading {
+        font-size: 1.8rem !important; /* Prevents long day titles from wrapping too much */
+    }
+}
+  /* --- Refined Footer Styles --- */
+footer {
+    padding: 100px 60px 40px;
+    background: var(--ivory);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    color: var(--ink);
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+.footer-col h4 {
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    color: var(--gold);
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col ul li {
+    margin-bottom: 12px;
+}
+
+.footer-col ul li a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 10px;
+    letter-spacing: 1px;
+    opacity: 0.6;
+    transition: all 0.4s var(--ease);
+}
+
+.footer-col ul li a:hover {
+    opacity: 1;
+    color: var(--gold);
+    padding-left: 5px;
+}
+
+.footer-contact p {
+    font-size: 11px;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+/* Social Media Icons */
+.footer-social {
+    display: flex;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.social-icon {
+    width: 35px;
+    height: 35px;
+    border: 0.5px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.5s var(--ease);
+}
+
+.social-icon svg {
+    width: 14px;
+    fill: var(--ink);
+    transition: all 0.5s var(--ease);
+}
+
+.social-icon:hover {
+    border-color: var(--gold);
+    background: var(--gold);
+    transform: translateY(-3px);
+}
+
+.social-icon:hover svg {
+    fill: var(--ivory);
+}
+
+/* --- Refined Easy-to-Read Footer --- */
+footer {
+    padding: 100px 60px 40px;
+    background: var(--ivory);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    color: var(--ink);
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+.footer-col h4 {
+    font-family: 'Tenor Sans', sans-serif;
+    font-size: 13px; /* Increased from 11px */
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    color: var(--gold);
+    font-weight: 600; /* Added weight for hierarchy */
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col ul li {
+    margin-bottom: 14px; /* More breathing room */
+}
+
+.footer-col ul li a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 14px; /* Increased from 10px */
+    letter-spacing: 0.5px;
+    opacity: 0.8; /* Increased from 0.6 */
+    transition: all 0.4s var(--ease);
+}
+
+.footer-col ul li a:hover {
+    opacity: 1;
+    color: var(--gold);
+    padding-left: 8px;
+}
+
+.footer-contact p {
+    font-size: 14px; /* Increased from 11px */
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+/* Social Media Icons */
+.footer-social {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.social-icon {
+    width: 42px; /* Slightly larger targets */
+    height: 42px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.5s var(--ease);
+}
+
+/* Footer Bottom */
+.footer-bottom {
+    padding-top: 40px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copyright {
+    font-size: 11px; /* Increased from 9px */
+    letter-spacing: 1.5px;
+    opacity: 0.6;
+    text-transform: uppercase;
+}
+
+.footer-bottom-links {
+    display: flex;
+    gap: 30px;
+}
+
+.footer-bottom-links a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 11px; /* Increased from 9px */
+    letter-spacing: 1px;
+    opacity: 0.7;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+@media (max-width: 1024px) {
+    .footer-main { grid-template-columns: 1fr 1fr; gap: 40px; }
+    footer { padding: 80px 30px 40px; }
+}
+/* --- Responsiveness & Mobile Optimization --- */
+
+@media (max-width: 1024px) {
+    nav { padding: 0 30px; }
+    .nav-links { gap: 20px; }
+    
+    .itinerary-section {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 30px 100px 30px;
+    }
+
+    .accommodation-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .footer-main {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Disable custom cursor on touch devices */
+    #cursor-follower { display: none !important; }
+    * { cursor: auto !important; }
+
+    /* Hero Section Scaling */
+    .page-header h1 {
+        font-size: 15vw; /* Scale up for smaller screens */
+    }
+    .page-header .hero-subtitle {
+        font-size: 14px;
+        letter-spacing: 8px;
+    }
+
+    /* Navigation Adjustment */
+    nav { padding: 0 20px; height: 70px; }
+    .logo { font-size: 1.2rem; }
+    .nav-links { display: none; } /* Usually replaced by a burger menu, but keeping it simple as requested */
+
+    /* Stacking Grids to Single Column */
+    .itinerary-section {
+        grid-template-columns: 1fr;
+        padding: 0 20px 80px 20px;
+    }
+
+    .itin-card {
+        height: 60vh;
+    }
+
+    .accommodation-section {
+        padding: 80px 20px;
+    }
+
+    .accommodation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hotel-image-container {
+        height: 250px;
+    }
+
+    /* Footer Stacking */
+    .footer-main {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .footer-bottom-links {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+}
+
+/* Fix for ultra-small screens */
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 18vw;
+    }
+    
+    .mega-menu {
+        display: none !important; /* Mega menus are non-functional on mobile hover */
+    }
+}
+/* ==========================================================================
+   MOBILE & SMALL PHONE EXTRA RESYNC (max-width: 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+    /* 1. Reset Bespoke Cursor for Touch Screens */
+    * { 
+        cursor: auto !important; /* Restore normal touch target styling */
+    }
+    #cursor-follower { 
+        display: none !important; /* Hide custom desktop circle follower */
+    }
+
+    /* 2. Hero Component Text Fit */
+    .hero-title h1 {
+        font-size: 14vw !important; /* Limits massive viewport width text from overlapping */
+        line-height: 1.1 !important;
+        margin-bottom: 15px !important;
+    }
+    .hero-title .line-sub {
+        font-size: 8px !important;
+        letter-spacing: 6px !important; /* Prevents long text tracking out-of-bounds */
+        display: block;
+    }
+
+    /* 3. Global Section Typography Scale Down */
+    .intro-h2, .dest-text h2, .case-text h3, .process-title, .testimonials-title, .b2b-cta h2 {
+        font-size: 2rem !important; /* Prevents elegant italic fonts from forcing layout text-breaks */
+        line-height: 1.2 !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .cta-text {
+        font-size: 1.8rem !important;
+        padding: 0 15px !important;
+    }
+
+    /* 4. Column Text & Block Padding Realignment */
+    .intro-section, .dest-text, .case-text, .process-section, .testimonials-section, .b2b-cta {
+        padding: 60px 20px !important; /* Reclaims screen width taken by large percentages */
+    }
+    
+    .section-label {
+        padding: 40px 20px 10px !important;
+        letter-spacing: 4px !important;
+    }
+
+    /* 5. Flexbox / Grid Adjustments for Inner Sections */
+    .themes-grid {
+        grid-template-columns: 1fr !important; /* Stacks themes cleanly vertically */
+    }
+    .theme-card {
+        height: 45vh !important; /* Shorter card block for intuitive scrolling on phone profiles */
+    }
+
+    .process-grid {
+        grid-template-columns: 1fr !important; /* Linear tracking layout for steps */
+        gap: 40px !important;
+    }
+    .process-step::after {
+        display: none !important; /* Removes step arrows that break column lines */
+    }
+
+    .b2b-contact {
+        flex-direction: column !important; /* Stacks contact channels */
+        gap: 30px !important;
+    }
+
+    /* 6. Button Alignment Adjustments */
+    .btn-main, .btn-plan {
+        width: 100% !important; /* Easier tap zones across full viewport width */
+        text-align: center !important;
+        padding: 18px 30px !important;
+        letter-spacing: 3px !important;
+    }
+}
+/* ==========================================================================
+   MOBILE & TOUCHSCREEN RESPONSIVE RESTRUCTURING (max-width: 768px)
+   ========================================================================= */
+@media (max-width: 768px) {
+    /* 1. Sanitize Custom Cursor and Force Tap Layer Target Usability */
+    * { 
+        cursor: auto !important; 
+    }
+    #cursor-follower { 
+        display: none !important; 
+    }
+
+    /* 2. Restructure Global Layout Wrappers */
+    .intro-section, .comparison-section {
+        padding: 80px 24px !important; /* Reclaims side padding lost to 10% spacing margins */
+    }
+    
+    nav {
+        padding: 0 24px !important;
+        height: 75px !important;
+    }
+
+    /* 3. Rescale Hero Section Displays */
+    .hero {
+        height: 70vh !important; /* Prevents tall viewport empty space gaps on handheld views */
+    }
+    .hero-title h1 {
+        font-size: 16vw !important; /* Scale text cleanly to wrap gracefully */
+        line-height: 1.1 !important;
+    }
+    .hero-title .line-sub {
+        font-size: 8px !important;
+        letter-spacing: 5px !important;
+        line-height: 1.4 !important;
+        padding: 0 10px;
+    }
+
+    /* 4. Transform Partnership Rates Tier Grid into Vertical Feed */
+    .rates-container {
+        grid-template-columns: 1fr !important; /* Collapse from 3 columns down to a single clean stack */
+        gap: 30px !important;
+        padding: 0 24px 100px !important;
+    }
+    .rate-card {
+        padding: 35px 24px !important;
+    }
+    .rate-price {
+        font-size: 3.5rem !important;
+    }
+
+    /* 5. Make Comparison Data Table Swipe-Scrollable horizontally */
+    .comparison-title {
+        font-size: 2.2rem !important;
+        margin-bottom: 40px !important;
+        line-height: 1.3 !important;
+    }
+    .comparison-section {
+        overflow-x: auto; /* Enables touch-swipe scrolling without breaking page margins */
+        -webkit-overflow-scrolling: touch;
+    }
+    .comparison-table {
+        min-width: 580px; /* Protects data structure cells from getting illegibly crushed */
+    }
+    .comparison-table th, .comparison-table td {
+        padding: 16px 14px !important;
+        font-size: 0.88rem !important;
+    }
+
+    /* 6. Clean Up CTA and Footer Blocks */
+    .final-cta {
+        height: 60vh !important;
+        padding: 40px 24px !important;
+    }
+    .cta-text {
+        font-size: 2.2rem !important;
+        line-height: 1.3 !important;
+        margin-bottom: 35px !important;
+    }
+    .btn-main {
+        width: 100% !important; /* Expand to fill viewport width for clear mobile tap zones */
+        text-align: center !important;
+        padding: 20px 30px !important;
+        letter-spacing: 3px !important;
+    }
+
+    .footer-main {
+        grid-template-columns: 1fr !important; /* Linear grid fallback for footers */
+        gap: 45px !important;
+        margin-bottom: 60px !important;
+    }
+    .footer-col {
+        border: none !important;
+    }
+    .footer-cta-box {
+        border-left: none !important; /* Convert from desktop side layout alignment */
+        border-top: 1px solid var(--gold) !important;
+        padding: 30px 0 0 0 !important;
+    }
+    .footer-bottom {
+        flex-direction: column !important;
+        gap: 20px !important;
+        text-align: center !important;
+    }
+    .footer-bottom-links {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+}
+
+/* Extra optimization targeting mini compact smartphones */
+@media (max-width: 440px) {
+    .intro-h2 {
+        font-size: 2.2rem !important;
+        line-height: 1.2 !important;
+    }
+    .intro-p {
+        font-size: 1rem !important;
+        text-align: left !important; /* Prevents text-justification tracking errors */
+    }
+}
+/* ==========================================================================
+   MOBILE OPTIMIZATION FOR COMPARISON TABLE & CTA
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* 1. Make the table section safely swipe-scrollable */
+    .comparison-section {
+        padding: 60px 24px !important; /* Reclaims side padding on small devices */
+        overflow-x: auto !important;   /* Enables seamless touch swipe layout */
+        -webkit-overflow-scrolling: touch; /* Smooth kinetic scrolling on iOS Safari */
+    }
+
+    .comparison-title {
+        font-size: 2rem !important;
+        line-height: 1.3 !important;
+        margin-bottom: 30px !important;
+    }
+
+    /* 2. Protect the internal table grid columns from getting crushed */
+    .comparison-table {
+        min-width: 600px !important; /* Ensures headers and checkboxes have breathing room */
+        width: 100%;
+    }
+
+    .comparison-table th, 
+    .comparison-table td {
+        padding: 16px 12px !important; /* Slightly tighter spacing for mobile grid efficiency */
+        font-size: 0.9rem !important;
+    }
+
+    /* 3. Scale down the Final CTA block for phone aspect ratios */
+    .final-cta {
+        height: auto !important;
+        padding: 80px 24px !important; /* Changes from large fixed heights to natural text padding */
+    }
+
+    .cta-text {
+        font-size: 2.2rem !important; /* Keeps the high-end serif statement big but legible */
+        line-height: 1.2 !important;
+        margin-bottom: 40px !important;
+    }
+
+    /* 4. Convert CTA button to a comfortable mobile touch target */
+    .btn-main {
+        display: block !important;
+        width: 100% !important; /* Spans full width of screen for easy thumb clicking */
+        text-align: center !important;
+        padding: 20px 30px !important;
+        letter-spacing: 3px !important;
+    }
+}
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div id="cursor-follower"><span>Explore</span></div>
+
+      <nav>
+        <a href="index.html" class="logo">L'INDOCHINE</a>
+        
+        <ul class="nav-links desktop-nav">
+            <li class="dropdown"> 
+                <a href="#">Destinations</a>
+                <div class="mega-menu"> 
+                    <a href="cambodia.html" class="mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                    <a href="Vietnam.html" class="mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                    <a href="Thailand.html" class="mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                    <a href="Laos.html" class="mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                    <a href="Multi-country.html" class="mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                </div>
+            </li>
+            <li class="dropdown"> 
+                <a href="#">Themes</a>
+                <div class="mega-menu" style="grid-template-columns: repeat(6, 1fr);">
+                    <a href="Culture-Heritage.html" class="mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                    <a href="Romantic-Journeys.html" class="mega-item"><img src="penin boat 1.jpg"><span>Romantic Journeys</span></a>
+                    <a href="Wellness-Rejuvenation.html" class="mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                    <a href="Family-Journeys.html" class="mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                    <a href="Nature-Adventure.html" class="mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                    <a href="Culinary-Journeys.html" class="mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Partners</a>
+                <div class="mega-menu" style="grid-template-columns: 1.3fr 1fr; padding: 0; overflow: hidden; min-width: 600px;">
+                    <div style="padding: 50px; background: var(--ink);">
+                        <h4 style="color: var(--gold); font-size: 13px; margin-bottom: 35px; letter-spacing: 4px; text-transform: uppercase; font-family: 'Tenor Sans';">B2B & DMC Services</h4>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="Dmc-services.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>DMC Operational Excellence</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="b2b-rates.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>Confidential B2B Tariffs</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="white-label.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>White-Label Ground Handling</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="mice-groups.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>MICE & Incentive Groups</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <p style="margin-top: 30px; font-size: 10px; color: var(--gold); opacity: 0.7; letter-spacing: 2px; text-transform: uppercase;">Your strategic partner in the SouthEast Asia.</p>
+                    </div>
+                    <div style="position: relative; background: var(--clay); overflow: hidden;">
+                        <img src="angkor_wat_sunrise2712_67ddcbab8b.jpg" alt="Siem Reap Hub" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+                        <div style="position: absolute; bottom: 35px; left: 35px;">
+                            <span style="display: block; color: var(--ivory); font-family: 'Cormorant Garamond'; font-style: italic; font-size: 22px;">Regional Operations</span>
+                            <span style="display: block; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px;">Siem Reap, Cambodia</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><a href="Accommodation.html">Accommodation</a></li>
+            <li><a href="About-Us.html">About Us</a></li>
+        </ul>
+
+        <div class="menu-trigger" id="menu-open">
+            <div class="burger"><span class="line"></span><span class="line"></span></div>
+        </div>
+
+        <div class="mobile-overlay" id="mobile-overlay">
+            <div class="menu-close" id="menu-close">✕</div>
+            <div class="mobile-scroll-container">
+                <ul class="mobile-nav-links">
+                    
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Destinations <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="cambodia.html" class="mobile-mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                            <a href="Vietnam.html" class="mobile-mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                            <a href="Thailand.html" class="mobile-mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                            <a href="Laos.html" class="mobile-mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                            <a href="Multi-country.html" class="mobile-mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                        </div>
+                    </li>
+
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Themes <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="Culture-Heritage.html" class="mobile-mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                            <a href="Romantic-Journeys.html" class="mobile-mega-item"><img src="penin boat 1.jpg"><span>Romantic Getaways</span></a>
+                            <a href="Wellness-Rejuvenation.html" class="mobile-mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                            <a href="Family-Journeys.html" class="mobile-mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                             <a href="Nature-Adventure.html" class="mobile-mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                            <a href="Culinary-Journeys.html" class="mobile-mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                        </div>
+                    </li>
+
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Partners <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <div style="grid-column: span 2; width: 100%;">
+                                <ul class="mobile-partner-list">
+                                    <li><a href="Dmc-services.html"><span>DMC Excellence</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="b2b-rates.html"><span>B2B Tariffs</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="white-label.html"><span>White-Label</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="mice-groups.html"><span>MICE Groups</span> <span class="arrow">→</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li><a href="Accommodation.html">Accommodation</a></li>
+                    <li><a href="About-Us.html">About Us</a></li>
+                     <li><a href="Plan-Your-Trip.html">Plan Your Trip</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="nav-right desktop-nav"><a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a></div>
+    </nav>
+
+    <section class="hero">
+        <img src="https://images.unsplash.com/photo-1552520514-6cdc7da8d367?q=80&w=2000" class="hero-img">
+        <div class="hero-title">
+            <h1>White-Label Solutions</h1>
+            <div class="line-sub">Premium Ground Handling Under Your Brand</div>
+        </div>
+    </section>
+
+    <section class="intro-section">
+        <div class="intro-container">
+            <span class="intro-label">Complete Ground Operations</span>
+            <h2 class="intro-h2">Deliver Luxury Experiences Under Your Own Brand</h2>
+            <p class="intro-p">
+                L'INDOCHINE provides full white-label ground handling services across Southeast Asia. Seamlessly integrate our operational excellence with your brand identity. From airport transfers to bespoke itinerary management, we execute your vision with precision.
+            </p>
+        </div>
+    </section>
+
+    <div class="section-label" style="text-align: center; letter-spacing: 15px; font-family: 'Tenor Sans', sans-serif; font-size: 14px;">Core Services</div>
+
+    <section class="services-section">
+        <div class="service-card">
+            <div class="service-icon">✈</div>
+            <div class="service-title">Airport & Transfers</div>
+            <p class="service-desc">VIP airport services with dedicated ground handlers, luxury vehicle coordination, and seamless passenger transitions.</p>
+            <ul class="service-features">
+                <li>Meet & greet services</li>
+                <li>Priority processing</li>
+                <li>Fleet management</li>
+                <li>Real-time tracking</li>
+            </ul>
+        </div>
+
+        <div class="service-card">
+    <div class="service-icon">🏛️</div> 
+    <div class="service-title">Accommodation Curation</div>
+    <p class="service-desc">Curated hotel partnerships with exclusive rates, room upgrades, and dedicated concierge services.</p>
+    <ul class="service-features">
+        <li>5-star property network</li>
+        <li>Negotiated rates</li>
+        <li>Pre-arrival coordination</li>
+        <li>VIP amenities</li>
+    </ul>
+</div>
+        <div class="service-card">
+            <div class="service-icon">🗺</div>
+            <div class="service-title">Itinerary Management</div>
+            <p class="service-desc">End-to-end itinerary planning, guide coordination, and real-time operational management throughout the journey.</p>
+            <ul class="service-features">
+                <li>Destination expertise</li>
+                <li>Cultural guidance</li>
+                <li>Activity coordination</li>
+                <li>24/7 support</li>
+            </ul>
+        </div>
+
+        <div class="service-card">
+            <div class="service-icon">🍽</div>
+            <div class="service-title">Culinary Experiences</div>
+            <p class="service-desc">Curated dining experiences, chef coordination, and bespoke gastronomy programs for your guests.</p>
+            <ul class="service-features">
+                <li>Restaurant partnerships</li>
+                <li>Private dining options</li>
+                <li>Culinary tours</li>
+                <li>Local cuisine mastery</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="benefits-section">
+        <h2 class="benefits-title">Why Choose L'INDOCHINE White-Label?</h2>
+        <div class="benefits-grid">
+            <div class="benefit-item">
+                <div class="benefit-number">20+</div>
+                <div class="benefit-text">Years of operational excellence in Southeast Asia with deep local expertise</div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-number">500+</div>
+                <div class="benefit-text">Curated properties and partners across Cambodia, Laos, Thailand, and Vietnam</div>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-number">99.8%</div>
+                <div class="benefit-text">Client satisfaction rate with zero operational compromises or brand conflicts</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="implementation-section">
+        <h2 class="impl-title">Getting Started</h2>
+        <div class="impl-grid">
+            <div class="impl-step">
+                <div class="step-number">1</div>
+                <div class="step-title">Consultation</div>
+                <div class="step-desc">Discuss your brand requirements, target markets, and operational needs with our B2B team.</div>
+            </div>
+            <div class="impl-step">
+                <div class="step-number">2</div>
+                <div class="step-title">Customization</div>
+                <div class="step-desc">Define branding guidelines, service standards, and operational protocols tailored to your vision.</div>
+            </div>
+            <div class="impl-step">
+                <div class="step-number">3</div>
+                <div class="step-title">Integration</div>
+                <div class="step-desc">Seamlessly integrate with your booking systems and operational infrastructure within 2-4 weeks.</div>
+            </div>
+            <div class="impl-step">
+                <div class="step-number">4</div>
+                <div class="step-title">Launch & Support</div>
+                <div class="step-desc">Go live with dedicated account management and 24/7 operational support from our team.</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="final-cta">
+        <div class="cta-text">Ready to Expand Your Offering?</div>
+        <a href="mailto:b2b@lindochine.com" class="btn-main">Schedule a Consultation</a>
+    </section>
+
+    <footer>
+        <div class="footer-main">
+            <div class="footer-col">
+                <h4>Destinations</h4>
+                <ul>
+                    <li><a href="cambodia.html">Cambodia</a></li>
+                    <li><a href="Laos.html">Laos</a></li>
+                    <li><a href="Vietnam.html">Vietnam</a></li>
+                    <li><a href="Thailand.html">Thailand</a></li>
+                    <li><a href="Multi-country.html">Multi-Country</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Experiences</h4>
+                <ul>
+                    <li><a href="Culture-Heritage.html">Culture & Heritage</a></li>
+                    <li><a href="Romantic-Journeys.html">Romantic Journeys</a></li>
+                    <li><a href="Nature-Adventure.html">Nature & Adventure</a></li>
+                    <li><a href="Wellness-Rejuvenation.html">Wellness & Rejuvenation</a></li>
+                    <li><a href="Family-Journeys.html">Family Journeys</a></li>
+                    <li><a href="Culinary-Journeys.html">Culinary Journeys</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col footer-contact">
+                <h4>Connect with Us</h4>
+                <p>+855 95 267 257</p>
+                <p>contact@l'indochine.com</p>
+                
+                <div class="footer-social">
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-2.21c0-.837.39-1.29 1.121-1.29h2.879v-4.498c-.443-.059-1.968-.202-3.726-.202-3.689 0-6.274 2.247-6.274 6.46v1.74z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-cta-box" style="background: rgba(194, 157, 107, 0.05); padding: 30px; border: 1px solid rgba(194, 157, 107, 0.2);">
+                    <h4 style="margin-bottom: 20px;">Curate Your Legacy</h4>
+                    <a href="Plan-Your-Trip.html" class="btn-plan" style="display: block; text-align: center; margin-bottom: 20px;">Plan Your Trip</a>
+                    <div style="display: flex; justify-content: space-between;">
+                        <a href="About-Us.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ABOUT US</a>
+                        <a href="Accommodation.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ACCOMMODATION</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="copyright">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+            <div class="footer-bottom-links">
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="Terms&Conditions.html">Terms & Conditions</a>
+                <a href="#" id="back-to-top">BACK TO TOP &#10142;</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const follower = document.getElementById('cursor-follower');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(follower, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: "power2.out" });
+        });
+
+        document.getElementById('back-to-top')?.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+          // 1. Mobile Menu Toggles
+const mOpen = document.getElementById('menu-open');
+const mClose = document.getElementById('menu-close');
+const mOverlay = document.getElementById('mobile-overlay');
+
+if(mOpen) mOpen.addEventListener('click', () => mOverlay.classList.add('active'));
+if(mClose) mClose.addEventListener('click', () => mOverlay.classList.remove('active'));
+
+// 2. Mobile Mega Menu Accordion Logic
+document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+    trigger.addEventListener('click', function() {
+        const content = this.nextElementSibling;
+        const icon = this.querySelector('span');
+        content.classList.toggle('active');
+        icon.innerText = content.classList.contains('active') ? "−" : "+";
+    });
+});
+
+// 3. Original Desktop Hover Positioning
+document.querySelectorAll('.desktop-nav .dropdown').forEach(drop => {
+    const menu = drop.querySelector('.mega-menu');
+    const link = drop.querySelector('a');
+    drop.addEventListener('mouseenter', () => {
+        if (menu && link) {
+            const linkRect = link.getBoundingClientRect();
+            const linkCenter = linkRect.left + (linkRect.width / 2);
+            menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+        }
+    });
+});
+    </script>
+
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>
