@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siem Reap | L'INDOCHINE Sovereign Journeys</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+   <style>
+        :root {
+            --ivory: #F0EDE5;
+            --ink: #0A0A0A;
+            --gold: #C29D6B;
+            --clay: #1A1917;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* ==========================================
+           BASE STYLES & CINEMATIC OVERLAYS
+           ========================================== */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            cursor: none !important; 
+        }
+        body { 
+            background-color: var(--ivory); 
+            color: var(--ink); 
+            font-family: 'Tenor Sans', sans-serif; 
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+        .vignette { 
+            position: fixed; 
+            inset: 0; 
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%); 
+            pointer-events: none; 
+            z-index: 100; 
+            opacity: 0.4; 
+        }
+        .grain { 
+            position: fixed; 
+            inset: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: url('https://grainy-gradients.vercel.app/noise.svg'); 
+            opacity: 0.07; 
+            pointer-events: none; 
+            z-index: 1000; 
+            mix-blend-mode: multiply; 
+        }
+
+        /* Bespoke Cursor */
+        #cursor-follower {
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px;
+            border: 0.5px solid var(--gold); border-radius: 50%; z-index: 10000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear, width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor-follower span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; }
+
+        /* ==========================================
+           STABLE DESKTOP NAVIGATION
+           ========================================== */
+        nav { 
+            position: fixed; top: 0; left: 0; width: 100%; padding: 0 60px; 
+            height: 90px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            z-index: 999; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .nav-links { display: flex; list-style: none; gap: 40px; height: 100%; }
+        .nav-links > li { display: flex; align-items: center; position: relative; }
+        .nav-links > li > a {
+            text-decoration: none; color: var(--ivory); font-size: 10px; letter-spacing: 3px;
+            text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            transition: color 0.4s var(--ease); padding: 35px 0; position: relative; padding-right: 18px;
+        }
+        .nav-links > li > a:hover { color: var(--gold); }
+        
+        .dropdown { position: static; }
+        .dropdown > a::after {
+            content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            width: 0; height: 0; border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+            border-top: 4px solid var(--gold); transition: transform 0.4s var(--ease); opacity: 0.6;
+        }
+        .dropdown:hover > a::after { transform: translateY(-50%) rotate(180deg); opacity: 1; }
+
+        /* Centered CSS Mega Menu */
+        .mega-menu {
+            position: fixed; top: 90px; left: 0; width: 100vw; background: var(--ink); padding: 40px 60px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; opacity: 0; visibility: hidden; 
+            pointer-events: none; transform: translateY(10px); transition: opacity 0.4s var(--ease), transform 0.4s var(--ease), visibility 0.4s;
+            border-bottom: 1px solid rgba(194, 157, 107, 0.3); z-index: 1000;
+        }
+        .mega-menu::before {
+            content: ''; position: absolute; top: -10px; left: var(--triangle-left, 50%); transform: translateX(-50%);
+            width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--ink); pointer-events: none;
+        }
+        .dropdown:hover .mega-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+
+        .mega-item {
+            position: relative; height: 250px; overflow: hidden; text-decoration: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mega-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); filter: brightness(0.5); }
+        .mega-item span {
+            position: absolute; z-index: 2; color: var(--ivory); font-family: 'Cormorant Garamond'; font-size: 1.2rem; 
+            font-style: italic; letter-spacing: 1px; text-align: center; padding: 0 10px; transition: transform 0.4s var(--ease);
+        }
+        .mega-item:hover img { transform: scale(1.1); filter: brightness(0.7); }
+        .mega-item::after { content: ''; position: absolute; inset: 0; border: 0px solid var(--gold); transition: 0.4s var(--ease); }
+        .mega-item:hover::after { border: 1px solid var(--gold); inset: 10px; }
+
+        .btn-plan {
+            text-decoration: none; color: var(--gold); font-size: 9px; letter-spacing: 2px;
+            text-transform: uppercase; border: 1px solid var(--gold); padding: 12px 25px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px); transition: all 0.5s var(--ease); display: inline-block;
+        }
+        .btn-plan:hover { background: var(--gold); color: var(--ink); }
+
+        /* ==========================================
+           HERO & EDITORIAL INTRO
+           ========================================== */
+        .siem-reap-hero {
+            height: 75vh;
+            background: linear-gradient(rgba(10,10,10,0.5), rgba(10,10,10,0.2)), url('wp3304568.jpg') center/cover no-repeat;
+            display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 20px;
+        }
+        .hero-title-box h1 {
+            font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 7vw, 6rem);
+            font-style: italic; font-weight: 300; color: var(--ivory); line-height: 1; margin-bottom: 15px;
+        }
+        .hero-title-box p { font-size: 11px; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); }
+
+        .page-header {
+            height: 100vh;
+            display: flex; align-items: center; justify-content: center; text-align: center; color: var(--ivory); position: relative;
+        }
+        .page-header .hero-subtitle {
+            display: block; letter-spacing: 15px; text-transform: uppercase; font-size: 20px; color: #FFFFFF; font-weight: 700; margin-bottom: 25px;
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.8), 0 0 10px rgba(194, 157, 107, 0.5);
+        }
+        .page-header h1 { font-family: 'Cormorant Garamond'; font-size: 9vw; font-style: italic; font-weight: 300; text-shadow: 0 4px 30px rgba(0,0,0,0.6); }
+
+        .editorial-intro {
+            padding: 140px 80px; max-width: 1440px; margin: 0 auto;
+            display: grid; grid-template-columns: 1.1fr 1fr; gap: 80px; align-items: center;
+        }
+        .editorial-text h2 {
+            font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 4vw, 4.2rem);
+            font-weight: 300; line-height: 1.1; color: var(--ink); margin-bottom: 40px;
+        }
+        .editorial-text p { font-size: 15px; line-height: 1.8; opacity: 0.85; margin-bottom: 25px; text-align: justify; }
+        .editorial-gallery { position: relative; height: 620px; width: 100%; }
+        .img-frame { position: absolute; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.15); background: var(--clay); }
+        .img-frame img, .img-frame video { width: 100%; height: 100%; object-fit: cover; }
+        .frame-primary { top: 0; left: 10%; width: 75%; height: 60%; z-index: 2; }
+        .frame-secondary { bottom: 0; right: 0; width: 50%; height: 50%; z-index: 3; border: 8px solid var(--ivory); }
+
+        /* ==========================================
+           INTERACTIVE TEMPLE HIGHLIGHTS GRID
+           ========================================== */
+        .highlights-section { padding: 100px 60px 140px; background: var(--ivory); max-width: 1440px; margin: 0 auto; }
+        .section-header { text-align: center; margin-bottom: 80px; }
+        .section-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; font-weight: 300; letter-spacing: 1px; color: var(--ink); }
+        .section-header .line-divider { width: 60px; height: 1px; background: var(--gold); margin: 25px auto 0; }
+
+        .temple-grid { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 35px; row-gap: 50px; min-height: 600px; }
+        .temple-card { display: flex; flex-direction: column; background: transparent; }
+        .temple-img-wrap { position: relative; width: 100%; aspect-ratio: 16 / 10; overflow: hidden; background: var(--clay); margin-bottom: 20px; }
+        .temple-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease); }
+        .temple-card:hover .temple-img-wrap img { transform: scale(1.06); }
+        
+        .temple-trigger-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 15px; border-bottom: 1px solid rgba(10, 10, 10, 0.15); transition: border-color 0.4s; }
+        .temple-card:hover .temple-trigger-bar { border-color: var(--gold); }
+        .temple-name { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--ink); font-weight: 400; transition: color 0.4s; }
+        .temple-card:hover .temple-name { color: var(--gold); }
+        
+        .temple-arrow { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; transition: transform 0.5s var(--ease); }
+        .temple-arrow svg { width: 100%; fill: none; stroke: var(--ink); stroke-width: 1.2px; transition: stroke 0.4s; }
+        .temple-card:hover .temple-arrow svg { stroke: var(--gold); }
+
+        .temple-details-drawer { max-height: 0; overflow: hidden; transition: max-height 0.6s var(--ease); }
+        .drawer-inner { padding: 20px 5px 10px; }
+        .drawer-inner p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 17px;
+            line-height: 1.65;
+            color: rgba(10, 10, 10, 0.85);
+            text-align: left;
+        }
+
+        /* Card Active States */
+        .temple-card.is-active .temple-arrow { transform: rotate(180deg); }
+        .temple-card.is-active .temple-trigger-bar { border-color: var(--gold); }
+        .temple-card.is-active .temple-name { color: var(--gold); }
+        .temple-card.is-active .temple-details-drawer { max-height: 300px; }
+
+        /* Editorial Pagination Elements */
+        .pagination-container {
+            display: flex; justify-content: center; align-items: center;
+            gap: 24px; margin-top: 80px; border-top: 1px solid rgba(10, 10, 10, 0.08); padding-top: 40px;
+        }
+        .pag-arrow {
+            background: none; border: 1px solid rgba(10, 10, 10, 0.15);
+            width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+            transition: all 0.4s var(--ease); outline: none;
+        }
+        .pag-arrow svg { width: 16px; height: 16px; fill: none; stroke: var(--ink); stroke-width: 1.2px; transition: stroke 0.4s; }
+        .pag-arrow:hover:not(:disabled) { border-color: var(--gold); }
+        .pag-arrow:hover:not(:disabled) svg { stroke: var(--gold); }
+        .pag-arrow:disabled { opacity: 0.25; }
+
+        .pag-numbers { display: flex; gap: 8px; }
+        .pag-num {
+            background: none; border: none; font-family: 'Tenor Sans', sans-serif;
+            font-size: 11px; letter-spacing: 1.5px; color: var(--ink); width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center; opacity: 0.4;
+            transition: all 0.4s var(--ease); outline: none;
+        }
+        .pag-num:hover { opacity: 1; color: var(--gold); }
+        .pag-num.is-active { opacity: 1; color: var(--gold); border-bottom: 1px solid var(--gold); }
+
+        /* ==========================================
+           FOOTER STYLES
+           ========================================== */
+        footer { padding: 100px 60px 40px; background: var(--ivory); border-top: 1px solid rgba(0,0,0,0.08); color: var(--ink); }
+        .footer-main { display: grid; grid-template-columns: 1.2fr 1.2fr 1.5fr 2fr; gap: 60px; margin-bottom: 80px; }
+        .footer-col h4 { font-family: 'Tenor Sans', sans-serif; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 30px; color: var(--gold); font-weight: 600; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 14px; }
+        .footer-col ul li a { text-decoration: none; color: var(--ink); font-size: 14px; letter-spacing: 0.5px; opacity: 0.8; transition: all 0.4s var(--ease); }
+        .footer-col ul li a:hover { opacity: 1; color: var(--gold); padding-left: 8px; }
+        .footer-contact p { font-size: 14px; letter-spacing: 0.5px; margin-bottom: 15px; opacity: 0.9; }
+        .footer-social { display: flex; gap: 15px; margin-top: 25px; }
+        .social-icon { width: 42px; height: 42px; border: 1px solid rgba(0,0,0,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.5s var(--ease); }
+        .social-icon svg { width: 14px; fill: var(--ink); transition: all 0.5s var(--ease); }
+        .social-icon:hover { border-color: var(--gold); background: var(--gold); transform: translateY(-3px); }
+        .social-icon:hover svg { fill: var(--ivory); }
+        .footer-bottom { padding-top: 40px; border-top: 1px solid rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; }
+        .copyright { font-size: 11px; letter-spacing: 1.5px; opacity: 0.6; text-transform: uppercase; }
+        .footer-bottom-links { display: flex; gap: 30px; }
+        .footer-bottom-links a { text-decoration: none; color: var(--ink); font-size: 11px; letter-spacing: 1px; opacity: 0.7; text-transform: uppercase; transition: 0.3s; }
+
+        /* ==========================================
+           RESPONSIVE DESIGN MEDIA QUERIES
+           ========================================== */
+        @media (min-width: 1025px) {
+            .menu-trigger, .mobile-overlay { display: none; }
+            .desktop-nav { display: flex !important; }
+        }
+
+        @media (max-width: 1100px) {
+            .editorial-intro { grid-template-columns: 1fr; gap: 50px; padding: 100px 40px; }
+            .editorial-gallery { height: 500px; }
+            .temple-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 1024px) {
+            nav { padding: 0 30px; }
+            .nav-links { gap: 20px; }
+            .mega-menu { display: none !important; }
+            .footer-main { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+            
+            /* Mobile Overlay Panel Layouts Setup */
+            .desktop-nav { display: none !important; }
+            .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+            .burger .line { width: 25px; height: 1px; background: var(--gold); display: block; margin: 6px 0; }
+            .mobile-overlay { position: fixed; inset: 0; background: var(--ink); z-index: 5000; transform: translateY(-100%); transition: transform 0.8s var(--ease); overflow-y: auto; padding: 100px 40px; }
+            .mobile-overlay.active { transform: translateY(0); }
+            .menu-close { position: absolute; top: 30px; right: 30px; color: var(--gold); font-size: 24px; cursor: pointer; }
+            .mobile-nav-links { list-style: none; }
+            .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+            .mobile-nav-links a, .mobile-drop-trigger { font-family: 'Cormorant Garamond'; font-size: 2rem; color: var(--ivory); text-decoration: none; font-style: italic; }
+            .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+            .mobile-mega-content { display: none; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+            .mobile-mega-content.active { display: grid; }
+            .mobile-mega-item { text-decoration: none; }
+            .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; opacity: 0.7; }
+            .mobile-mega-item span { display: block; color: var(--ivory); font-size: 0.7rem; text-transform: uppercase; margin-top: 5px; letter-spacing: 1px; }
+            .mobile-partner-list { list-style: none; margin-top: 20px; }
+            .mobile-partner-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 8px; }
+            .mobile-partner-list a { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+            .mobile-partner-list .arrow { font-size: 14px; color: var(--gold); font-family: sans-serif; font-style: normal; }
+        }
+
+        @media (max-width: 768px) {
+            #cursor-follower { display: none !important; }
+            * { cursor: auto !important; }
+            nav { padding: 0 20px; height: 70px; }
+            .logo { font-size: 1.2rem; }
+            .page-header h1 { font-size: 15vw; }
+            .page-header .hero-subtitle { font-size: 14px; letter-spacing: 8px; }
+            .temple-grid { grid-template-columns: 1fr; row-gap: 40px; }
+            .highlights-section { padding: 60px 20px 100px; }
+            .footer-main { grid-template-columns: 1fr; gap: 40px; }
+            .footer-bottom { flex-direction: column; gap: 20px; text-align: center; }
+            .footer-bottom-links { justify-content: center; flex-wrap: wrap; gap: 15px; }
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 { font-size: 18vw; }
+        }
+       /* Wrapper to align links and pagination in one line */
+.pagination-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px; /* Adjust as needed for your layout */
+    margin: 80px auto 0;
+    padding-top: 40px;
+    border-top: 1px solid rgba(10, 10, 10, 0.08);
+}
+
+/* Make destination names larger and prominent */
+.dest-link-big {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; /* Larger font size */
+    font-style: italic;
+    text-decoration: none;
+    color: var(--ink);
+    transition: color 0.4s var(--ease);
+}
+
+.dest-link-big:hover {
+    color: var(--gold);
+}
+
+/* Ensure pagination container sits nicely in the middle */
+.pagination-container {
+    margin-top: 0; /* Override previous margin */
+    border-top: none; /* Remove duplicate border */
+    padding-top: 0;
+}
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+</head>
+<body>
+
+    <!-- SYSTEM OVERLAYS & CURSOR -->
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div id="cursor-follower"><span>Explore</span></div>
+
+    <!-- NAVIGATION HEADER -->
+    <nav>
+        <a href="index.html" class="logo">L'INDOCHINE</a>
+        
+        <ul class="nav-links desktop-nav">
+            <li class="dropdown"> 
+                <a href="#">Destinations</a>
+                <div class="mega-menu"> 
+                    <a href="cambodia.html" class="mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                    <a href="Vietnam.html" class="mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                    <a href="Thailand.html" class="mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                    <a href="Laos.html" class="mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                    <a href="Multi-country.html" class="mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                </div>
+            </li>
+            <li class="dropdown"> 
+                <a href="#">Themes</a>
+                <div class="mega-menu" style="grid-template-columns: repeat(6, 1fr);">
+                    <a href="Culture-Heritage.html" class="mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                    <a href="Romantic-Journeys.html" class="mega-item"><img src="penin boat 1.jpg"><span>Romantic Journeys</span></a>
+                    <a href="Wellness-Rejuvenation.html" class="mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                    <a href="Family-Journeys.html" class="mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                    <a href="Nature-Adventure.html" class="mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                    <a href="Culinary-Journeys.html" class="mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Partners</a>
+                <div class="mega-menu" style="grid-template-columns: 1.3fr 1fr; padding: 0; overflow: hidden; min-width: 600px;">
+                    <div style="padding: 50px; background: var(--ink);">
+                        <h4 style="color: var(--gold); font-size: 13px; margin-bottom: 35px; letter-spacing: 4px; text-transform: uppercase; font-family: 'Tenor Sans';">B2B & DMC Services</h4>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="Dmc-services.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>DMC Operational Excellence</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="b2b-rates.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>Confidential B2B Tariffs</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="white-label.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>White-Label Ground Handling</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 12px;">
+                                <a href="mice-groups.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic; letter-spacing: 0.5px;">
+                                    <span>MICE & Incentive Groups</span>
+                                    <span style="font-size: 12px; color: var(--gold);">→</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <p style="margin-top: 30px; font-size: 10px; color: var(--gold); opacity: 0.7; letter-spacing: 2px; text-transform: uppercase;">Your strategic partner in SouthEast Asia.</p>
+                    </div>
+                    <div style="position: relative; background: var(--clay); overflow: hidden;">
+                        <img src="angkor_wat_sunrise2712_67ddcbab8b.jpg" alt="Siem Reap Hub" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
+                        <div style="position: absolute; bottom: 35px; left: 35px;">
+                            <span style="display: block; color: var(--ivory); font-family: 'Cormorant Garamond'; font-style: italic; font-size: 22px;">Regional Operations</span>
+                            <span style="display: block; color: var(--gold); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px;">Siem Reap, Cambodia</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><a href="Accommodation.html">Accommodation</a></li>
+            <li><a href="About-Us.html">About Us</a></li>
+        </ul>
+
+        <div class="menu-trigger" id="menu-open">
+            <div class="burger"><span class="line"></span><span class="line"></span></div>
+        </div>
+
+        <!-- MOBILE OVERLAY INTERACTION -->
+        <div class="mobile-overlay" id="mobile-overlay">
+            <div class="menu-close" id="menu-close">✕</div>
+            <div class="mobile-scroll-container">
+                <ul class="mobile-nav-links">
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Destinations <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="cambodia.html" class="mobile-mega-item"><img src="istockphoto-589941504-612x612.jpg"><span>Cambodia</span></a>
+                            <a href="Vietnam.html" class="mobile-mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg"><span>Vietnam</span></a>
+                            <a href="Thailand.html" class="mobile-mega-item"><img src="Wat Arun temple illuminated at night.jpeg"><span>Thailand</span></a>
+                            <a href="Laos.html" class="mobile-mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg"><span>Laos</span></a>
+                            <a href="Multi-country.html" class="mobile-mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp"><span>Multi-Country</span></a>
+                        </div>
+                    </li>
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Themes <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <a href="Culture-Heritage.html" class="mobile-mega-item"><img src="istockphoto-500361595-612x612.jpg"><span>Culture & Heritage</span></a>
+                            <a href="Romantic-Journeys.html" class="mobile-mega-item"><img src="penin boat 1.jpg"><span>Romantic Getaways</span></a>
+                            <a href="Wellness-Rejuvenation.html" class="mobile-mega-item"><img src="bodymind-cleanse-2.png"><span>Wellness & Rejuvenation</span></a>
+                            <a href="Family-Journeys.html" class="mobile-mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg"><span>Family Journeys</span></a>
+                            <a href="Nature-Adventure.html" class="mobile-mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg"><span>Nature & Adventure</span></a>
+                            <a href="Culinary-Journeys.html" class="mobile-mega-item"><img src="amansara_cambodia_-_dining.jpg"><span>Culinary Journeys</span></a>
+                        </div>
+                    </li>
+                    <li class="mobile-dropdown">
+                        <div class="mobile-drop-trigger">Partners <span>+</span></div>
+                        <div class="mobile-mega-content">
+                            <div style="grid-column: span 2; width: 100%;">
+                                <ul class="mobile-partner-list">
+                                    <li><a href="Dmc-services.html"><span>DMC Excellence</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="b2b-rates.html"><span>B2B Tariffs</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="white-label.html"><span>White-Label</span> <span class="arrow">→</span></a></li>
+                                    <li><a href="mice-groups.html"><span>MICE Groups</span> <span class="arrow">→</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a href="Accommodation.html">Accommodation</a></li>
+                    <li><a href="About-Us.html">About Us</a></li>
+                    <li><a href="Plan-Your-Trip.html">Plan Your Trip</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="nav-right desktop-nav"><a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a></div>
+    </nav>
+
+    <!-- Destination Hero -->
+    <header class="siem-reap-hero">
+        <div class="hero-title-box">
+            <h1>Siem Reap</h1>
+            <p>The Sacred Heart of the Khmer Empire</p>
+        </div>
+    </header>
+
+    <!-- Editorial Narrative Block -->
+    <section class="editorial-intro">
+        <div class="editorial-text">
+            <h2>Quite simply the greatest temples on earth</h2>
+            <p>A visit to the ancient monuments of Angkor is a profound experience, as few landscapes on earth match the imperial majesty of Angkor Wat, the chaotic vines running amok across Ta Prohm, or the timeless stone smiles radiating from the Bayon temple towers.</p>
+            <p>Situated in the northwest province of Siem Reap, this sacred sanctuary safeguards more than 1,000 distinct temples and shrines engineered between the 9th and 13th centuries. These remarkable structures comprise the remaining architectural crown of what was once the sprawling economic, cultural, and administrative epicenter of the grand Khmer Empire.</p>
+        </div>
+        <div class="editorial-gallery">
+            <div class="img-frame frame-primary"><img src="angkor_wat_temple_complex_ta_prohm.jpg"></div>
+            <div class="img-frame frame-secondary"><img src="Angkor_Wat_-_050_Apsaras_(8580603733).jpg"></div>
+        </div>
+    </section>
+
+    <!-- Interactive Highlights Section -->
+    <section class="highlights-section">
+        <div class="section-header">
+            <h2>The Highlights of Siem Reap</h2>
+            <div class="line-divider"></div>
+        </div>
+
+        <div class="temple-grid">
+            <!-- Angkor Wat -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Angkor-Wat-Cambodia-National-Geographic.jpg" alt="Angkor Wat"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Angkor Wat</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>The 'temple that is a city', there are few places on earth to match the splendour of Angkor Wat. The mother of all temples is the world's largest religious building and is truly one of the wonders of the world. Sunrise at Angkor Wat is one of life's bucketlist experiences.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Angkor Thom & Bayon -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="wp2196274.jpg" alt="Angkor Thom & Bayon"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Angkor Thom & Bayon</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>A mesmerizing labyrinth of Gothic stone towers adorned with hundreds of colossal smiling faces. As the historical center of King Jayavarman VII's great capital city, the monument radiates an enigmatic and powerful atmosphere from every angle.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ta Prohm -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="pexels-photo-31610353.avif" alt="Ta Prohm"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Ta Prohm</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Swallowed whole by the jungle, this atmospheric sanctuary remains locked in a spectacular embrace with nature. Colossal silk-cotton tree roots wrap tightly around ancient thresholds, perfectly showcasing the relentless power of time.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preah Khan -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="kfeeh2acl9kz.jpg" alt="Preah Khan"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Preah Khan</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>The monument translates to the 'Sacred Sword', acting as a vast complex that once housed a Buddhist university and monastic city. Its long, moody galleries remain delightfully uncrowded and filled with exquisite carvings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banteay Srei -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Banteay-Srei-Temple-in-Siem-Reap-2.jpg" alt="Banteay Srei"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Banteay Srei</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Constructed from exquisite pink-hued sandstone, the 'Citadel of the Women' boasts the absolute finest and most intricate bas-relief detail found anywhere in the ancient world. Its micro-carvings are sharp, deep, and remarkably preserved.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beng Mealea -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="DSC00715-01-1280x960.jpeg" alt="Beng Mealea"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Beng Mealea</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>A completely raw, untamed ruin left trapped within dense jungle overgrowth. Guests can wander over collapsing roofs, through dynamic vine-choked courtyards, and across rustic wooden walking trails like classic explorers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Koh Ker -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Koh-Ker-Temple.avif" alt="Koh Ker"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Koh Ker</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Deep within the northern forests lies an enigmatic, short-lived 10th-century capital. Dominated by an imposing seven-tiered sandstone pyramid rising high above the tree canopy, this remote complex offers quiet, historic pathways far removed from standard crowds.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phnom Kulen -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Phnom-Kulen-waterfall.jpg.webp" alt="Phnom Kulen National Park"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Phnom Kulen National Park</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Discover the sacred birthplace of the ancient Khmer Empire. This mountain sanctuary features the spectacular River of a Thousand Lingas, where intricate carvings sit just beneath the crystal waters, a massive 16th-century reclining Buddha carved directly into a sandstone boulder, and refreshing waterfalls perfect for a midday swim.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Villages of Tonle Sap -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="ADK0627.jpg" alt="Floating Villages Tonle Sap"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Floating Villages of Tonle Sap</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Experience the unique flow of life on Southeast Asia's largest freshwater lake. From stilted bamboo homes soaring above the floodplain to self-contained floating markets and schools, these lakeside communities showcase an incredible, generational relationship with the shifting seasonal waters.</p>
+                    </div>
+                </div>
+            </div>
+
+        <div class="temple-card">
+    <div class="temple-img-wrap"><img src="QuadBikeAdventureinSiemReap,Cambodia-Klook.jpg" alt="Quad Adventure Cambodia Off Road Tour"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Quad Adventure Cambodia</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Venture off the beaten track and experience the authentic Cambodian countryside on an exhilarating all-terrain vehicle excursion. Navigating through rugged dirt roads, remote villages, and vibrant rice paddies, this guided tour offers an intimate glimpse into local rural life far beyond the temple walls. Whether riding into a brilliant rural sunset or exploring hidden pre-Angkorian ruins, the journey balances high-octane adventure with deep cultural immersion.</p>
+        </div>
+    </div>
+</div>
+            <!-- Vespa Foodie Tour -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="siem-reap-foodie-tour.jpg" alt="Vespa Foodie Tour"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Vespa Foodie Tour</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>As dusk settles over Siem Reap, venture out on pillion vintage scooters to track down the region's culinary heritage. We bypass standard establishments to explore bustling evening markets and hidden local kitchens, sampling authentic Khmer delicacies and infused rice wines.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vintage Jeep Tour -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="angkor-temple-jeep-adventure.jpg" alt="Vintage Jeep Tour"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Vintage Jeep Overland</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Navigate the rugged red-dirt roads of the Cambodian countryside in open-top, restored vintage jeeps. This open-air overland journey winds through scenic emerald paddies, forgotten pre-Angkorian brick ruins, and rural homesteads completely out of reach of standard transport.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horse Riding -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="12122013652-scaled.jpg" alt="Horse Riding Countryside"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">The Happy Horse Ranch Farm</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Trek through scenic rural landscapes on horseback, navigating quiet sandy paths that snake past traditional stilted villages. It provides a peaceful, slower pace for observation, culminating in views of rural ruins isolated within pastoral settings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bicycle Tours -->
+            <div class="temple-card"> 
+                <div class="temple-img-wrap"><img src="temples_from_a_distance_siem_reap_cambodia.jpg" alt="Bicycle Trails"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Bicycle Expeditions</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Pedal along shaded back-trails, hidden jungle tracks, and ancient temple earthen dikes. Traveling by bicycle allows travelers to feel the true contour of the land, crossing historic waterways and cooling canopies while encountering rural communities at a personalized pace.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Village Tours -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="117បន្ទាយស្រី_o.jpg" alt="Village Culture Immersion"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Village Culture Immersion</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Step directly into authentic country living with private, respectful village interactions. Spend time with local artisanal weavers, watch traditional sugar-palm producers practicing their craft, and support community-led heritage initiatives that keep old-world Cambodian customs vibrant.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cooking Class -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="cooking-class-siem-reap-group.jpg" alt="Khmer Culinary Masterclass"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Culinary Cooking Class</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Uncover the nuanced heritage of Khmer gastronomy, one of the world's oldest living culinary traditions. Guided by an expert chef, you will gather fresh botanical ingredients and delicate spices, then retreat to a private pavilion to master the intricate balance of sweet, sour, salty, and bitter that defines signature dishes like aromatic fish amok and seasonal curries.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sunset Gondola Boat -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="2D3JJejfndnAa49yKNJt.jpg" alt="Angkor Gondola Sunset"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Sunset Gondola Boat</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Drift along the historic moat of the ancient walled city of Angkor Thom aboard a traditional Khmer paddle boat. As the day quietens, glide past hidden corner temples and timeless forest shorelines, enjoying cold refreshments while the golden Indochine sunset casts a majestic glow across the majestic sandstone walls.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kulen Elephant Forest -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="SliderHome-1080x800-2.jpeg" alt="Kulen Elephant Forest"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Kulen Elephant Forest</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Retreat to the protected foothills of the sacred Kulen Mountains, where retired giant elephants now roam freely within their natural habitat. Spend a quiet morning walking alongside these gentle giants through dense forest canopies, observing them forage, dust-bathe, and socialize in a peaceful sanctuary dedicated to long-term conservation and care.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APOPO HeroRATs -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Screenshot-2023-06-10-at-4.25.58-AM-2.png" alt="APOPO Visitor Center"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">APOPO Visitor Centre</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Witness a remarkable and vital chapter of Cambodia's modern history. Meet the highly trained African giant pouched rats—affectionately known as HeroRATs—and discover how their extraordinary sense of smell helps safely clear residual landmines from rural communities, restoring beautiful, arable lands to generational farmers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Apsara Dinner Show -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="jpg (1).jpg" alt="Apsara Dance Performance"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Apsara Dance & Culinary Theatre</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Immerse yourself in Cambodia’s sacred performance art, a classical dance form originally preserved for royal courts and immortalized on the reliefs of Angkor Wat. Beneath the soft glow of a traditional pavilion, witness the highly stylized, hypnotic movements and ornate silk costuming of the dancers as they recount ancient epic poems, accompanied by a multi-course dinner of refined Khmer gastronomy.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khmer Ceramics -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Artisan-making-the-dinner-plates-avi-1024x461.jpg.webp" alt="Khmer Ceramics Class"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name"> Khmer Ceramics & Fine Arts Centre</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Connect with Cambodia’s rich artistic lineage through a private pottery masterclass. Working alongside master local artisans, you will use traditional pottery wheels and clay harvested from the provincial countryside to hand-mold your own pieces, learning the historic, delicate firing and green-glazing techniques that have defined Khmer pottery since the golden age of the Angkorian Empire.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Senteurs d'Angkor -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="workshop-hero-family-visiting-1024x683.webp" alt="Senteurs d'Angkor Workshop"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Senteurs d'Angkor </h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Indulge your senses in the aromatic heritage of Cambodia at this eco-responsible botanical workshop. Discover how local craftswomen transform sustainably sourced native ingredients—such as lemongrass, wild ginger, Kampot pepper, and coconut oil—into premium handmade soaps, natural cosmetics, and delicate home fragrances using traditional, artisanal techniques.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Artisans d'Angkor -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Artisans-Angkor–Les-Chantiers-Ecoles-Siem-Reap.jpg" alt="Artisans d'Angkor Workshop"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Artisans Angkor </h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Step inside a vibrant sanctuary dedicated to preserving ancient Cambodian craftsmanship. Wander through open-air studios to watch master artisans train next-generation rural youth in fine stone sculpting, wood carving, lacquerware creation, and intricate polychrome techniques that have defined Khmer cultural heritage for centuries.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Angkor National Museum -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Angkor-National-Museum.jpg" alt="Angkor National Museum"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Angkor National Museum</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Gather essential context before exploring the stone ruins at this world-class cultural repository. Through spectacular galleries—including the breathtaking Gallery of a Thousand Buddhas—marvel at a vast collection of priceless golden-age lintels, sandstone statues, and royal artifacts that chronicle the spiritual, architectural, and historical rise of the great Khmer Empire.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Satcha Handicraft Center -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="satcha-handicraft-001.webp" alt="Satcha Handicraft Center"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Satcha Handicraft Center</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Explore Cambodia’s first incubator center dedicated to reinterpreting traditional craftsmanship with a contemporary edge. Set within sustainable bamboo pavilions, this creative cooperative allows you to engage with local woodcarvers, stone sculptors, silversmiths, and weavers who blend ancestral Khmer knowledge with modern design aesthetics to create luxury handcrafted goods.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lotus Silk Farm -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="19.jpg" alt="Lotus Silk Farm"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name"> Lotus Silk Farm</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Discover one of the rarest and most ecological textiles in the world at this pioneering eco-farm. Witness the mesmerizing, step-by-step process of transforming raw lotus stems into an exceptionally soft, breathable fabric—from the delicate extraction of micro-fibers by hand to the ancient spinning and weaving techniques that produce a highly prized, spiritual thread of luxury fashion.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- War Museum Cambodia -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="images (27).jpg" alt="War Museum Cambodia"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">War Museum Cambodia</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Step into Cambodia's raw history through the country's largest open-air military museum. The collection features authentic, weathered machinery from the late 20th century civil war, including Soviet tanks, fighter jets, and heavy artillery. Guided tours are often led by war veterans who share deeply moving, personal stories of survival.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cambodia Landmine Museum -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="landmine-3.jpg" alt="Cambodia Landmine Museum"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Cambodia Landmine Museum</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Founded by former child soldier Aki Ra, this deeply impactful museum shines a light on the ongoing legacy of landmines in Cambodia. Witness safe, defused remnants of war, learn about the painstaking process of mine clearance, and see how the foundation supports, educates, and empowers affected children in the local community.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wat Thmey -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Wat_Thmey_-_Siem_Reap_memorial.jpg" alt="Wat Thmey"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Wat Thmey Killing Fields</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Serves as a solemn memorial to the victims of the Khmer Rouge regime. Located just outside Siem Reap's center, this active monastery houses a glass-walled stupa containing the remains of those who perished here, alongside a poignant photographic exhibition detailing the history and resilience of the Cambodian people.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banteay Srey Butterfly Centre -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Exploring-the-Banteay-Srey-Butterfly-Centre-A-Haven-for-Nature-Lovers.jpg" alt="Banteay Srey Butterfly Centre"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Banteay Srey Butterfly Centre</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Immerse yourself in one of the largest enclosed butterfly sanctuaries in Southeast Asia. This lush, tropical net-enclosed garden is home to thousands of vibrant, free-flying native Cambodian butterflies. The center supports local communities through sustainable pupae farming and offers a fascinating look into the butterfly life cycle.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Traditional Ox Cart Ride -->
+            <div class="temple-card">
+                <div class="temple-img-wrap"><img src="Ox-cart-1-av-2.jpeg" alt="Traditional Ox Cart Experience"></div>
+                <div class="temple-trigger-bar">
+                    <h3 class="temple-name">Traditional Khmer Ox Cart Ride</h3>
+                    <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+                </div>
+                <div class="temple-details-drawer">
+                    <div class="drawer-inner">
+                        <p>Step back in time and experience the slow, rhythmic pace of rural Cambodia with a traditional ox cart journey. Wind through quiet, dirt paths, emerald rice paddies, and local stilted villages untouched by modern traffic. This intentional, immersive experience offers an authentic window into ancestral agrarian life while directly supporting local farming families.</p>
+                    </div>
+                </div>
+            </div>
+        
+        
+        <!-- ACCB Angkor -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="c8b5e8150447722dead372b00dc6421c654c9ed6a0872e42f3e2db2c7c498b8f.webp" alt="Angkor Centre for Conservation of Biodiversity"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Angkor Centre for Conservation of Biodiversity (ACCB)</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Discover Cambodia's unique wildlife at the first nature conservation center in the country, located near Kbal Spean. This guided, immersive experience takes you behind the scenes of vital rescue, rehabilitation, and breeding programs for threatened species, including rare waterbirds, gibbons, and turtles. Your visit directly supports local biodiversity conservation and environmental education efforts.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Osmose Ecotourism -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="new-Prek Toal - Bird Sanctuary.jpg" alt="Osmose Ecotourism Prek Toal Tonle Sap"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Osmose Community-Based Ecotourism</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Journey deep into the Tonle Sap Biosphere Reserve to Prek Toal, Southeast Asia's most critical nesting ground for endangered waterbirds. This pioneering, community-driven ecotourism experience combines wildlife observation from treetop platforms with an authentic immersion into floating village life. By visiting, you directly fund environmental education and provide sustainable, alternative livelihoods for local families and former poachers turned rangers.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Phare, The Cambodian Circus -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="a7727df447b75e1347cc5975e9a49cc2.jpg" alt="Phare, The Cambodian Circus Performance"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Phare, The Cambodian Circus</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Experience the vibrant energy of modern Cambodian storytelling under the big top. Far more than a conventional circus, Phare blends high-flying acrobatics, theater, live music, and contemporary dance to bring local folklore, history, and modern society to life. Every performance is powered by talented youth from the Phare Ponleu Selpak social enterprise, meaning your evening directly funds free education and professional arts training for local communities.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Angkor Zipline -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="Angkor-Zipline-Tour-3.jpg" alt="Angkor Zipline Canopy Eco-Tour"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Angkor Zipline Eco-Adventure</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Soar high above the dense, ancient rainforest canopy hidden deep within the protected Angkor Archaeological Park. This thrilling eco-adventure features an engineered system of towering treetop platforms, suspension sky bridges, rapid ziplines, and a dramatic abseil descent. Guided by certified safety experts, the eco-tour offers a rare, bird's-eye perspective of the jungle's ecosystem while actively supporting the protection of local wildlife and the reintroduction of wild gibbons to the park.</p>
+        </div>
+    </div>
+</div>
+<!-- Sam Veasna Conservation Center -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="sam-veasna-center.jpg" alt="Sam Veasna Conservation Center Bird Watching"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Sam Veasna Conservation Center</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Embark on a world-class birding and wildlife excursion dedicated to preserving Cambodia's rarest species. Led by expert local guides, this eco-tour operator takes you deep into protected ibises, floricans, and vultures habitats. Your visit directly funds community-led conservation projects, providing sustainable alternative livelihoods for local villages while securing the future of critically endangered wildlife.</p>
+        </div>
+    </div>
+</div>
+<!-- Angkor Wildlife & Aquarium -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="fresh-water-tank-view.jpg" alt="Angkor Wildlife and Aquarium Exhibit"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Angkor Wildlife & Aquarium</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Explore Cambodia's premier destination for biodiversity education and wildlife wonders. This expansive sanctuary features a massive freshwater aquarium showcasing the unique marine life of the Mekong River and Tonle Sap, alongside outdoor habitats home to rescued tigers, Asian small-clawed otters, and sun bears. It serves as an essential hub for conservation awareness, captive breeding programs, and family-friendly wildlife education.</p>
+        </div>
+    </div>
+</div>
+<!-- Villa Chandara -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="villa-chandara-atc022.jpg" alt="Villa Chandara Culinary Experience"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Villa Chandara Dining & Countryside Escape</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Escape the urban rhythm for an exclusive culinary journey nestled amidst the emerald rice paddies of rural Siem Reap. Indulge in refined traditional Khmer gastronomy prepared in a restored traditional wooden house, complemented by serene sunset views, candlelit garden dining, and bespoke hospitality.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Chill out Sunset Champagne -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="Chill-out-Sunset-Champagne-1.jpg" alt="Chill out Sunset Champagne Experience"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Chill out Sunset Champagne</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+           <p>Embark on a scenic countryside drive through charming rural villages and vast rice paddies. Take in the authentic local lifestyle before pausing to admire breathtaking panoramic sunset views over the serene Siem Reap landscape while enjoying chilled champagne.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Temple Gala Dinner at Kravan Temple -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="photo_2023-05-15_16-48-13.webp" alt="Temple Gala Dinner at Kravan Temple"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Temple​ Dinner at Kravan Temple</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Experience an unforgettable evening of royal Khmer hospitality illuminated by torchlight against the ancient brick towers of Prasat Kravan. Delight in a gourmet multi-course dinner accompanied by classical Apsara dance performances under the stars.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Angkor Silk Farm -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="artisans-angkor-visit-us-d.jpg" alt="Angkor Silk Farm Tour"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Angkor Silk Farm</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Discover the ancient art of Cambodian silk weaving on a guided tour through lush mulberry gardens and workshop spaces. Trace the entire traditional process from silkworm farming and yarn spinning to natural dyeing and intricate handloom weaving by local artisans.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Theam's Gallery -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="theams+gallery.webp" alt="Theam's Gallery Siem Reap"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Theam's Gallery</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Step into a serene tropical oasis and artist's sanctuary curated by Cambodian master designer Lim Muy Theam. Explore lush gardens, traditional wooden stilt houses, and vibrant workshops filled with fine lacquerware, hand-painted sculptures, and authentic Khmer art objects crafted on-site by local artisans.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Angkor Balloon Scenic Flight -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="caption (4).jpg" alt="Angkor Balloon Ride Siem Reap"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Angkor Balloon Experience</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Ascend 120 meters into the sky aboard a safe, tethered helium balloon for panoramic 360-degree views of Angkor Wat and the surrounding Siem Reap countryside. Perfect for capturing breathtaking aerial photos at sunrise or sunset without the noise of a traditional helicopter engine.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Anlong Thom Community-Based Tourism Trekking -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="AdobeStock_334750551.jpeg" alt="Anlong Thom Community-Based Trekking"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Anlong Thom Jungle Trekking & Ecotour</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Venture deep into the sacred plateau of Phnom Kulen with local community guides from Anlong Thom Community-Based Tourism Centre. Trek off-the-beaten-path jungle trails to discover hidden ancient temple ruins, mystical bat caves, secluded waterfalls, and enjoy authentic, eco-friendly Khmer picnic lunches prepared by local villagers.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Helistar Scenic Flight -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="Helistar-helicopter-over-Angkor-Wat-Temple.jpg" alt="Helistar Scenic Flight Over Angkor"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Helistar Sovereign Aerial Journey</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Soar above the crown jewel of the Khmer Empire on an exclusive helicopter flight over the Angkor sanctuary. Take in sweeping aerial vistas of Angkor Wat's iconic moat and five towers, the vast moat of Angkor Thom, and the lush jungle canopy from a breathtaking vantage point impossible to experience from the ground.</p>
+        </div>
+    </div>
+</div>
+
+
+<!-- Jayav Art -->
+<div class="temple-card">
+    <div class="temple-img-wrap"><img src="2941981695386647980506002137395455316078104n_20230403140129.jpeg" alt="Jayav Art Gallery Siem Reap"></div>
+    <div class="temple-trigger-bar">
+        <h3 class="temple-name">Jayav Art Gallery</h3>
+        <div class="temple-arrow"><svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5" /></svg></div>
+    </div>
+    <div class="temple-details-drawer">
+        <div class="drawer-inner">
+            <p>Discover the artistic world of Philippe Brousseau at Jayav Art, a unique gallery in Siem Reap famous for handcrafted papier-mâché sculptures. Admire intricate interpretations of Angkorian statues, Apsara dancers, and Khmer heritage, created using traditional techniques paired with contemporary artistic vision.</p>
+        </div>
+    </div>
+</div>
+</div>
+
+
+        <!-- Integrated Navigation and Pagination -->
+<div class="pagination-wrapper">
+    <a href="Siem-reap.html" class="dest-link-big">Siem Reap</a>
+    
+    <div class="pagination-container">
+        <button class="pag-arrow prev-btn" aria-label="Previous Page">
+            <svg viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <div class="pag-numbers"></div>
+        <button class="pag-arrow next-btn" aria-label="Next Page">
+            <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></svg>
+        </button>
+    </div>
+    
+    <a href="Phnom-Penh.html" class="dest-link-big">Phnom Penh</a>
+</div>
+</section>
+
+
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-main">
+            <div class="footer-col">
+                <h4>Destinations</h4>
+                <ul>
+                    <li><a href="cambodia.html">Cambodia</a></li>
+                    <li><a href="Laos.html">Laos</a></li>
+                    <li><a href="Vietnam.html">Vietnam</a></li>
+                    <li><a href="Thailand.html">Thailand</a></li>
+                    <li><a href="Multi-country.html">Multi-Country</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Experiences</h4>
+                <ul>
+                    <li><a href="Culture-Heritage.html">Culture & Heritage</a></li>
+                    <li><a href="Romantic-Journeys.html">Romantic Getaways</a></li>
+                    <li><a href="Nature-Adventure.html">Nature & Adventure</a></li>
+                    <li><a href="Wellness-Rejuvenation.html">Wellness & Rejuvenation</a></li>
+                    <li><a href="Family-Journeys.html">Family Journeys</a></li>
+                    <li><a href="Culinary-Journeys.html">Culinary Journeys</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col footer-contact">
+                <h4>Connect with Us</h4>
+                <p>+855 95 267 257</p>
+                <p>contact@l'indochine.com</p>
+                
+                <div class="footer-social">
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-2.21c0-.837.39-1.29 1.121-1.29h2.879v-4.498c-.443-.059-1.968-.202-3.726-.202-3.689 0-6.274 2.247-6.274 6.46v1.74z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <div class="footer-cta-box" style="background: rgba(194, 157, 107, 0.05); padding: 30px; border: 1px solid rgba(194, 157, 107, 0.2);">
+                    <h4 style="margin-bottom: 20px;">Curate Your Legacy</h4>
+                    <a href="Plan-Your-Trip.html" class="btn-plan" style="display: block; text-align: center; margin-bottom: 20px;">Plan Your Trip</a>
+                    <div style="display: flex; justify-content: space-between;">
+                        <a href="About-Us.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ABOUT US</a>
+                        <a href="Accommodation.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ACCOMMODATION</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="copyright">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+            <div class="footer-bottom-links">
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="Terms&Conditions.html">Terms & Conditions</a>
+                <a href="#" id="back-to-top">BACK TO TOP &#10142;</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        
+        // 1. Mobile Menu Toggles
+        const mOpen = document.getElementById('menu-open');
+        const mClose = document.getElementById('menu-close');
+        const mOverlay = document.getElementById('mobile-overlay');
+
+        if(mOpen) mOpen.addEventListener('click', () => mOverlay.classList.add('active'));
+        if(mClose) mClose.addEventListener('click', () => mOverlay.classList.remove('active'));
+
+        // 2. Mobile Mega Menu Accordion Logic
+        document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('span');
+                content.classList.toggle('active');
+                icon.innerText = content.classList.contains('active') ? "−" : "+";
+            });
+        });
+
+        // 3. Desktop Hover Positioning / Mega Menu Caret positioning
+        document.querySelectorAll('.desktop-nav .dropdown').forEach(drop => {
+            const menu = drop.querySelector('.mega-menu');
+            const link = drop.querySelector('a');
+            drop.addEventListener('mouseenter', () => {
+                if (menu && link) {
+                    const linkRect = link.getBoundingClientRect();
+                    const linkCenter = linkRect.left + (linkRect.width / 2);
+                    menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+                }
+            });
+        });
+
+        // 4. Custom Follower Cursor Logic
+        const follower = document.getElementById('cursor-follower');
+        const fText = follower.querySelector('span');
+        
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(follower, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: "power2.out" });
+        });
+
+        document.querySelectorAll('a, .mega-item, .temple-card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(follower, { width: 100, height: 100, background: 'rgba(194, 157, 107, 0.15)', border: 'none' });
+                fText.style.opacity = 1;
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(follower, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+                fText.style.opacity = 0;
+            });
+        });
+
+        // 5. Back to Top Smooth Scroll
+        document.getElementById('back-to-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // 6. Cards and Expand details setup
+const cards = document.querySelectorAll('.temple-card');
+cards.forEach(card => {
+    card.addEventListener('click', function() {
+        // Toggles active state independently without closing other open cards
+        this.classList.toggle('is-active');
+    });
+});
+        // 7. Grid Architectural Pagination Logic
+        const itemsPerPage = 9;
+        let currentPage = 1;
+        const totalPages = Math.ceil(cards.length / itemsPerPage);
+
+        const pagNumbersContainer = document.querySelector('.pag-numbers');
+        const prevBtn = document.querySelector('.prev-btn');
+        const nextBtn = document.querySelector('.next-btn');
+
+        function showPage(page) {
+            currentPage = page;
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+
+            cards.forEach((card, index) => {
+                if (index >= start && index < end) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                    card.classList.remove('is-active'); 
+                }
+            });
+
+            updatePaginationControls();
+        }
+
+        function updatePaginationControls() {
+            pagNumbersContainer.innerHTML = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.classList.add('pag-num');
+                if (i === currentPage) btn.classList.add('is-active');
+                btn.innerText = i;
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showPage(i);
+                    scrollToSection();
+                });
+                pagNumbersContainer.appendChild(btn);
+            }
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        function scrollToSection() {
+            document.querySelector('.highlights-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentPage > 1) {
+                showPage(currentPage - 1);
+                scrollToSection();
+            }
+        });
+
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentPage < totalPages) {
+                showPage(currentPage + 1);
+                scrollToSection();
+            }
+        });
+
+        // Initialize First View Page
+        showPage(1);
+        const lenis = new Lenis({
+            duration: 1.8,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: 'vertical',
+            gestureOrientation: 'vertical',
+            smoothWheel: true,
+            wheelMultiplier: 0.9,
+            touchMultiplier: 1.2,
+            infinite: false,
+        });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    </script>
+</body>
+</html>
