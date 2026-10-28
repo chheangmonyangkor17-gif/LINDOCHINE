@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | L'INDOCHINE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Tenor+Sans&family=Playfair+Display:ital,wght@1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ivory: #F0EDE5;
+            --ink: #0A0A0A;
+            --gold: #C29D6B;
+            --clay: #1A1917;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none !important; }
+        body {
+            background-color: var(--ivory);
+            color: var(--ink);
+            font-family: 'Tenor Sans', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.4;
+        }
+
+        /* Cinematic Overlays */
+        .vignette { position: fixed; inset: 0; background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.4) 100%); pointer-events: none; z-index: 100; opacity: 0.4; }
+        .grain { position: fixed; inset: 0; width: 100%; height: 100%; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.07; pointer-events: none; z-index: 1000; mix-blend-mode: multiply; }
+
+        /* Bespoke Cursor */
+        #cursor-follower {
+            position: fixed; top: 0; left: 0; width: 60px; height: 60px;
+            border: 0.5px solid var(--gold); border-radius: 50%; z-index: 10000; pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear, width 0.4s var(--ease), height 0.4s var(--ease);
+        }
+        #cursor-follower span { font-size: 7px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; opacity: 0; white-space: nowrap; }
+
+        /* Navigation */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 0 60px;
+            height: 90px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 999; background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, transparent 100%);
+        }
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; color: var(--ivory); text-decoration: none; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .nav-links { display: flex; list-style: none; gap: 40px; height: 100%; }
+        .nav-links > li { display: flex; align-items: center; }
+        .nav-links > li > a {
+            text-decoration: none; color: var(--ivory); font-size: 10px; letter-spacing: 3px;
+            text-transform: uppercase; text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            transition: color 0.4s var(--ease); padding: 20px 0;
+            position: relative; padding-right: 18px;
+        }
+        .nav-links > li > a:hover { color: var(--gold); }
+        .dropdown > a::after {
+            content: ''; position: absolute; right: 0; top: 50%;
+            transform: translateY(-50%); width: 0; height: 0;
+            border-left: 3.5px solid transparent; border-right: 3.5px solid transparent;
+            border-top: 4px solid var(--gold); transition: transform 0.4s var(--ease); opacity: 0.6;
+        }
+        .dropdown:hover > a::after { transform: translateY(-50%) rotate(180deg); opacity: 1; }
+        .mega-menu {
+            position: absolute; top: 90px; left: 0; width: 100vw;
+            background: var(--ink); padding: 40px 60px;
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transform: translateY(15px); transition: all 0.5s var(--ease);
+            border-bottom: 1px solid rgba(194, 157, 107, 0.3); z-index: 1000;
+        }
+        .mega-menu::before {
+            content: ''; position: absolute; top: -10px;
+            left: var(--triangle-left, 50%); transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 10px solid transparent; border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--ink); pointer-events: none;
+        }
+        .dropdown { position: static; }
+        .dropdown:hover .mega-menu { opacity: 1; visibility: visible; transform: translateY(0); pointer-events: auto; }
+        .mega-item {
+            position: relative; height: 250px; overflow: hidden; text-decoration: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mega-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); filter: brightness(0.5); }
+        .mega-item span {
+            position: absolute; z-index: 2; color: var(--ivory);
+            font-family: 'Cormorant Garamond'; font-size: 1.2rem; font-style: italic;
+            letter-spacing: 1px; text-align: center; padding: 0 10px;
+        }
+        .mega-item:hover img { transform: scale(1.1); filter: brightness(0.7); }
+        .mega-item::after { content: ''; position: absolute; inset: 0; border: 0px solid var(--gold); transition: 0.4s var(--ease); }
+        .mega-item:hover::after { border: 1px solid var(--gold); inset: 10px; }
+        .btn-plan {
+            text-decoration: none; color: var(--gold); font-size: 9px; letter-spacing: 2px;
+            text-transform: uppercase; border: 1px solid var(--gold); padding: 12px 25px;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+            transition: all 0.5s var(--ease); display: inline-block;
+        }
+        .btn-plan:hover { background: var(--gold); color: var(--ink); }
+
+        /* Mobile Nav */
+        @media (min-width: 1025px) {
+            .menu-trigger, .mobile-overlay { display: none; }
+            .desktop-nav { display: flex !important; }
+        }
+        @media (max-width: 1024px) {
+            .desktop-nav { display: none !important; }
+            .menu-trigger { display: flex; cursor: pointer; z-index: 1001; }
+            .burger .line { width: 25px; height: 1px; background: var(--gold); display: block; margin: 6px 0; }
+            .mobile-overlay {
+                position: fixed; inset: 0; background: var(--ink);
+                z-index: 5000; transform: translateY(-100%);
+                transition: transform 0.8s var(--ease); overflow-y: auto; padding: 100px 40px;
+            }
+            .mobile-overlay.active { transform: translateY(0); }
+            .menu-close { position: absolute; top: 30px; right: 30px; color: var(--gold); font-size: 24px; cursor: pointer; }
+            .mobile-nav-links { list-style: none; }
+            .mobile-nav-links > li { margin-bottom: 25px; border-bottom: 1px solid rgba(194, 157, 107, 0.1); padding-bottom: 10px; }
+            .mobile-nav-links a, .mobile-drop-trigger {
+                font-family: 'Cormorant Garamond'; font-size: 2rem;
+                color: var(--ivory); text-decoration: none; font-style: italic;
+            }
+            .mobile-drop-trigger { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+            .mobile-mega-content { display: none; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+            .mobile-mega-content.active { display: grid; }
+            .mobile-mega-item { text-decoration: none; }
+            .mobile-mega-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 2px; opacity: 0.7; }
+            .mobile-mega-item span { display: block; color: var(--ivory); font-size: 0.7rem; text-transform: uppercase; margin-top: 5px; letter-spacing: 1px; }
+            .mobile-partner-list { list-style: none; margin-top: 20px; }
+            .mobile-partner-list li { margin-bottom: 15px; border-bottom: 1px solid rgba(194, 157, 107, 0.15); padding-bottom: 8px; }
+            .mobile-partner-list a { font-size: 1.2rem; display: flex; justify-content: space-between; align-items: center; color: var(--ivory); text-decoration: none; font-family: 'Cormorant Garamond'; font-style: italic; }
+            .mobile-partner-list .arrow { font-size: 14px; color: var(--gold); font-family: sans-serif; font-style: normal; }
+            nav { padding: 0 30px; }
+        }
+
+        /* ── PAGE HERO ── */
+        .page-hero {
+            height: 55vh; min-height: 380px;
+            display: flex; align-items: flex-end; justify-content: flex-start;
+            background: var(--ink); overflow: hidden; position: relative;
+            padding: 0 10% 70px;
+        }
+        .page-hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.28; }
+        .page-hero-content { position: relative; z-index: 10; color: var(--ivory); }
+        .page-hero-eyebrow { font-size: 10px; letter-spacing: 6px; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 18px; }
+        .page-hero-title { font-family: 'Cormorant Garamond'; font-size: 5rem; font-weight: 300; font-style: italic; line-height: 1; color: var(--ivory); }
+        .page-hero-rule { width: 60px; height: 1px; background: var(--gold); margin-top: 30px; }
+
+        /* ── MAIN CONTENT ── */
+        .tc-wrapper { max-width: 880px; margin: 0 auto; padding: 100px 40px 120px; }
+        .tc-intro {
+            font-family: 'Cormorant Garamond'; font-size: 1.35rem; font-style: italic;
+            font-weight: 300; line-height: 1.8; color: var(--ink); opacity: 0.85;
+            margin-bottom: 60px; padding-bottom: 60px;
+            border-bottom: 1px solid rgba(194, 157, 107, 0.3);
+        }
+        .tc-updated { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; display: block; }
+        .tc-section { margin-bottom: 60px; }
+        .tc-section-number { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 12px; }
+        .tc-section h2 { font-family: 'Cormorant Garamond'; font-size: 2rem; font-style: italic; font-weight: 300; margin-bottom: 22px; color: var(--ink); line-height: 1.2; }
+        .tc-section p { font-size: 0.95rem; line-height: 1.9; color: #3a3a3a; margin-bottom: 16px; }
+        .tc-section ul { list-style: none; margin: 16px 0 20px 0; }
+        .tc-section ul li { font-size: 0.92rem; line-height: 1.8; color: #3a3a3a; padding-left: 22px; position: relative; margin-bottom: 10px; }
+        .tc-section ul li::before { content: ''; position: absolute; left: 0; top: 11px; width: 6px; height: 1px; background: var(--gold); }
+        .tc-divider { border: none; border-top: 1px solid rgba(194, 157, 107, 0.2); margin: 60px 0; }
+        .tc-highlight-box { background: rgba(194, 157, 107, 0.06); border-left: 2px solid var(--gold); padding: 30px 35px; margin: 30px 0; }
+        .tc-highlight-box p { font-family: 'Cormorant Garamond'; font-size: 1.1rem; font-style: italic; line-height: 1.8; color: var(--ink); opacity: 0.9; margin: 0; }
+        .tc-contact-block {
+            background: var(--clay); padding: 50px 60px; margin-top: 80px;
+            display: flex; justify-content: space-between; align-items: center; gap: 40px;
+        }
+        .tc-contact-block h3 { font-family: 'Cormorant Garamond'; font-size: 1.8rem; font-style: italic; font-weight: 300; color: var(--ivory); margin-bottom: 10px; }
+        .tc-contact-block p { font-size: 0.85rem; color: var(--ivory); opacity: 0.6; line-height: 1.7; margin: 0; }
+        .tc-contact-block a.btn-plan { white-space: nowrap; flex-shrink: 0; }
+
+        /* Data table */
+        .data-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 0.88rem; }
+        .data-table th {
+            text-align: left; font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--gold); padding: 12px 16px; border-bottom: 1px solid rgba(194,157,107,0.3);
+            font-family: 'Tenor Sans';
+        }
+        .data-table td { padding: 14px 16px; color: #3a3a3a; border-bottom: 1px solid rgba(0,0,0,0.06); line-height: 1.7; vertical-align: top; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: rgba(194,157,107,0.04); }
+
+        @media (max-width: 768px) {
+            .page-hero-title { font-size: 3rem; }
+            .tc-wrapper { padding: 60px 25px 80px; }
+            .tc-contact-block { flex-direction: column; padding: 40px 30px; text-align: center; }
+            .data-table { display: block; overflow-x: auto; }
+        }
+
+        /* ── FOOTER ── */
+        footer { padding: 120px 60px 40px; background: var(--ivory); border-top: 1px solid rgba(0,0,0,0.05); position: relative; }
+        .footer-main { display: grid; grid-template-columns: 1fr 1fr 1.5fr 2fr; gap: 40px; margin-bottom: 100px; }
+        .footer-col h4 { font-family: 'Tenor Sans', sans-serif; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 35px; color: var(--gold); }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 15px; }
+        .footer-col a { text-decoration: none; color: var(--ink); font-size: 11px; opacity: 0.7; transition: opacity 0.3s; }
+        .footer-col a:hover { opacity: 1; }
+        .footer-contact p { font-size: 12px; margin-bottom: 10px; opacity: 0.8; }
+        .footer-social { display: flex; gap: 20px; margin-top: 25px; }
+        .social-icon { width: 36px; height: 36px; border: 1px solid rgba(194, 157, 107, 0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.4s; opacity: 0.6; }
+        .social-icon svg { width: 14px; height: 14px; fill: var(--ink); }
+        .social-icon:hover { opacity: 1; border-color: var(--gold); }
+        .footer-cta-box { background: rgba(194, 157, 107, 0.05); padding: 30px; border: 1px solid rgba(194, 157, 107, 0.2); }
+        .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 40px; border-top: 1px solid rgba(0,0,0,0.1); }
+        .footer-bottom-links { display: flex; gap: 30px; align-items: center; }
+        .footer-bottom-links a { text-decoration: none; color: var(--ink); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; transition: opacity 0.3s; }
+        .footer-bottom-links a:hover { opacity: 1; }
+        .copyright { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.4; }
+        @media (max-width: 1024px) {
+            .footer-main { grid-template-columns: 1fr 1fr; gap: 60px 20px; }
+            footer { padding: 80px 30px 40px; }
+        }
+        @media (max-width: 600px) {
+            .footer-main { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 20px; text-align: center; }
+            .footer-bottom-links { flex-wrap: wrap; justify-content: center; }
+        }
+    </style>
+<style id="grain-mobile-disabled">@media (max-width: 768px) { .grain { display: none !important; } }</style>
+<script src="https://unpkg.com/lenis@1.1.9/dist/lenis.min.js"></script>
+</head>
+<body>
+
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div id="cursor-follower"><span>Read</span></div>
+
+    <!-- ══ NAVIGATION ══ -->
+    <nav>
+        <a href="index.html" class="logo">L'INDOCHINE</a>
+
+        <ul class="nav-links desktop-nav">
+            <li class="dropdown">
+                <a href="#">Destinations</a>
+                <div class="mega-menu">
+                    <a href="cambodia.html" class="mega-item"><img src="istockphoto-589941504-612x612.jpg" alt="Cambodia"><span>Cambodia</span></a>
+                    <a href="Vietnam.html" class="mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg" alt="Vietnam"><span>Vietnam</span></a>
+                    <a href="Thailand.html" class="mega-item"><img src="Wat Arun temple illuminated at night.jpeg" alt="Thailand"><span>Thailand</span></a>
+                    <a href="Laos.html" class="mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg" alt="Laos"><span>Laos</span></a>
+                    <a href="Multi-country.html" class="mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp" alt="Multi-Country"><span>Multi-Country</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Themes</a>
+                <div class="mega-menu" style="grid-template-columns: repeat(6, 1fr);">
+                    <a href="Culture-Heritage.html" class="mega-item"><img src="istockphoto-500361595-612x612.jpg" alt="Culture"><span>Culture & Heritage</span></a>
+                    <a href="Romantic-Journeys.html" class="mega-item"><img src="penin boat 1.jpg" alt="Romantic"><span>Romantic Journeys</span></a>
+                    <a href="Wellness-Rejuvenation.html" class="mega-item"><img src="bodymind-cleanse-2.png" alt="Wellness"><span>Wellness & Rejuvenation</span></a>
+                    <a href="Family-Journeys.html" class="mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg" alt="Family"><span>Family Journeys</span></a>
+                    <a href="Nature-Adventure.html" class="mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg" alt="Nature"><span>Nature & Adventure</span></a>
+                    <a href="Culinary-Journeys.html" class="mega-item"><img src="amansara_cambodia_-_dining.jpg" alt="Culinary"><span>Culinary Journeys</span></a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a href="#">Partners</a>
+                <div class="mega-menu" style="grid-template-columns: 1.3fr 1fr; padding: 0; overflow: hidden;">
+                    <div style="padding: 50px; background: var(--ink);">
+                        <h4 style="color: var(--gold); font-size: 13px; margin-bottom: 35px; letter-spacing: 4px; text-transform: uppercase; font-family: 'Tenor Sans';">B2B & DMC Services</h4>
+                        <ul style="list-style: none;">
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194,157,107,0.15); padding-bottom: 12px;"><a href="Dmc-services.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>DMC Operational Excellence</span><span style="font-size:12px;color:var(--gold);">→</span></a></li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194,157,107,0.15); padding-bottom: 12px;"><a href="b2b-rates.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>Confidential B2B Tariffs</span><span style="font-size:12px;color:var(--gold);">→</span></a></li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194,157,107,0.15); padding-bottom: 12px;"><a href="white-label.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>White-Label Ground Handling</span><span style="font-size:12px;color:var(--gold);">→</span></a></li>
+                            <li style="margin-bottom: 22px; border-bottom: 1px solid rgba(194,157,107,0.15); padding-bottom: 12px;"><a href="mice-groups.html" style="font-size: 16px; color: var(--ivory); text-decoration: none; display: flex; justify-content: space-between; align-items: center; font-family: 'Cormorant Garamond'; font-style: italic;"><span>MICE & Incentive Groups</span><span style="font-size:12px;color:var(--gold);">→</span></a></li>
+                        </ul>
+                        <p style="margin-top: 30px; font-size: 10px; color: var(--gold); opacity: 0.7; letter-spacing: 2px; text-transform: uppercase;">Your strategic partner in Southeast Asia.</p>
+                    </div>
+                    <div style="position: relative; background: var(--clay); overflow: hidden;">
+                        <img src="angkor_wat_sunrise2712_67ddcbab8b.jpg" alt="Siem Reap" style="width:100%;height:100%;object-fit:cover;opacity:0.4;">
+                        <div style="position: absolute; bottom: 35px; left: 35px;">
+                            <span style="display:block;color:var(--ivory);font-family:'Cormorant Garamond';font-style:italic;font-size:22px;">Regional Operations</span>
+                            <span style="display:block;color:var(--gold);font-size:10px;letter-spacing:3px;text-transform:uppercase;margin-top:8px;">Siem Reap, Cambodia</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><a href="Accommodation.html">Accommodation</a></li>
+            <li><a href="About-Us.html">About Us</a></li>
+        </ul>
+
+        <div class="menu-trigger" id="menu-open">
+            <div class="burger"><span class="line"></span><span class="line"></span></div>
+        </div>
+
+        <div class="mobile-overlay" id="mobile-overlay">
+            <div class="menu-close" id="menu-close">✕</div>
+            <ul class="mobile-nav-links">
+                <li class="mobile-dropdown">
+                    <div class="mobile-drop-trigger">Destinations <span>+</span></div>
+                    <div class="mobile-mega-content">
+                        <a href="cambodia.html" class="mobile-mega-item"><img src="istockphoto-589941504-612x612.jpg" alt="Cambodia"><span>Cambodia</span></a>
+                        <a href="Vietnam.html" class="mobile-mega-item"><img src="halong-bay-vietnam-from-above-gettyimages.jpg" alt="Vietnam"><span>Vietnam</span></a>
+                        <a href="Thailand.html" class="mobile-mega-item"><img src="Wat Arun temple illuminated at night.jpeg" alt="Thailand"><span>Thailand</span></a>
+                        <a href="Laos.html" class="mobile-mega-item"><img src="Kuang-Si-Waterfalls-laos-1.jpg" alt="Laos"><span>Laos</span></a>
+                        <a href="Multi-country.html" class="mobile-mega-item"><img src="luang-prabang-view-1600x900-f50_50.webp" alt="Multi-Country"><span>Multi-Country</span></a>
+                    </div>
+                </li>
+                <li class="mobile-dropdown">
+                    <div class="mobile-drop-trigger">Themes <span>+</span></div>
+                    <div class="mobile-mega-content">
+                        <a href="Culture-Heritage.html" class="mobile-mega-item"><img src="istockphoto-500361595-612x612.jpg" alt="Culture"><span>Culture & Heritage</span></a>
+                        <a href="Romantic-Journeys.html" class="mobile-mega-item"><img src="penin boat 1.jpg" alt="Romantic"><span>Romantic Getaways</span></a>
+                        <a href="Wellness-Rejuvenation.html" class="mobile-mega-item"><img src="bodymind-cleanse-2.png" alt="Wellness"><span>Wellness</span></a>
+                        <a href="Family-Journeys.html" class="mobile-mega-item"><img src="166382030_4379547945423143_356141880427865949_n.jpg" alt="Family"><span>Family Journeys</span></a>
+                        <a href="Nature-Adventure.html" class="mobile-mega-item"><img src="QRtrqjIZUSOrC244AUPb3R2mM7ivLzsCEEY6wRrj.jpeg" alt="Nature"><span>Nature & Adventure</span></a>
+                        <a href="Culinary-Journeys.html" class="mobile-mega-item"><img src="amansara_cambodia_-_dining.jpg" alt="Culinary"><span>Culinary Journeys</span></a>
+                    </div>
+                </li>
+                <li class="mobile-dropdown">
+                    <div class="mobile-drop-trigger">Partners <span>+</span></div>
+                    <div class="mobile-mega-content">
+                        <div style="grid-column: span 2; width: 100%;">
+                            <ul class="mobile-partner-list">
+                                <li><a href="Dmc-services.html"><span>DMC Excellence</span><span class="arrow">→</span></a></li>
+                                <li><a href="b2b-rates.html"><span>B2B Tariffs</span><span class="arrow">→</span></a></li>
+                                <li><a href="white-label.html"><span>White-Label</span><span class="arrow">→</span></a></li>
+                                <li><a href="mice-groups.html"><span>MICE Groups</span><span class="arrow">→</span></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="Accommodation.html">Accommodation</a></li>
+                <li><a href="About-Us.html">About Us</a></li>
+                <li><a href="Plan-Your-Trip.html">Plan Your Trip</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-right desktop-nav"><a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a></div>
+    </nav>
+
+    <!-- ══ PAGE HERO ══ -->
+    <section class="page-hero">
+        <img src="https://images.unsplash.com/photo-1555400038-63f5ba517a47?q=80&w=2000" class="page-hero-img" alt="Tranquil Indochina">
+        <div class="page-hero-content">
+            <span class="page-hero-eyebrow">Trust & Transparency</span>
+            <h1 class="page-hero-title">Privacy<br>Policy</h1>
+            <div class="page-hero-rule"></div>
+        </div>
+    </section>
+
+    <!-- ══ PRIVACY CONTENT ══ -->
+    <main class="tc-wrapper">
+
+        <span class="tc-updated">Last Updated — January 2026</span>
+        <p class="tc-intro">
+            At L'Indochine, the privacy of our guests and partners is held with the same reverence as the journeys we create. This Privacy Policy explains how we collect, use, protect, and respect your personal information when you engage with us — online, by correspondence, or through the planning and delivery of your journey.
+        </p>
+
+        <!-- 1 -->
+        <div class="tc-section">
+            <span class="tc-section-number">01 — Who We Are</span>
+            <h2>Data Controller</h2>
+            <p>L'Indochine is the data controller responsible for your personal information. We are a luxury Destination Management Company headquartered in Siem Reap, Kingdom of Cambodia, operating journeys across Southeast Asia.</p>
+            <p>If you have any questions about this Privacy Policy or how we handle your data, please contact our team at:</p>
+            <ul>
+                <li><strong>Email:</strong> privacy@lindochine.com</li>
+                <li><strong>Phone:</strong> +855 95 267 257</li>
+                <li><strong>Address:</strong> Siem Reap, Kingdom of Cambodia</li>
+            </ul>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 2 -->
+        <div class="tc-section">
+            <span class="tc-section-number">02 — Information We Collect</span>
+            <h2>What Personal Data We Hold</h2>
+            <p>We collect personal information only when it is necessary to provide our services or to communicate with you. The categories of data we may collect include:</p>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Examples</th>
+                        <th>Why We Collect It</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Identity Data</strong></td>
+                        <td>Full name, date of birth, nationality, passport number</td>
+                        <td>Journey bookings, visa assistance, hotel check-in requirements</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Contact Data</strong></td>
+                        <td>Email address, phone number, postal address</td>
+                        <td>Correspondence, booking confirmations, emergency contact</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Journey Preferences</strong></td>
+                        <td>Dietary requirements, accessibility needs, room preferences, special occasions</td>
+                        <td>Delivering a personalised, bespoke experience</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Health Data</strong></td>
+                        <td>Medical conditions relevant to travel, allergies</td>
+                        <td>Safety and wellbeing during your journey (collected only with consent)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Financial Data</strong></td>
+                        <td>Payment information (processed securely by our payment providers)</td>
+                        <td>Processing deposits and balances</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Technical Data</strong></td>
+                        <td>IP address, browser type, pages visited, cookies</td>
+                        <td>Website performance, analytics, user experience improvement</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Communications Data</strong></td>
+                        <td>Emails, enquiry forms, call notes</td>
+                        <td>Responding to enquiries and maintaining service records</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>We do not collect data we do not need. We will never ask for sensitive information such as racial origin, political opinions, or religious beliefs unless directly relevant to a specific journey service and only with your explicit consent.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 3 -->
+        <div class="tc-section">
+            <span class="tc-section-number">03 — How We Collect Your Data</span>
+            <h2>Sources of Information</h2>
+            <p>We collect personal information through the following channels:</p>
+            <ul>
+                <li><strong>Directly from you</strong> — when you submit an enquiry form, email us, call us, or complete a booking.</li>
+                <li><strong>Travel agents and B2B partners</strong> — who share your information on your behalf to arrange your journey with us.</li>
+                <li><strong>Our website</strong> — through cookies, contact forms, and the journey planning tool.</li>
+                <li><strong>Third-party services</strong> — such as accommodation providers, airlines, and activity operators who may share relevant guest information with us as part of journey delivery.</li>
+            </ul>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 4 -->
+        <div class="tc-section">
+            <span class="tc-section-number">04 — How We Use Your Data</span>
+            <h2>Purposes & Legal Basis</h2>
+            <p>We process your personal data only for specific, legitimate purposes. Our legal bases for processing are:</p>
+            <ul>
+                <li><strong>Performance of a contract</strong> — processing your booking, arranging transport, accommodation, guides, and all journey components.</li>
+                <li><strong>Legal obligation</strong> — complying with immigration, customs, and financial record-keeping requirements.</li>
+                <li><strong>Legitimate interests</strong> — improving our services, communicating with past guests about new offerings, and protecting our business from fraud.</li>
+                <li><strong>Consent</strong> — sending you marketing communications or processing special-category data such as health or dietary information.</li>
+            </ul>
+            <div class="tc-highlight-box">
+                <p>"We will never use your personal data for purposes incompatible with why you shared it with us. Your trust is the foundation of every journey we craft."</p>
+            </div>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 5 -->
+        <div class="tc-section">
+            <span class="tc-section-number">05 — Sharing Your Data</span>
+            <h2>With Whom We Share Information</h2>
+            <p>To deliver your journey, we share only the data strictly necessary with the following categories of third parties:</p>
+            <ul>
+                <li><strong>Accommodation providers</strong> — hotels, resorts, and boutique lodges included in your itinerary.</li>
+                <li><strong>Transport operators</strong> — airlines, private drivers, charter services, and river cruise operators.</li>
+                <li><strong>Local guides and activity operators</strong> — vetted specialists who form part of your journey experience.</li>
+                <li><strong>Payment processors</strong> — secure third-party platforms for processing deposits and balances.</li>
+                <li><strong>Travel agents and B2B partners</strong> — where your booking was made through an intermediary.</li>
+                <li><strong>Government and immigration authorities</strong> — where required by law for entry or border requirements.</li>
+            </ul>
+            <p>We do not sell, rent, or trade your personal data to any third party for their own marketing purposes. All supplier partners are required to maintain appropriate data security standards and to use your information only for the purposes of delivering your journey.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 6 -->
+        <div class="tc-section">
+            <span class="tc-section-number">06 — International Data Transfers</span>
+            <h2>Cross-Border Data Flows</h2>
+            <p>As a Southeast Asia travel specialist, the nature of our business means your personal data may be transferred to and processed in countries including Cambodia, Vietnam, Thailand, Laos, and Myanmar — and potentially beyond, depending on your journey.</p>
+            <p>These countries may have different data protection standards than your home country. We take appropriate contractual and organisational safeguards to ensure your data receives an equivalent level of protection wherever it is processed.</p>
+            <p>For guests based in the European Union or United Kingdom, we rely on Standard Contractual Clauses and adequacy decisions where applicable to legitimise such transfers.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 7 -->
+        <div class="tc-section">
+            <span class="tc-section-number">07 — Data Retention</span>
+            <h2>How Long We Keep Your Data</h2>
+            <p>We retain your personal data only for as long as necessary to fulfil the purposes for which it was collected, including legal, accounting, and reporting requirements:</p>
+            <ul>
+                <li><strong>Active booking and journey data</strong> — retained for 7 years from the date of travel to comply with financial and legal obligations.</li>
+                <li><strong>Enquiry data (no booking made)</strong> — retained for 12 months, after which it is securely deleted.</li>
+                <li><strong>Marketing preferences</strong> — retained until you withdraw consent or unsubscribe.</li>
+                <li><strong>Website analytics and technical data</strong> — retained for up to 24 months in aggregated, anonymised form.</li>
+            </ul>
+            <p>Upon expiry of the relevant retention period, your data is securely deleted or anonymised so it can no longer be linked to you.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 8 -->
+        <div class="tc-section">
+            <span class="tc-section-number">08 — Cookies & Website Tracking</span>
+            <h2>How We Use Cookies</h2>
+            <p>Our website uses cookies and similar tracking technologies to enhance your browsing experience and understand how visitors interact with our content. The types of cookies we use include:</p>
+            <ul>
+                <li><strong>Essential cookies</strong> — necessary for the website to function correctly. These cannot be disabled.</li>
+                <li><strong>Performance cookies</strong> — collect anonymised analytics data (e.g. Google Analytics) to help us improve page performance and content.</li>
+                <li><strong>Functional cookies</strong> — remember your preferences such as language or region settings.</li>
+                <li><strong>Marketing cookies</strong> — used to deliver relevant content and measure campaign effectiveness. These are only placed with your consent.</li>
+            </ul>
+            <p>You may manage your cookie preferences at any time via your browser settings or our cookie consent banner. Disabling non-essential cookies will not affect your ability to use our website, though some personalisation features may be limited.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 9 -->
+        <div class="tc-section">
+            <span class="tc-section-number">09 — Data Security</span>
+            <h2>How We Protect Your Information</h2>
+            <p>We take the security of your personal data seriously and have implemented appropriate technical and organisational measures to protect it against unauthorised access, loss, destruction, or alteration. These include:</p>
+            <ul>
+                <li>Secure, encrypted transmission of data via HTTPS across our website and communications.</li>
+                <li>Access controls ensuring only authorised personnel can access personal data relevant to their role.</li>
+                <li>Secure, password-protected systems and regular security reviews.</li>
+                <li>Staff training on data protection obligations and best practices.</li>
+            </ul>
+            <p>In the event of a data breach that is likely to result in a risk to your rights and freedoms, we will notify you and the relevant supervisory authorities as required by applicable law.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 10 -->
+        <div class="tc-section">
+            <span class="tc-section-number">10 — Your Rights</span>
+            <h2>Your Data Protection Rights</h2>
+            <p>Depending on your country of residence, you may have the following rights regarding your personal data:</p>
+            <ul>
+                <li><strong>Right of access</strong> — request a copy of the personal data we hold about you.</li>
+                <li><strong>Right to rectification</strong> — request correction of inaccurate or incomplete data.</li>
+                <li><strong>Right to erasure</strong> — request deletion of your data where there is no legitimate reason for us to continue processing it.</li>
+                <li><strong>Right to restrict processing</strong> — ask us to suspend processing your data in certain circumstances.</li>
+                <li><strong>Right to data portability</strong> — request your data in a structured, machine-readable format.</li>
+                <li><strong>Right to object</strong> — object to processing based on legitimate interests or for direct marketing purposes.</li>
+                <li><strong>Right to withdraw consent</strong> — where processing is based on your consent, withdraw it at any time without affecting prior processing.</li>
+            </ul>
+            <p>To exercise any of these rights, please contact us at privacy@lindochine.com. We will respond within 30 days. We may need to verify your identity before fulfilling your request.</p>
+            <p>If you are not satisfied with our response, you have the right to lodge a complaint with your local data protection supervisory authority.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 11 -->
+        <div class="tc-section">
+            <span class="tc-section-number">11 — Marketing Communications</span>
+            <h2>Staying in Touch</h2>
+            <p>If you have booked with us or made an enquiry, we may, with your consent, send you occasional communications about new journeys, seasonal destinations, and curated travel inspiration relevant to your interests.</p>
+            <p>You may unsubscribe from marketing communications at any time by clicking the unsubscribe link in any email we send, or by contacting us directly. Withdrawing consent for marketing will not affect the delivery of your booked journey or any transactional communications.</p>
+            <p>We will never send unsolicited marketing without your prior consent, and we will never share your details with third-party marketers.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 12 -->
+        <div class="tc-section">
+            <span class="tc-section-number">12 — Children's Privacy</span>
+            <h2>Protecting Younger Travellers</h2>
+            <p>Our website and services are not directed at children under the age of 16. We do not knowingly collect personal data directly from children. When a child is part of a family booking, their data is collected from and managed by the accompanying adult, who is responsible for consent on their behalf.</p>
+            <p>If you believe we have inadvertently collected data from a child without appropriate parental consent, please contact us immediately and we will take prompt action to delete it.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 13 -->
+        <div class="tc-section">
+            <span class="tc-section-number">13 — Changes to This Policy</span>
+            <h2>Policy Updates</h2>
+            <p>We may update this Privacy Policy from time to time to reflect changes in our practices, technology, or legal obligations. When we make material changes, we will update the "Last Updated" date at the top of this page and, where appropriate, notify you by email.</p>
+            <p>We encourage you to review this Policy periodically to stay informed about how we protect your information. Continued use of our website or services after changes are posted constitutes acceptance of the updated Policy.</p>
+        </div>
+
+        <hr class="tc-divider">
+
+        <!-- 14 -->
+        <div class="tc-section">
+            <span class="tc-section-number">14 — Third-Party Links</span>
+            <h2>External Websites</h2>
+            <p>Our website may contain links to third-party websites — for example, accommodation partners, destination guides, or social media platforms. These sites operate under their own privacy policies, and we have no control over or responsibility for their content or data practices.</p>
+            <p>We encourage you to review the privacy policy of any third-party site you visit before providing personal information.</p>
+        </div>
+
+        <!-- Contact Block -->
+        <div class="tc-contact-block">
+            <div>
+                <h3>Privacy Enquiries</h3>
+                <p>To exercise your data rights, ask a question, or raise a concern about how we handle your information, reach our team directly.<br>privacy@lindochine.com &nbsp;·&nbsp; +855 95 267 257</p>
+            </div>
+            <a href="Plan-Your-Trip.html" class="btn-plan">Plan Your Trip</a>
+        </div>
+
+    </main>
+
+    <!-- ══ FOOTER ══ -->
+    <footer>
+        <div class="footer-main">
+            <div class="footer-col">
+                <h4>Destinations</h4>
+                <ul>
+                    <li><a href="cambodia.html">Cambodia</a></li>
+                    <li><a href="Laos.html">Laos</a></li>
+                    <li><a href="Vietnam.html">Vietnam</a></li>
+                    <li><a href="Thailand.html">Thailand</a></li>
+                    <li><a href="Multi-country.html">Multi-Country</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Experiences</h4>
+                <ul>
+                    <li><a href="Culture-Heritage.html">Culture & Heritage</a></li>
+                    <li><a href="Romantic-Journeys.html">Romantic Getaways</a></li>
+                    <li><a href="Nature-Adventure.html">Nature & Adventure</a></li>
+                    <li><a href="Wellness-Rejuvenation.html">Wellness & Rejuvenation</a></li>
+                    <li><a href="Family-Journeys.html">Family Journeys</a></li>
+                    <li><a href="Culinary-Journeys.html">Culinary Journeys</a></li>
+                </ul>
+            </div>
+            <div class="footer-col footer-contact">
+                <h4>Connect with Us</h4>
+                <p>+855 95 267 257</p>
+                <p>contact@l'indochine.com</p>
+                <div class="footer-social">
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.791-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-2.21c0-.837.39-1.29 1.121-1.29h2.879v-4.498c-.443-.059-1.968-.202-3.726-.202-3.689 0-6.274 2.247-6.274 6.46v1.74z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4.98 3.5c0 1.381-1.11 2.5-2.48 2.5s-2.48-1.119-2.48-2.5c0-1.38 1.11-2.5 2.48-2.5s2.48 1.12 2.48 2.5zm.02 4.5h-5v16h5v-16zm7.982 0h-4.968v16h4.969v-8.399c0-4.67 6.029-5.052 6.029 0v8.399h4.988v-10.131c0-7.88-8.922-7.593-11.018-3.714v-2.155z"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <div class="footer-cta-box">
+                    <h4 style="margin-bottom: 20px;">Curate Your Legacy</h4>
+                    <a href="Plan-Your-Trip.html" class="btn-plan" style="display: block; text-align: center; margin-bottom: 20px;">Plan Your Trip</a>
+                    <div style="display: flex; justify-content: space-between;">
+                        <a href="About-Us.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ABOUT US</a>
+                        <a href="Accommodation.html" style="font-size: 8px; letter-spacing: 2px; text-decoration: none; color: var(--ink); opacity: 0.6;">ACCOMMODATION</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="copyright">&copy; 2026 L'INDOCHINE — SOVEREIGN JOURNEYS</div>
+            <div class="footer-bottom-links">
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="Terms&Conditions.html">Terms & Conditions</a>
+                <a href="#" id="back-to-top">BACK TO TOP &#10142;</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Cursor
+        const follower = document.getElementById('cursor-follower');
+        const fText = follower.querySelector('span');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(follower, { x: e.clientX - 30, y: e.clientY - 30, duration: 0.6, ease: "power2.out" });
+        });
+        document.querySelectorAll('a, .mega-item').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(follower, { width: 100, height: 100, background: 'rgba(194, 157, 107, 0.15)', border: 'none' });
+                fText.innerText = "READ";
+                gsap.to(fText, { opacity: 1 });
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(follower, { width: 60, height: 60, background: 'transparent', border: '0.5px solid #C29D6B' });
+                gsap.to(fText, { opacity: 0 });
+            });
+        });
+
+        // Section reveals
+        gsap.utils.toArray('.tc-section').forEach((section) => {
+            gsap.from(section, {
+                opacity: 0, y: 40, duration: 1.2, ease: "power3.out",
+                scrollTrigger: { trigger: section, start: "top 85%" }
+            });
+        });
+
+        gsap.from('.page-hero-content', { opacity: 0, y: 60, duration: 1.5, ease: "power4.out", delay: 0.3 });
+
+        // Back to top
+        document.getElementById('back-to-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Mobile menu
+        const mOpen = document.getElementById('menu-open');
+        const mClose = document.getElementById('menu-close');
+        const mOverlay = document.getElementById('mobile-overlay');
+        if (mOpen) mOpen.addEventListener('click', () => mOverlay.classList.add('active'));
+        if (mClose) mClose.addEventListener('click', () => mOverlay.classList.remove('active'));
+
+        document.querySelectorAll('.mobile-drop-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function () {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('span');
+                content.classList.toggle('active');
+                icon.innerText = content.classList.contains('active') ? "−" : "+";
+            });
+        });
+
+        // Mega menu caret
+        document.querySelectorAll('.desktop-nav .dropdown').forEach(drop => {
+            const menu = drop.querySelector('.mega-menu');
+            const link = drop.querySelector('a');
+            drop.addEventListener('mouseenter', () => {
+                if (menu && link) {
+                    const linkRect = link.getBoundingClientRect();
+                    const linkCenter = linkRect.left + (linkRect.width / 2);
+                    menu.style.setProperty('--triangle-left', `${(linkCenter / window.innerWidth) * 100}%`);
+                }
+            });
+        });
+    </script>
+
+<script>
+(() => {
+    if (!window.Lenis || window.__siteLenis) return;
+    const lenis = new Lenis({
+        duration: 1.8,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 0.9,
+        touchMultiplier: 1.2,
+        infinite: false,
+    });
+    window.__siteLenis = lenis;
+
+    if (window.gsap && window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+    } else {
+        const raf = (time) => {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+    }
+})();
+</script>
+</body>
+</html>
